@@ -3763,6 +3763,7 @@
     const KEY_ALTO_CONTRASTE= "recetas:a11y-contraste";    // "1" si activo
     const KEY_BIBLIOTECA_MODO = "recetas:biblioteca-modo"; // tarjetas | lista
     const KEY_SUPABASE        = "recetas:supabase";        // sesión + tokens auth
+    const KEY_MODO_DEV        = "recetas:modo-dev";        // "1" para mostrar config avanzada
 
     /* Configuración Supabase precargada (anon key es pública, no es secreta). */
     const SUPABASE_URL_DEFAULT  = "https://lsxyefydmxhjmsdtzvuq.supabase.co";
@@ -3838,6 +3839,8 @@
         errores: [],
         incidencias: []      // ultima importacion
       },
+      /* Modo desarrollador — oculta/muestra config avanzada (persistido). */
+      modoDev: false,
       /* Supabase — config + tokens persistidos en KEY_SUPABASE. */
       supabase: {
         url:           SUPABASE_URL_DEFAULT,
@@ -4020,6 +4023,15 @@
     function cargarBibliotecaModo() {
       const m = localStorage.getItem(KEY_BIBLIOTECA_MODO);
       sesion.bibliotecaModo = (m === "lista") ? "lista" : "tarjetas";
+    }
+
+    function cargarModoDev() {
+      sesion.modoDev = localStorage.getItem(KEY_MODO_DEV) === "1";
+    }
+    function alternarModoDev() {
+      sesion.modoDev = !sesion.modoDev;
+      localStorage.setItem(KEY_MODO_DEV, sesion.modoDev ? "1" : "0");
+      renderDatos();
     }
 
     function cargarSupabase() {
@@ -7535,6 +7547,7 @@
             <div id="sync-msg" class="iox-info"></div>
           `}
         </div>
+        ${sesion.modoDev ? `
         <div class="datos-card">
           <div class="datos-card-head">
             <h2>Configuración avanzada</h2>
@@ -7554,6 +7567,13 @@
             <button type="button" class="iox-boton secundario" data-accion="sync-guardar-cfg">Guardar configuración</button>
             <button type="button" class="iox-boton peligro" data-accion="sync-reset-cfg">Restablecer por defecto</button>
           </div>
+        </div>
+        ` : ""}
+        <div style="margin-top:var(--gap-4); text-align:center;">
+          <button type="button" data-accion="toggle-modo-dev"
+                  style="background:transparent;border:none;color:var(--text-muted);font-size:12px;cursor:pointer;text-decoration:underline;opacity:0.6;">
+            ${sesion.modoDev ? "Ocultar configuración avanzada" : "Mostrar configuración avanzada"}
+          </button>
         </div>
       `;
     }
@@ -7697,6 +7717,7 @@
       cargarCompra();
       cargarPlan();
       cargarA11y();
+      cargarModoDev();
       cargarSupabase();
       actualizarThemeColor(document.documentElement.dataset.tema);
       // Si quedaron timers activos al cargar, arrancar el ticker.
@@ -8378,6 +8399,10 @@
           sesion.supabase.anonKey = SUPABASE_ANON_DEFAULT;
           guardarSupabase();
           renderDatos();
+          return;
+        }
+        if (ev.target.closest("[data-accion='toggle-modo-dev']")) {
+          alternarModoDev();
           return;
         }
 
