@@ -2276,6 +2276,49 @@
       font-size: 11.5px;
     }
 
+    /* Textarea para pegar JSON (mismo estilo que el <pre> de plantilla, editable) */
+    textarea.plantilla-json {
+      width: 100%;
+      resize: vertical;
+      font-family: var(--font-num);
+      font-size: 11.5px;
+      line-height: 1.55;
+      tab-size: 2;
+      min-height: 180px;
+    }
+
+    /* Bloque de refs huérfanas tras importar */
+    .huerf-bloque {
+      margin-top: var(--gap-3);
+      padding: var(--gap-3);
+      background: color-mix(in srgb, var(--accent-bg) 50%, var(--bg-soft));
+      border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+      border-radius: var(--r-md);
+    }
+    .huerf-titulo {
+      font-size: 13.5px;
+      color: var(--text);
+      margin-bottom: 8px;
+      line-height: 1.45;
+    }
+    .huerf-lista {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      max-height: 140px;
+      overflow-y: auto;
+    }
+    .huerf-chip {
+      display: inline-block;
+      padding: 2px 8px;
+      background: var(--bg-elev);
+      border: 1px solid var(--line);
+      border-radius: var(--r-pill);
+      font-family: var(--font-num);
+      font-size: 11px;
+      color: var(--text);
+    }
+
     /* ========================================================================
        ACCESIBILIDAD DE COCINA — fuente grande, alto contraste, target tactil
        Persistidos en KEY_FUENTE_GRANDE y KEY_ALTO_CONTRASTE.
@@ -4241,7 +4284,9 @@
       /* Accesibilidad — nivel 0..3 (persistido). */
       fuenteNivel: 0,
       /* Datos — tab interna y estado del editor (efimero). */
-      datosTab: "recetas",   // recetas | ingredientes | iox
+      datosTab: "recetas",   // recetas | ingredientes | iox | sync
+      /* Refs detectadas como huérfanas en la última importación. */
+      refsHuerfanas: [],     // [{clave, nombre, categoriaCompraSugerida}]
       editor: {
         modo: null,          // null | "receta" | "ingrediente"
         receta: null,        // copia editable
@@ -5350,9 +5395,10 @@
      */
     function importarObjeto(obj) {
       const incidencias = [];
+      const huerfMap = new Map();   // ref -> {nombre}
       const out = { ingredientes: 0, recetas: 0, perfiles: 0 };
       if (!obj || typeof obj !== "object") {
-        return { incidencias: ["JSON sin contenido o no es un objeto"], aplicados: out };
+        return { incidencias: ["JSON sin contenido o no es un objeto"], aplicados: out, huerfanas: [] };
       }
       // Construir el nuevo documento mezclando con el actual.
       const nuevo = JSON.parse(JSON.stringify(estado));
@@ -5389,9 +5435,17 @@
           if (Array.isArray(r.pasos)) {
             r.pasos = r.pasos.map((p, i) => ({ ...p, n: i + 1 }));
           }
-          // Aplicar invariante 2 (con aviso, no error).
+          // Detectar refs huérfanas SIN convertirlas a null. Se registran
+          // para ofrecer el botón "Crear estos ingredientes en el catálogo".
           if (Array.isArray(r.ingredientes)) {
-            incidencias.push(...aplicarInvariante2(r, nuevo.ingredientes));
+            const claves = new Set(nuevo.ingredientes.map(x => x.clave));
+            for (const ing of r.ingredientes) {
+              if (ing.ref && !claves.has(ing.ref) && !huerfMap.has(ing.ref)) {
+                huerfMap.set(ing.ref, {
+                  nombre: ing.nombre || ing.ref
+                });
+              }
+            }
           }
           const errs = validarReceta(r);
           if (errs.length) {
@@ -5448,7 +5502,42 @@
       // Aplicar a estado y guardar.
       estado = nuevo;
       guardarEstado();
-      return { incidencias, aplicados: out };
+
+      // Guardar refs huérfanas detectadas para mostrar botón "Crear catálogo".
+      const huerfanas = [...huerfMap.entries()].map(([clave, info]) => ({
+        clave,
+        nombre: info.nombre,
+        categoriaCompra: "otros"
+      }));
+      sesion.refsHuerfanas = huerfanas;
+      if (huerfanas.length) {
+        incidencias.push(`${huerfanas.length} refs no existían en el catálogo. Puedes crearlas en bloque con el botón "Crear ${huerfanas.length} ingredientes al catálogo".`);
+      }
+
+      return { incidencias, aplicados: out, huerfanas };
+    }
+
+    /** Crea en el catálogo los ingredientes huérfanos detectados en la última importación. */
+    function crearIngredientesHuerfanos() {
+      const huerf = sesion.refsHuerfanas || [];
+      let creados = 0;
+      for (const h of huerf) {
+        if (estado.ingredientes.find(x => x.clave === h.clave)) continue;
+        estado.ingredientes.push({
+          clave: h.clave,
+          nombre: h.nombre,
+          categoriaCompra: h.categoriaCompra || "otros",
+          densidad: null,
+          gramosPorUnidad: null,
+          alias: []
+        });
+        creados++;
+      }
+      sesion.refsHuerfanas = [];
+      guardarEstado();
+      renderTodo();
+      programarAutoSync();
+      return creados;
     }
 
 
@@ -8139,11 +8228,50 @@
         <div class="datos-card">
           <div class="datos-card-head">
             <h2>Importar</h2>
-            <p>Valida invariantes 1-6. Las refs huérfanas se ad-hoquizan con aviso (inv. 2).</p>
+            <p>Valida invariantes 1-6. Las refs no existentes en el catálogo se pueden crear en bloque tras importar.</p>
           </div>
           <div class="iox-grupo">
-            <button type="button" class="iox-boton" data-accion="importar">Elegir archivo JSON…</button>
+            <button type="button" class="iox-boton" data-accion="importar">📁 Elegir archivo JSON…</button>
           </div>
+
+          <details class="plantilla-detalle">
+            <summary>✏️ O pegar JSON directamente aquí</summary>
+            <div class="plantilla-cuerpo">
+              <textarea id="iox-textarea" class="plantilla-json" rows="12"
+                        placeholder='Pega aquí tu JSON. Ejemplo:
+{
+  "schemaVersion": 1,
+  "recetas": [ ... ]
+}'></textarea>
+              <div class="iox-grupo" style="margin-top: 8px;">
+                <button type="button" class="iox-boton" data-accion="importar-pegado">Importar desde texto pegado</button>
+                <button type="button" class="iox-boton secundario" data-accion="limpiar-pegado">Limpiar</button>
+              </div>
+            </div>
+          </details>
+
+          ${(sesion.refsHuerfanas && sesion.refsHuerfanas.length) ? `
+            <div class="huerf-bloque">
+              <div class="huerf-titulo">
+                <b>${sesion.refsHuerfanas.length} ingredientes</b> de las recetas importadas no estaban en tu catálogo:
+              </div>
+              <div class="huerf-lista">
+                ${sesion.refsHuerfanas.slice(0, 20).map(h =>
+                  `<code class="huerf-chip">${esc(h.clave)}</code>`
+                ).join(" ")}
+                ${sesion.refsHuerfanas.length > 20 ? `<span class="iox-info">… y ${sesion.refsHuerfanas.length - 20} más</span>` : ""}
+              </div>
+              <div class="iox-grupo" style="margin-top: 10px;">
+                <button type="button" class="iox-boton" data-accion="crear-huerfanos">
+                  ✚ Crear ${sesion.refsHuerfanas.length} ingredientes en el catálogo
+                </button>
+                <button type="button" class="iox-boton secundario" data-accion="descartar-huerfanos">
+                  Ignorar
+                </button>
+              </div>
+              <p class="iox-info">Se crearán con categoría <code>otros</code>. Podrás editarlos después en la pestaña Ingredientes.</p>
+            </div>
+          ` : ""}
 
           <details class="plantilla-detalle">
             <summary>📋 Ver / copiar plantilla JSON</summary>
@@ -9092,6 +9220,49 @@
         }
         if (ev.target.closest("[data-accion='importar']")) {
           document.getElementById("iox-archivo").click();
+          return;
+        }
+        if (ev.target.closest("[data-accion='importar-pegado']")) {
+          const ta = document.getElementById("iox-textarea");
+          if (!ta) return;
+          const txt = (ta.value || "").trim();
+          if (!txt) {
+            sesion.editor.incidencias = ["El campo está vacío. Pega tu JSON primero."];
+            sesion.datosTab = "iox";
+            renderDatos();
+            return;
+          }
+          let obj;
+          try { obj = JSON.parse(txt); }
+          catch (e) {
+            sesion.editor.incidencias = [`JSON no válido: ${e.message}`];
+            sesion.datosTab = "iox";
+            renderDatos();
+            return;
+          }
+          const { incidencias, aplicados } = importarObjeto(obj);
+          const resumen = `Aplicados: ${aplicados.ingredientes} ingredientes, ${aplicados.recetas} recetas, ${aplicados.perfiles} perfiles.`;
+          sesion.editor.incidencias = [resumen, ...incidencias];
+          sesion.datosTab = "iox";
+          renderTodo();
+          programarAutoSync();
+          return;
+        }
+        if (ev.target.closest("[data-accion='limpiar-pegado']")) {
+          const ta = document.getElementById("iox-textarea");
+          if (ta) ta.value = "";
+          return;
+        }
+        if (ev.target.closest("[data-accion='crear-huerfanos']")) {
+          const n = crearIngredientesHuerfanos();
+          sesion.editor.incidencias = [`✓ ${n} ingredientes añadidos al catálogo con categoría "otros". Edítalos en la pestaña Ingredientes para completar densidad, gramos/unidad y categoría real.`];
+          sesion.datosTab = "iox";
+          renderDatos();
+          return;
+        }
+        if (ev.target.closest("[data-accion='descartar-huerfanos']")) {
+          sesion.refsHuerfanas = [];
+          renderDatos();
           return;
         }
         if (ev.target.closest("[data-accion='copiar-plantilla']")) {
