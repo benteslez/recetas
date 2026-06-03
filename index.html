@@ -5047,6 +5047,30 @@
       } catch (_) { return false; }
     }
 
+    /** Inicia sesión con email + contraseña. */
+    async function iniciarSesionPassword(email, password) {
+      const s = sesion.supabase;
+      const res = await fetch(s.url + "/auth/v1/token?grant_type=password", {
+        method: "POST",
+        headers: { "apikey": s.anonKey, "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+      if (!res.ok) {
+        const t = await res.text();
+        let msg = "Email o contraseña incorrectos.";
+        try {
+          const j = JSON.parse(t);
+          if (j && j.msg) msg = j.msg;
+        } catch (_) {}
+        throw new Error(msg);
+      }
+      const data = await res.json();
+      s.token = data.access_token;
+      s.refreshToken = data.refresh_token;
+      s.email = (data.user && data.user.email) || email;
+      guardarSupabase();
+    }
+
     /** Pide a Supabase que envíe un magic link al email indicado. */
     async function enviarMagicLink(email) {
       const s = sesion.supabase;
@@ -7519,14 +7543,21 @@
             <p>Mantiene tus recetas idénticas entre dispositivos. Last-write-wins por <code>modificado</code>.</p>
           </div>
           ${!autenticado ? `
-            <p class="iox-info">Para sincronizar entre dispositivos, inicia sesión con tu email.
-            Te llegará un enlace mágico — al pulsarlo, vuelves aquí ya logueado.</p>
-            <div class="campo" style="max-width:360px;">
-              <label for="sync-email">Email</label>
-              <input type="email" id="sync-email" placeholder="tu@email.com" autocomplete="email">
+            <p class="iox-info">Inicia sesión con tu email y contraseña.
+            Si has olvidado la contraseña, puedes pedir un enlace mágico al final.</p>
+            <div class="editor-grid" style="max-width:480px;">
+              <div class="campo">
+                <label for="sync-email">Email</label>
+                <input type="email" id="sync-email" placeholder="tu@email.com" autocomplete="email">
+              </div>
+              <div class="campo">
+                <label for="sync-pass">Contraseña</label>
+                <input type="password" id="sync-pass" placeholder="••••••••" autocomplete="current-password">
+              </div>
             </div>
             <div class="iox-grupo" style="margin-top:var(--gap-3);">
-              <button type="button" class="iox-boton" data-accion="sync-magic">Enviar magic link</button>
+              <button type="button" class="iox-boton" data-accion="sync-login">Iniciar sesión</button>
+              <button type="button" class="iox-boton secundario" data-accion="sync-magic">¿Olvidaste la contraseña?</button>
             </div>
             <div id="sync-msg" class="iox-info"></div>
           ` : `
@@ -8356,6 +8387,28 @@
           return;
         }
         // -- Sincronización con Supabase ------------------------------------
+        if (ev.target.closest("[data-accion='sync-login']")) {
+          const em = (document.getElementById("sync-email") || {}).value || "";
+          const pw = (document.getElementById("sync-pass")  || {}).value || "";
+          const msg = document.getElementById("sync-msg");
+          if (!em || !em.includes("@")) {
+            if (msg) msg.innerHTML = '<span style="color:var(--danger);">Introduce un email válido.</span>';
+            return;
+          }
+          if (!pw) {
+            if (msg) msg.innerHTML = '<span style="color:var(--danger);">Introduce la contraseña.</span>';
+            return;
+          }
+          if (msg) msg.textContent = "Iniciando sesión…";
+          iniciarSesionPassword(em, pw).then(() => {
+            renderDatos();
+            // Primer sync automático tras login
+            sincronizar().catch(() => {});
+          }).catch(e => {
+            if (msg) msg.innerHTML = `<span style="color:var(--danger);">${esc(e.message)}</span>`;
+          });
+          return;
+        }
         if (ev.target.closest("[data-accion='sync-magic']")) {
           const em = (document.getElementById("sync-email") || {}).value || "";
           const msg = document.getElementById("sync-msg");
