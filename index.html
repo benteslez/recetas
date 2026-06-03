@@ -3762,6 +3762,11 @@
     const KEY_FUENTE_GRANDE = "recetas:a11y-fuente";       // (legacy) "1" si activo
     const KEY_ALTO_CONTRASTE= "recetas:a11y-contraste";    // "1" si activo
     const KEY_BIBLIOTECA_MODO = "recetas:biblioteca-modo"; // tarjetas | lista
+    const KEY_SUPABASE        = "recetas:supabase";        // sesión + tokens auth
+
+    /* Configuración Supabase precargada (anon key es pública, no es secreta). */
+    const SUPABASE_URL_DEFAULT  = "https://lsxyefydmxhjmsdtzvuq.supabase.co";
+    const SUPABASE_ANON_DEFAULT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxzeHllZnlkbXhoam1zZHR6dnVxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MTEwMjYsImV4cCI6MjA5NjA4NzAyNn0.UM4KYKXRCPzASuvuRzEWNyPJrOGSyx2rgPYSYTC4CPo";
 
     const ORDENES_VALIDOS = ["nombre","tiempo","valoracion","veces","ultima"];
 
@@ -3832,6 +3837,18 @@
         ingrediente: null,
         errores: [],
         incidencias: []      // ultima importacion
+      },
+      /* Supabase — config + tokens persistidos en KEY_SUPABASE. */
+      supabase: {
+        url:           SUPABASE_URL_DEFAULT,
+        anonKey:       SUPABASE_ANON_DEFAULT,
+        token:         null,    // access_token JWT
+        refreshToken:  null,
+        email:         null,
+        ultimoSync:    null,    // ISO de la última sync OK
+        autoSync:      true,    // sync automático al guardar cambios
+        estadoSync:    "idle",  // idle | syncing | error
+        ultimoError:   null
       },
       /* Conversores — estado efimero de los formularios. */
       conv: {
@@ -4003,6 +4020,34 @@
     function cargarBibliotecaModo() {
       const m = localStorage.getItem(KEY_BIBLIOTECA_MODO);
       sesion.bibliotecaModo = (m === "lista") ? "lista" : "tarjetas";
+    }
+
+    function cargarSupabase() {
+      try {
+        const raw = localStorage.getItem(KEY_SUPABASE);
+        if (!raw) return;
+        const o = JSON.parse(raw);
+        if (o && typeof o === "object") {
+          // Solo recuperar campos esperados
+          if (typeof o.url === "string")          sesion.supabase.url = o.url;
+          if (typeof o.anonKey === "string")      sesion.supabase.anonKey = o.anonKey;
+          if (typeof o.token === "string")        sesion.supabase.token = o.token;
+          if (typeof o.refreshToken === "string") sesion.supabase.refreshToken = o.refreshToken;
+          if (typeof o.email === "string")        sesion.supabase.email = o.email;
+          if (typeof o.ultimoSync === "string")   sesion.supabase.ultimoSync = o.ultimoSync;
+          if (typeof o.autoSync === "boolean")    sesion.supabase.autoSync = o.autoSync;
+        }
+      } catch (_) {/* ignora */}
+    }
+    function guardarSupabase() {
+      // No persistir estadoSync/ultimoError (efímeros de UI).
+      const s = sesion.supabase;
+      localStorage.setItem(KEY_SUPABASE, JSON.stringify({
+        url: s.url, anonKey: s.anonKey,
+        token: s.token, refreshToken: s.refreshToken,
+        email: s.email, ultimoSync: s.ultimoSync,
+        autoSync: s.autoSync
+      }));
     }
     function fijarBibliotecaModo(m) {
       if (m !== "tarjetas" && m !== "lista") return;
@@ -4267,8 +4312,9 @@
       if (!PERFILES.includes(perfil)) return;
       if (!estado.estadoUsuario[perfil]) estado.estadoUsuario[perfil] = {};
       const previo = estado.estadoUsuario[perfil][idReceta] || estadoUsuarioVacio();
-      estado.estadoUsuario[perfil][idReceta] = { ...previo, ...parcial };
+      estado.estadoUsuario[perfil][idReceta] = { ...previo, ...parcial, modificado: nowISO() };
       guardarEstado();
+      programarAutoSync();   // sync diferido si está conectado
     }
 
     /** Busca una receta por id. */
@@ -4938,6 +4984,301 @@
       estado = nuevo;
       guardarEstado();
       return { incidencias, aplicados: out };
+    }
+
+
+    /* ========================================================================
+       SUPABASE — auth (magic link) + sync bidireccional last-write-wins.
+       Sin SDK ni CDN: solo fetch contra la REST API y /auth/v1/* de GoTrue.
+       ======================================================================== */
+
+    /** Llamada genérica a Supabase. Renueva token si recibe 401. */
+    async function supaFetch(path, options, retry) {
+      if (retry === undefined) retry = true;
+      const s = sesion.supabase;
+      if (!s.url || !s.anonKey) throw new Error("Supabase no configurado");
+      const headers = Object.assign({
+        "apikey": s.anonKey,
+        "Content-Type": "application/json"
+      }, (options && options.headers) || {});
+      if (s.token) headers["Authorization"] = "Bearer " + s.token;
+      const opts = Object.assign({}, options, { headers });
+      const res = await fetch(s.url + path, opts);
+      if (res.status === 401 && retry && s.refreshToken) {
+        if (await refrescarToken()) return supaFetch(path, options, false);
+      }
+      if (!res.ok) {
+        const txt = await res.text().catch(() => "");
+        throw new Error("Supabase " + res.status + ": " + txt);
+      }
+      if (res.status === 204) return null;
+      const ct = res.headers.get("Content-Type") || "";
+      if (ct.indexOf("application/json") >= 0) return res.json();
+      return res.text();
+    }
+
+    async function refrescarToken() {
+      const s = sesion.supabase;
+      if (!s.refreshToken) return false;
+      try {
+        const res = await fetch(s.url + "/auth/v1/token?grant_type=refresh_token", {
+          method: "POST",
+          headers: { "apikey": s.anonKey, "Content-Type": "application/json" },
+          body: JSON.stringify({ refresh_token: s.refreshToken })
+        });
+        if (!res.ok) return false;
+        const data = await res.json();
+        s.token = data.access_token;
+        s.refreshToken = data.refresh_token || s.refreshToken;
+        guardarSupabase();
+        return true;
+      } catch (_) { return false; }
+    }
+
+    /** Pide a Supabase que envíe un magic link al email indicado. */
+    async function enviarMagicLink(email) {
+      const s = sesion.supabase;
+      const redirect = window.location.href.split("#")[0];
+      const res = await fetch(s.url + "/auth/v1/otp", {
+        method: "POST",
+        headers: { "apikey": s.anonKey, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          create_user: false,
+          options: { emailRedirectTo: redirect }
+        })
+      });
+      if (!res.ok) {
+        const t = await res.text();
+        throw new Error("No se pudo enviar el magic link: " + t);
+      }
+    }
+
+    /** Al volver del magic link, Supabase incluye el token en el hash. */
+    async function procesarCallbackAuth() {
+      if (!window.location.hash) return false;
+      const params = new URLSearchParams(window.location.hash.slice(1));
+      const at = params.get("access_token");
+      const rt = params.get("refresh_token");
+      if (!at) return false;
+      sesion.supabase.token = at;
+      sesion.supabase.refreshToken = rt;
+      guardarSupabase();
+      // Limpiar el hash de la URL (sin recargar)
+      history.replaceState(null, "", window.location.pathname + window.location.search);
+      // Obtener el email del usuario logueado
+      try {
+        const u = await supaFetch("/auth/v1/user", { method: "GET" });
+        if (u && u.email) {
+          sesion.supabase.email = u.email;
+          guardarSupabase();
+        }
+      } catch (_) {/* ignora */}
+      return true;
+    }
+
+    async function cerrarSesionSupabase() {
+      try { await supaFetch("/auth/v1/logout", { method: "POST" }, false); } catch (_) {}
+      sesion.supabase.token = null;
+      sesion.supabase.refreshToken = null;
+      sesion.supabase.email = null;
+      guardarSupabase();
+    }
+
+    /* --------- Mappers entre modelo SPEC (camelCase) y Supabase (snake_case) ----- */
+
+    function ingLocalASupa(i) {
+      return {
+        clave: i.clave,
+        nombre: i.nombre,
+        categoria_compra: i.categoriaCompra,
+        densidad: i.densidad,
+        gramos_por_unidad: i.gramosPorUnidad,
+        alias: Array.isArray(i.alias) ? i.alias : [],
+        modificado: i.modificado || nowISO()
+      };
+    }
+    function ingSupaALocal(i) {
+      return {
+        clave: i.clave,
+        nombre: i.nombre,
+        categoriaCompra: i.categoria_compra,
+        densidad: i.densidad,
+        gramosPorUnidad: i.gramos_por_unidad,
+        alias: Array.isArray(i.alias) ? i.alias : [],
+        modificado: i.modificado
+      };
+    }
+    function recetaLocalASupa(r) {
+      return {
+        id: r.id,
+        nombre: r.nombre,
+        tipo: r.tipo,
+        tags: Array.isArray(r.tags) ? r.tags : [],
+        dieta: Array.isArray(r.dieta) ? r.dieta : [],
+        raciones_base: r.racionesBase,
+        tiempo_prep: r.tiempoPrep || 0,
+        tiempo_coccion: r.tiempoCoccion || 0,
+        dificultad: r.dificultad,
+        fuente: r.fuente,
+        imagen: r.imagen,
+        ingredientes: Array.isArray(r.ingredientes) ? r.ingredientes : [],
+        pasos: Array.isArray(r.pasos) ? r.pasos : [],
+        notas: r.notas,
+        creado: r.creado || nowISO(),
+        modificado: r.modificado || nowISO()
+      };
+    }
+    function recetaSupaALocal(r) {
+      return {
+        id: r.id,
+        nombre: r.nombre,
+        tipo: r.tipo,
+        tags: Array.isArray(r.tags) ? r.tags : [],
+        dieta: Array.isArray(r.dieta) ? r.dieta : [],
+        racionesBase: r.raciones_base,
+        tiempoPrep: r.tiempo_prep || 0,
+        tiempoCoccion: r.tiempo_coccion || 0,
+        dificultad: r.dificultad,
+        fuente: r.fuente,
+        imagen: r.imagen,
+        ingredientes: Array.isArray(r.ingredientes) ? r.ingredientes : [],
+        pasos: Array.isArray(r.pasos) ? r.pasos : [],
+        notas: r.notas,
+        creado: r.creado,
+        modificado: r.modificado
+      };
+    }
+    function euLocalASupa(perfil, idReceta, eu) {
+      return {
+        perfil,
+        id_receta: idReceta,
+        favorito: !!eu.favorito,
+        valoracion: eu.valoracion,
+        veces_cocinada: eu.vecesCocinada || 0,
+        ultima_vez: eu.ultimaVez,
+        notas_personales: eu.notasPersonales,
+        ajustes: eu.ajustes,
+        estado: eu.estado,
+        colecciones: Array.isArray(eu.colecciones) ? eu.colecciones : [],
+        modificado: eu.modificado || nowISO()
+      };
+    }
+    function euSupaALocal(eu) {
+      return {
+        favorito: !!eu.favorito,
+        valoracion: eu.valoracion,
+        vecesCocinada: eu.veces_cocinada || 0,
+        ultimaVez: eu.ultima_vez,
+        notasPersonales: eu.notas_personales,
+        ajustes: eu.ajustes,
+        estado: eu.estado,
+        colecciones: Array.isArray(eu.colecciones) ? eu.colecciones : [],
+        modificado: eu.modificado
+      };
+    }
+
+    /* --------- Sync bidireccional last-write-wins ----------------------- */
+
+    async function sincronizar() {
+      const s = sesion.supabase;
+      if (!s.token) throw new Error("Inicia sesión primero");
+      s.estadoSync = "syncing";
+      s.ultimoError = null;
+      renderDatos();
+      try {
+        const desde = s.ultimoSync || "1970-01-01T00:00:00Z";
+
+        // 1) Bajar cambios remotos desde `desde`.
+        const filtro = "modificado=gte." + encodeURIComponent(desde);
+        const [remIng, remRec, remEU] = await Promise.all([
+          supaFetch("/rest/v1/ingredientes?" + filtro),
+          supaFetch("/rest/v1/recetas?" + filtro),
+          supaFetch("/rest/v1/estado_usuario?" + filtro)
+        ]);
+
+        // 2) Aplicar last-write-wins
+        let aplicados = 0;
+        for (const rem of (remIng || [])) {
+          const local = estado.ingredientes.find(x => x.clave === rem.clave);
+          const remL = ingSupaALocal(rem);
+          if (!local) { estado.ingredientes.push(remL); aplicados++; }
+          else if (!local.modificado || (remL.modificado || "") > local.modificado) {
+            Object.assign(local, remL); aplicados++;
+          }
+        }
+        for (const rem of (remRec || [])) {
+          const local = estado.recetas.find(x => x.id === rem.id);
+          const remL = recetaSupaALocal(rem);
+          if (!local) { estado.recetas.push(remL); aplicados++; }
+          else if (!local.modificado || (remL.modificado || "") > local.modificado) {
+            const i = estado.recetas.indexOf(local);
+            estado.recetas[i] = remL; aplicados++;
+          }
+        }
+        for (const rem of (remEU || [])) {
+          if (!PERFILES.includes(rem.perfil)) continue;
+          if (!estado.estadoUsuario[rem.perfil]) estado.estadoUsuario[rem.perfil] = {};
+          const local = estado.estadoUsuario[rem.perfil][rem.id_receta];
+          const remL = euSupaALocal(rem);
+          if (!local || !local.modificado || (remL.modificado || "") > local.modificado) {
+            estado.estadoUsuario[rem.perfil][rem.id_receta] = remL; aplicados++;
+          }
+        }
+        guardarEstado();
+
+        // 3) Subir locales con modificado > desde (o todos si primer sync).
+        const subirIng = estado.ingredientes
+          .filter(x => !desde || !x.modificado || x.modificado > desde || s.ultimoSync == null)
+          .map(ingLocalASupa);
+        const subirRec = estado.recetas
+          .filter(x => !desde || !x.modificado || x.modificado > desde || s.ultimoSync == null)
+          .map(recetaLocalASupa);
+        const subirEU = [];
+        PERFILES.forEach(p => {
+          const usu = estado.estadoUsuario[p] || {};
+          for (const idR in usu) {
+            const eu = usu[idR];
+            if (!s.ultimoSync || !eu.modificado || eu.modificado > desde) {
+              subirEU.push(euLocalASupa(p, idR, eu));
+            }
+          }
+        });
+
+        // upsert por lotes (Prefer: resolution=merge-duplicates)
+        const upsertHdr = { "Prefer": "resolution=merge-duplicates,return=minimal" };
+        if (subirIng.length) await supaFetch("/rest/v1/ingredientes", {
+          method: "POST", headers: upsertHdr, body: JSON.stringify(subirIng)
+        });
+        if (subirRec.length) await supaFetch("/rest/v1/recetas", {
+          method: "POST", headers: upsertHdr, body: JSON.stringify(subirRec)
+        });
+        if (subirEU.length)  await supaFetch("/rest/v1/estado_usuario", {
+          method: "POST", headers: upsertHdr, body: JSON.stringify(subirEU)
+        });
+
+        s.ultimoSync = nowISO();
+        s.estadoSync = "idle";
+        guardarSupabase();
+        renderTodo();
+        return { aplicados, subidos: subirIng.length + subirRec.length + subirEU.length };
+      } catch (e) {
+        s.estadoSync = "error";
+        s.ultimoError = e.message || String(e);
+        renderDatos();
+        throw e;
+      }
+    }
+
+    /** Auto-sync ligero: solo si está autenticado y autoSync está activo. */
+    let _autoSyncTimer = null;
+    function programarAutoSync() {
+      if (!sesion.supabase.autoSync) return;
+      if (!sesion.supabase.token) return;
+      clearTimeout(_autoSyncTimer);
+      _autoSyncTimer = setTimeout(() => {
+        sincronizar().catch(() => {/* fallo silencioso, queda en estadoSync */});
+      }, 1500);
     }
 
 
@@ -7150,6 +7491,73 @@
       `;
     }
 
+    function htmlSync() {
+      const s = sesion.supabase;
+      const autenticado = !!s.token;
+      const estadoTxt = s.estadoSync === "syncing" ? "Sincronizando…"
+                      : s.estadoSync === "error"   ? "Error"
+                      : "Listo";
+      const ultimoSyncTxt = s.ultimoSync
+        ? new Date(s.ultimoSync).toLocaleString("es-ES")
+        : "nunca";
+      return `
+        <div class="datos-card">
+          <div class="datos-card-head">
+            <h2>Sincronización con Supabase</h2>
+            <p>Mantiene tus recetas idénticas entre dispositivos. Last-write-wins por <code>modificado</code>.</p>
+          </div>
+          ${!autenticado ? `
+            <p class="iox-info">Para sincronizar entre dispositivos, inicia sesión con tu email.
+            Te llegará un enlace mágico — al pulsarlo, vuelves aquí ya logueado.</p>
+            <div class="campo" style="max-width:360px;">
+              <label for="sync-email">Email</label>
+              <input type="email" id="sync-email" placeholder="tu@email.com" autocomplete="email">
+            </div>
+            <div class="iox-grupo" style="margin-top:var(--gap-3);">
+              <button type="button" class="iox-boton" data-accion="sync-magic">Enviar magic link</button>
+            </div>
+            <div id="sync-msg" class="iox-info"></div>
+          ` : `
+            <div class="iox-info">
+              Conectado como <b>${esc(s.email || "—")}</b>.<br>
+              Estado: <b>${esc(estadoTxt)}</b>. Última sincronización: <b>${esc(ultimoSyncTxt)}</b>.
+              ${s.ultimoError ? `<br><span style="color:var(--danger);">Último error: ${esc(s.ultimoError)}</span>` : ""}
+            </div>
+            <div class="iox-grupo" style="margin-top:var(--gap-3);">
+              <button type="button" class="iox-boton" data-accion="sync-ahora"
+                      ${s.estadoSync === "syncing" ? "disabled" : ""}>🔄 Sincronizar ahora</button>
+              <label class="iox-info" style="display:inline-flex;align-items:center;gap:6px;cursor:pointer;">
+                <input type="checkbox" id="sync-auto" ${s.autoSync ? "checked" : ""}>
+                Sincronizar automáticamente al guardar
+              </label>
+              <button type="button" class="iox-boton secundario" data-accion="sync-cerrar">Cerrar sesión</button>
+            </div>
+            <div id="sync-msg" class="iox-info"></div>
+          `}
+        </div>
+        <div class="datos-card">
+          <div class="datos-card-head">
+            <h2>Configuración avanzada</h2>
+            <p>Cambia el proyecto Supabase al que apuntas. Por defecto, ya está configurado.</p>
+          </div>
+          <div class="editor-grid">
+            <div class="campo">
+              <label for="sup-url">Project URL</label>
+              <input type="text" id="sup-url" value="${esc(s.url || "")}">
+            </div>
+            <div class="campo">
+              <label for="sup-key">Anon key</label>
+              <input type="text" id="sup-key" value="${esc(s.anonKey || "")}">
+            </div>
+          </div>
+          <div class="iox-grupo" style="margin-top:var(--gap-3);">
+            <button type="button" class="iox-boton secundario" data-accion="sync-guardar-cfg">Guardar configuración</button>
+            <button type="button" class="iox-boton peligro" data-accion="sync-reset-cfg">Restablecer por defecto</button>
+          </div>
+        </div>
+      `;
+    }
+
     function renderDatos() {
       const cont = document.getElementById("datos-contenedor");
       if (!cont) return;
@@ -7158,7 +7566,8 @@
       const tabs = [
         ["recetas",      "Recetas"],
         ["ingredientes", "Ingredientes"],
-        ["iox",          "Import/Export"]
+        ["iox",          "Import/Export"],
+        ["sync",         "Sincronización"]
       ].map(([v,l]) =>
         `<button type="button" class="filtro-chip" data-accion="datos-tab" data-valor="${v}"
                  aria-pressed="${tab===v}">${esc(l)}</button>`
@@ -7201,6 +7610,8 @@
         }
       } else if (tab === "iox") {
         cuerpo = htmlImportExport();
+      } else if (tab === "sync") {
+        cuerpo = htmlSync();
       }
 
       cont.innerHTML = `
@@ -7286,6 +7697,7 @@
       cargarCompra();
       cargarPlan();
       cargarA11y();
+      cargarSupabase();
       actualizarThemeColor(document.documentElement.dataset.tema);
       // Si quedaron timers activos al cargar, arrancar el ticker.
       if (sesion.timers.some(t => !t.pausado && !t.vencido)) arrancarTicker();
@@ -7922,6 +8334,53 @@
           document.getElementById("iox-archivo").click();
           return;
         }
+        // -- Sincronización con Supabase ------------------------------------
+        if (ev.target.closest("[data-accion='sync-magic']")) {
+          const em = (document.getElementById("sync-email") || {}).value || "";
+          const msg = document.getElementById("sync-msg");
+          if (!em || !em.includes("@")) {
+            if (msg) msg.innerHTML = '<span style="color:var(--danger);">Introduce un email válido.</span>';
+            return;
+          }
+          if (msg) msg.textContent = "Enviando enlace…";
+          enviarMagicLink(em).then(() => {
+            if (msg) msg.innerHTML = `Te hemos enviado un email a <b>${esc(em)}</b>. Pulsa el enlace y volverás logueado.`;
+          }).catch(e => {
+            if (msg) msg.innerHTML = `<span style="color:var(--danger);">${esc(e.message)}</span>`;
+          });
+          return;
+        }
+        if (ev.target.closest("[data-accion='sync-ahora']")) {
+          const msg = document.getElementById("sync-msg");
+          if (msg) msg.textContent = "Sincronizando…";
+          sincronizar().then(r => {
+            if (msg) msg.innerHTML = `OK · ${r.aplicados} aplicados, ${r.subidos} subidos.`;
+          }).catch(e => {
+            if (msg) msg.innerHTML = `<span style="color:var(--danger);">${esc(e.message)}</span>`;
+          });
+          return;
+        }
+        if (ev.target.closest("[data-accion='sync-cerrar']")) {
+          cerrarSesionSupabase().then(() => renderDatos());
+          return;
+        }
+        if (ev.target.closest("[data-accion='sync-guardar-cfg']")) {
+          const url = (document.getElementById("sup-url") || {}).value || "";
+          const key = (document.getElementById("sup-key") || {}).value || "";
+          sesion.supabase.url = url.trim().replace(/\/$/, "");
+          sesion.supabase.anonKey = key.trim();
+          guardarSupabase();
+          renderDatos();
+          return;
+        }
+        if (ev.target.closest("[data-accion='sync-reset-cfg']")) {
+          sesion.supabase.url = SUPABASE_URL_DEFAULT;
+          sesion.supabase.anonKey = SUPABASE_ANON_DEFAULT;
+          guardarSupabase();
+          renderDatos();
+          return;
+        }
+
         if (ev.target.closest("[data-accion='reset-datos']")) {
           if (!confirm("Esto borra TODO y vuelve a los datos seed. ¿Seguro?")) return;
           estado = estructuraInicial();
@@ -7982,6 +8441,14 @@
           if (cmp === "i-densidad") { ing.densidad = t.value === "" ? null : Number(t.value); return; }
           if (cmp === "i-gxu")      { ing.gramosPorUnidad = t.value === "" ? null : Number(t.value); return; }
           if (cmp === "i-alias")    { ing.alias = t.value.split(",").map(s => s.trim()).filter(Boolean); return; }
+        }
+      });
+      // Toggle de auto-sync (en tab Sincronización)
+      contDatos.addEventListener("change", (ev) => {
+        if (ev.target.id === "sync-auto") {
+          sesion.supabase.autoSync = ev.target.checked;
+          guardarSupabase();
+          return;
         }
       });
       // Cambios en selects/checkboxes del editor.
@@ -8189,6 +8656,15 @@
       });
 
       renderTodo();
+
+      // Procesar callback de magic link (#access_token=... en la URL)
+      procesarCallbackAuth().then(ok => {
+        if (ok) {
+          renderDatos();
+          // Primer sync automático tras login
+          sincronizar().catch(() => {/* el estado queda en error, visible en UI */});
+        }
+      });
 
       // Exponer api minima para consola/depuracion (no para el producto).
       window.__recetas = {
