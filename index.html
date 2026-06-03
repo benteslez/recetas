@@ -6,11 +6,11 @@
   <meta name="theme-color" content="#fbfaf6">
   <title>Recetas</title>
 
-  <!-- Google Fonts: Inter (UI + títulos) y JetBrains Mono (números) -->
+  <!-- Google Fonts: Manrope (UI + títulos) y JetBrains Mono (números) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap">
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap">
 
   <style>
     /* ========================================================================
@@ -21,9 +21,9 @@
 
     /* ---- Variables base (independientes del tema) ------------------------- */
     :root {
-      /* tipografias — Inter para todo (UI + titulos), JetBrains Mono para numeros */
-      --font-titulo: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
-      --font-ui:     'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      /* tipografias — Manrope para todo (UI + titulos), JetBrains Mono para numeros */
+      --font-titulo: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      --font-ui:     'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
       --font-num:    'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
 
       /* radios */
@@ -184,28 +184,27 @@
     }
     .marca-icono { font-size: 22px; }
 
-    /* selector de perfil */
-    .perfil {
-      display: inline-flex; align-items: center;
+    /* etiqueta del usuario logueado (sustituye al switch de perfiles) */
+    .usuario-actual {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 14px;
       background: var(--bg-soft);
       border-radius: var(--r-pill);
-      padding: 2px;
-      gap: 2px;
-    }
-    .perfil button {
-      padding: 6px 12px;
       font-size: 13px;
-      font-weight: 500;
-      border-radius: var(--r-pill);
-      color: var(--text-muted);
-      transition: background .15s, color .15s;
-    }
-    .perfil button[aria-pressed="true"] {
-      background: var(--bg-elev);
+      font-weight: 600;
       color: var(--text);
-      box-shadow: var(--sh-1);
+      letter-spacing: -0.01em;
     }
-    .perfil button:hover { color: var(--text); }
+    .usuario-actual::before {
+      content: "";
+      display: inline-block;
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--accent-2);
+      margin-right: 8px;
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-2) 30%, transparent);
+    }
 
     /* boton de tema */
     .icon-btn {
@@ -382,9 +381,17 @@
     .tarjeta-meta dt {
       font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.04em;
       color: var(--text-muted);
+      font-family: var(--font-ui);
     }
-    .tarjeta-meta dd { margin: 0; color: var(--text); font-weight: 500; }
-    .tarjeta-meta dd.num { font-family: var(--font-num); font-variant-numeric: tabular-nums; }
+    .tarjeta-meta dd {
+      margin: 0; color: var(--text); font-weight: 500;
+      font-family: var(--font-ui);
+    }
+    .tarjeta-meta dd.num {
+      font-family: var(--font-ui);
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum" 1;
+    }
     .estrellas { letter-spacing: 1px; color: var(--accent); }
     .estrellas .vacia { color: var(--line); }
 
@@ -1352,10 +1359,17 @@
     }
     .modal-acciones .principal:hover { transform: translateY(-1px); box-shadow: var(--sh-2); }
 
-    /* La barra-acciones ahora tiene varios botones */
+    /* Barra-acciones (Modo cocina): SOLO visible en móvil, sticky abajo */
     .barra-acciones {
-      display: flex; gap: var(--gap-2); justify-content: center;
-      flex-wrap: wrap;
+      display: none;
+    }
+    @media (max-width: 720px) {
+      .barra-acciones {
+        display: flex;
+        gap: var(--gap-2);
+        justify-content: center;
+        flex-wrap: wrap;
+      }
     }
 
     /* ========================================================================
@@ -2578,10 +2592,12 @@
       font-size: 12px;
       color: var(--text-muted);
       flex-shrink: 0;
+      font-family: var(--font-ui);
     }
     .tarjeta-lista-meta .num {
-      font-family: var(--font-num);
+      font-family: var(--font-ui);
       font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum" 1;
     }
     .tarjeta-lista .estrellas { font-size: 11px; }
     .tarjeta-lista .tarjeta-fav { margin-left: 4px; }
@@ -3210,6 +3226,71 @@
     .mc-head h1, .mc-head .pasos-contador { color: inherit; }
 
     /* ========================================================================
+       TARJETAS FULL-COLOR — fondo del tipo + letras blancas
+       ======================================================================== */
+    .tarjeta {
+      background: var(--chip-fg, var(--bg-elev));
+      color: #ffffff;
+      border-color: transparent;
+      position: relative;
+      overflow: hidden;
+    }
+    .tarjeta::before {
+      content: "";
+      position: absolute; inset: 0;
+      background: radial-gradient(at top right, rgba(255,255,255,0.15), transparent 55%);
+      pointer-events: none;
+    }
+    .tarjeta > * { position: relative; z-index: 1; }
+    :root[data-tema="oscuro"] .tarjeta {
+      background: var(--chip-bg, var(--bg-elev));
+      color: var(--chip-fg, #fff);
+    }
+
+    .tarjeta .tarjeta-nombre,
+    .tarjeta .tarjeta-meta dd { color: inherit; }
+    .tarjeta .tarjeta-meta dt {
+      color: inherit;
+      opacity: 0.72;
+    }
+    .tarjeta .tarjeta-fav { color: inherit; opacity: 0.85; }
+    .tarjeta .tarjeta-fav:hover { background: rgba(255,255,255,0.15); opacity: 1; }
+    .tarjeta .tarjeta-fav[aria-pressed="true"] {
+      color: #ffffff;
+      opacity: 1;
+    }
+    .tarjeta .chip-tipo {
+      background: rgba(0,0,0,0.22) !important;
+      color: #ffffff !important;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .tarjeta .estrellas { color: #ffffff; }
+    .tarjeta .estrellas .vacia { color: rgba(255,255,255,0.30); }
+
+    /* Misma cromática para la vista LISTA */
+    .tarjeta-lista {
+      background: var(--chip-fg, var(--bg-elev));
+      color: #ffffff;
+      border-color: transparent;
+    }
+    :root[data-tema="oscuro"] .tarjeta-lista {
+      background: var(--chip-bg, var(--bg-elev));
+      color: var(--chip-fg, #fff);
+    }
+    .tarjeta-lista .tarjeta-lista-nombre { color: inherit; }
+    .tarjeta-lista .tarjeta-lista-meta { color: inherit; opacity: 0.85; }
+    .tarjeta-lista .tarjeta-lista-meta .num { color: inherit; }
+    .tarjeta-lista .chip-tipo {
+      background: rgba(0,0,0,0.22) !important;
+      color: #ffffff !important;
+    }
+    .tarjeta-lista .tarjeta-fav { color: inherit; opacity: 0.85; }
+    .tarjeta-lista .tarjeta-fav[aria-pressed="true"] { color: #ffffff; opacity: 1; }
+    .tarjeta-lista .estrellas { color: #ffffff; }
+    .tarjeta-lista .estrellas .vacia { color: rgba(255,255,255,0.30); }
+
+    /* ========================================================================
        GATE — pantalla de login obligatorio antes de ver la app
        ======================================================================== */
     body.gate-activo > header,
@@ -3314,11 +3395,7 @@
         <span>Recetas</span>
       </div>
 
-      <div class="perfil" role="group" aria-label="Perfil activo">
-        <button type="button" data-perfil="ruben"    aria-pressed="false">Rubén</button>
-        <button type="button" data-perfil="sergio"   aria-pressed="false">Sergio</button>
-        <button type="button" data-perfil="invitado" aria-pressed="false">Invitado</button>
-      </div>
+      <span id="usuario-actual" class="usuario-actual" aria-label="Usuario activo"></span>
 
       <button type="button" id="btn-fuente" class="icon-btn txt"
               aria-label="Tamaño de texto" aria-haspopup="true" aria-expanded="false"
@@ -5483,10 +5560,10 @@
       });
     }
 
+    const NOMBRE_PERFIL = { ruben: "Rubén", sergio: "Sergio", invitado: "Invitado" };
     function renderPerfil() {
-      document.querySelectorAll(".perfil button").forEach(b => {
-        b.setAttribute("aria-pressed", (b.dataset.perfil === perfilActivo) ? "true" : "false");
-      });
+      const el = document.getElementById("usuario-actual");
+      if (el) el.textContent = NOMBRE_PERFIL[perfilActivo] || perfilActivo;
     }
 
     /* ---- Biblioteca: orquestador ---------------------------------------- */
@@ -5530,7 +5607,8 @@
       const tt = tiempoTotalMin(r);
       const estr = eu.valoracion ? htmlEstrellas(eu.valoracion) : "";
       return `
-        <button type="button" class="tarjeta-lista" data-accion="abrir" data-id="${esc(r.id)}">
+        <button type="button" class="tarjeta-lista" data-accion="abrir" data-id="${esc(r.id)}"
+                style="--chip-bg: var(--tipo-${r.tipo}-bg); --chip-fg: var(--tipo-${r.tipo}-fg);">
           <span class="tarjeta-lista-nombre">${esc(r.nombre)}</span>
           <span class="tarjeta-lista-meta">
             <span class="num">${formateaMin(tt)}</span>
@@ -5596,7 +5674,8 @@
       const tt = tiempoTotalMin(r);
       const valStr = eu.valoracion ? htmlEstrellas(eu.valoracion) : '<span class="estrellas"><span class="vacia">★★★★★</span></span>';
       return `
-        <button type="button" class="tarjeta" data-accion="abrir" data-id="${esc(r.id)}">
+        <button type="button" class="tarjeta" data-accion="abrir" data-id="${esc(r.id)}"
+                style="--chip-bg: var(--tipo-${r.tipo}-bg); --chip-fg: var(--tipo-${r.tipo}-fg);">
           <div class="tarjeta-head">
             ${chipTipoHTML(r.tipo)}
             <span class="tarjeta-fav" data-accion="fav" data-id="${esc(r.id)}"
@@ -5857,6 +5936,8 @@
               Cocinada <b>${eu.vecesCocinada || 0}</b>
               ${eu.ultimaVez ? ` · última <b>${esc(eu.ultimaVez)}</b>` : ""}
             </div>
+            <button type="button" class="iox-boton secundario" data-accion="cocinado"
+                    style="margin-left:auto;">+1 cocinada</button>
           </section>
 
           <div class="detalle-tabs-bar">
@@ -5920,8 +6001,9 @@
           </section>
 
           <div class="barra-acciones">
-            <button type="button" class="btn-principal" data-accion="cocinado">
-              He cocinado esto
+            <button type="button" class="btn-principal" data-accion="iniciar-cocina"
+                    ${(r.pasos && r.pasos.length) ? "" : "disabled"}>
+              ▶ Modo cocina
             </button>
           </div>
         </div>`;
@@ -8792,6 +8874,17 @@
           else sesion.ticsIng.delete(idx);
           li.classList.toggle("tachado", ev.target.checked);
         }
+      });
+
+      // Tap en mitades de la pantalla (móvil): izq → anterior, dcha → siguiente.
+      // Se activa solo si el target NO es un control interactivo (botón, input, label, link).
+      ovCocina.addEventListener("click", (ev) => {
+        if (window.innerWidth > 720) return;
+        if (ev.target.closest("button, input, label, a, [role='button'], .mc-paso-ings")) return;
+        const x = ev.clientX;
+        const ancho = window.innerWidth;
+        if (x > ancho / 2) pasoSiguiente();
+        else pasoAnterior();
       });
 
       // Swipe horizontal en modo cocina (móvil): cambiar de paso.
