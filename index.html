@@ -3208,6 +3208,95 @@
     .mc-ing-lista .tachado { opacity: 0.45; }
     /* Header del overlay: contador + título siempre legibles */
     .mc-head h1, .mc-head .pasos-contador { color: inherit; }
+
+    /* ========================================================================
+       GATE — pantalla de login obligatorio antes de ver la app
+       ======================================================================== */
+    body.gate-activo > header,
+    body.gate-activo > main,
+    body.gate-activo > #panel-timers,
+    body.gate-activo > #fab-timer,
+    body.gate-activo > #modo-cocina,
+    body.gate-activo > #modal-nuevo-timer,
+    body.gate-activo > #modal-selector,
+    body.gate-activo > #popover-fuente { display: none !important; }
+    body.gate-activo { overflow: hidden; }
+    .gate {
+      position: fixed; inset: 0;
+      background: var(--bg);
+      z-index: 1000;
+      display: flex; align-items: center; justify-content: center;
+      padding: var(--gap-5);
+    }
+    .gate-box {
+      max-width: 400px; width: 100%;
+      background: var(--bg-elev);
+      border-radius: 24px;
+      padding: var(--gap-6);
+      box-shadow: var(--sh-3);
+      border: 1px solid var(--line-soft);
+    }
+    .gate-titulo {
+      font-family: var(--font-ui);
+      font-size: 36px; font-weight: 700;
+      letter-spacing: -0.04em;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+    .gate-subtitulo {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: var(--gap-5);
+    }
+    .gate-campo {
+      display: flex; flex-direction: column; gap: 6px;
+      margin-bottom: var(--gap-3);
+    }
+    .gate-campo label {
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;
+      font-weight: 600; color: var(--text-muted);
+    }
+    .gate-campo input {
+      background: var(--bg-input);
+      border: 1px solid var(--line);
+      border-radius: var(--r-md);
+      padding: 13px 14px;
+      font-size: 15px;
+      color: var(--text);
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .gate-campo input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+    }
+    .gate-acciones {
+      display: flex; flex-direction: column; gap: 10px;
+      margin-top: var(--gap-4);
+    }
+    .gate-acciones .btn-principal {
+      width: 100%; padding: 14px; font-size: 15px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    }
+    .gate-secundario {
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 13px;
+      text-decoration: underline;
+      border: none;
+      cursor: pointer;
+      padding: 6px;
+      text-align: center;
+    }
+    .gate-secundario:hover { color: var(--text); }
+    .gate-msg {
+      font-size: 13px;
+      text-align: center;
+      margin-top: var(--gap-3);
+      min-height: 18px;
+      line-height: 1.4;
+    }
   </style>
 </head>
 <body>
@@ -3305,6 +3394,27 @@
 
   <!-- Input file oculto para importar JSON. -->
   <input type="file" id="iox-archivo" class="iox-input-file" accept="application/json,.json">
+
+  <!-- Pantalla de login obligatorio. Visible si no hay sesión Supabase. -->
+  <div id="gate" class="gate" hidden>
+    <form class="gate-box" id="gate-form" autocomplete="on">
+      <h1 class="gate-titulo">Recetas</h1>
+      <p class="gate-subtitulo">Inicia sesión para acceder</p>
+      <div class="gate-campo">
+        <label for="gate-email">Email</label>
+        <input type="email" id="gate-email" autocomplete="email" required>
+      </div>
+      <div class="gate-campo">
+        <label for="gate-pass">Contraseña</label>
+        <input type="password" id="gate-pass" autocomplete="current-password" required>
+      </div>
+      <div class="gate-acciones">
+        <button type="submit" class="btn-principal" data-accion="gate-login">Iniciar sesión</button>
+        <button type="button" class="gate-secundario" data-accion="gate-magic">¿Olvidaste la contraseña?</button>
+      </div>
+      <div id="gate-msg" class="gate-msg"></div>
+    </form>
+  </div>
 
   <!-- Popover del slider de tamaño de fuente. -->
   <div id="popover-fuente" class="popover popover-fuente" hidden role="dialog" aria-label="Tamaño de texto">
@@ -5047,6 +5157,36 @@
       } catch (_) { return false; }
     }
 
+    /* Mapping email -> perfil. Si no aparece, va a "invitado". */
+    const EMAIL_A_PERFIL = {
+      "benteslez@gmail.com": "ruben",
+      "rubenfuentesgonzalez@gmail.com": "sergio"
+    };
+    function perfilDesdeEmail(email) {
+      const em = (email || "").toLowerCase().trim();
+      return EMAIL_A_PERFIL[em] || "invitado";
+    }
+
+    function gateNecesario() {
+      return !sesion.supabase.token;
+    }
+    function mostrarGate() {
+      const g = document.getElementById("gate");
+      if (g) g.hidden = false;
+      document.body.classList.add("gate-activo");
+      // Cerrar overlays abiertos
+      if (sesion.modoCocina && sesion.modoCocina.activo) cerrarCocina();
+      setTimeout(() => {
+        const i = document.getElementById("gate-email");
+        if (i && !i.value) i.focus();
+      }, 50);
+    }
+    function ocultarGate() {
+      const g = document.getElementById("gate");
+      if (g) g.hidden = true;
+      document.body.classList.remove("gate-activo");
+    }
+
     /** Inicia sesión con email + contraseña. */
     async function iniciarSesionPassword(email, password) {
       const s = sesion.supabase;
@@ -5119,6 +5259,7 @@
       sesion.supabase.refreshToken = null;
       sesion.supabase.email = null;
       guardarSupabase();
+      mostrarGate();
     }
 
     /* --------- Mappers entre modelo SPEC (camelCase) y Supabase (snake_case) ----- */
@@ -8738,9 +8879,60 @@
       // Procesar callback de magic link (#access_token=... en la URL)
       procesarCallbackAuth().then(ok => {
         if (ok) {
-          renderDatos();
-          // Primer sync automático tras login
-          sincronizar().catch(() => {/* el estado queda en error, visible en UI */});
+          fijarPerfil(perfilDesdeEmail(sesion.supabase.email));
+          ocultarGate();
+          renderTodo();
+          sincronizar().catch(() => {});
+        } else if (gateNecesario()) {
+          mostrarGate();
+        } else {
+          // Ya autenticado: asegurar perfil correcto según email
+          const p = perfilDesdeEmail(sesion.supabase.email);
+          if (p !== perfilActivo) fijarPerfil(p);
+          // Sync silencioso de fondo al cargar
+          sincronizar().catch(() => {});
+        }
+      });
+
+      // Wiring del formulario del gate
+      const gateForm = document.getElementById("gate-form");
+      gateForm.addEventListener("submit", (ev) => {
+        ev.preventDefault();
+        const em  = (document.getElementById("gate-email") || {}).value || "";
+        const pw  = (document.getElementById("gate-pass")  || {}).value || "";
+        const msg = document.getElementById("gate-msg");
+        if (!em || !em.includes("@")) {
+          if (msg) msg.innerHTML = '<span style="color:var(--danger);">Introduce un email válido.</span>';
+          return;
+        }
+        if (!pw) {
+          if (msg) msg.innerHTML = '<span style="color:var(--danger);">Introduce la contraseña.</span>';
+          return;
+        }
+        if (msg) msg.textContent = "Iniciando sesión…";
+        iniciarSesionPassword(em, pw).then(() => {
+          fijarPerfil(perfilDesdeEmail(em));
+          ocultarGate();
+          renderTodo();
+          sincronizar().catch(() => {});
+        }).catch(e => {
+          if (msg) msg.innerHTML = `<span style="color:var(--danger);">${esc(e.message)}</span>`;
+        });
+      });
+      gateForm.addEventListener("click", (ev) => {
+        if (ev.target.closest("[data-accion='gate-magic']")) {
+          const em  = (document.getElementById("gate-email") || {}).value || "";
+          const msg = document.getElementById("gate-msg");
+          if (!em || !em.includes("@")) {
+            if (msg) msg.innerHTML = '<span style="color:var(--danger);">Introduce tu email arriba.</span>';
+            return;
+          }
+          if (msg) msg.textContent = "Enviando enlace…";
+          enviarMagicLink(em).then(() => {
+            if (msg) msg.innerHTML = `Te hemos enviado un email a <b>${esc(em)}</b>. Pulsa el enlace y volverás logueado.`;
+          }).catch(e => {
+            if (msg) msg.innerHTML = `<span style="color:var(--danger);">${esc(e.message)}</span>`;
+          });
         }
       });
 
