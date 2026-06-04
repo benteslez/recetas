@@ -100,22 +100,27 @@
        En claro: -fg es el color saturado (se usa como fondo de tarjeta).
        En oscuro: -bg es el oscuro saturado (se usa como fondo). */
     :root {
-      --tipo-reposteria-bg:           #fce7f3; --tipo-reposteria-fg:           #a8497e;  /* rosa apagado */
-      --tipo-panaderia-bg:            #fef3c7; --tipo-panaderia-fg:            #8c5018;  /* ámbar tierra */
-      --tipo-pizzas-bg:               #fee2e2; --tipo-pizzas-fg:               #a83838;  /* terracota */
-      --tipo-pasta-bg:                #fef9c3; --tipo-pasta-fg:                #997816;  /* mostaza apagado */
-      --tipo-arroces-bg:              #ffedd5; --tipo-arroces-fg:              #ad551f;  /* ámbar quemado */
-      --tipo-sopas_cremas-bg:         #ffe4d0; --tipo-sopas_cremas-fg:         #8d4022;  /* rust apagado */
-      --tipo-legumbres-bg:            #f0e3d4; --tipo-legumbres-fg:            #6f4422;  /* marrón tierra */
-      --tipo-carnes-bg:               #fecaca; --tipo-carnes-fg:               #7c2c2c;  /* vino apagado */
-      --tipo-pescados_mariscos-bg:    #dbeafe; --tipo-pescados_mariscos-fg:    #34528f;  /* azul muted */
-      --tipo-huevos-bg:               #fef3c7; --tipo-huevos-fg:               #7d5814;  /* dorado apagado */
-      --tipo-verduras_ensaladas-bg:   #dcfce7; --tipo-verduras_ensaladas-fg:   #356d40;  /* verde bosque */
-      --tipo-salsas_fondos-bg:        #ffe4e6; --tipo-salsas_fondos-fg:        #7a2a44;  /* rose oscuro muted */
-      --tipo-desayunos-bg:            #ede9fe; --tipo-desayunos-fg:            #604390;  /* violeta apagado */
-      --tipo-aperitivos_tapas-bg:     #ccfbf1; --tipo-aperitivos_tapas-fg:     #2e6864;  /* teal apagado */
-      --tipo-bebidas-bg:              #cffafe; --tipo-bebidas-fg:              #2d6680;  /* cyan apagado */
-      --tipo-conservas-bg:            #d9f99d; --tipo-conservas-fg:            #506f28;  /* oliva apagado */
+      /* Paleta premium "earth tones" — saturación media (35–50%), profundidad
+         alta. Inspirada en Pantone labels / Notion / NYT Cooking. Ni pastel
+         infantil ni vivos Tailwind. Distintivos sin ser chillones.
+         -fg: tono principal profundo (dots, hairlines, acentos puntuales).
+         -bg: derivado al 18% con off-white (washes apenas perceptibles). */
+      --tipo-reposteria-bg:           #ede0e5; --tipo-reposteria-fg:           #8e3559;  /* rosa profundo */
+      --tipo-panaderia-bg:            #ece5d6; --tipo-panaderia-fg:            #86541d;  /* caramelo tostado */
+      --tipo-pizzas-bg:               #eddada; --tipo-pizzas-fg:               #963838;  /* bermellón sereno */
+      --tipo-pasta-bg:                #ece7d3; --tipo-pasta-fg:                #8e6e1f;  /* ocre profundo */
+      --tipo-arroces-bg:              #ecdcd2; --tipo-arroces-fg:              #9c4f1e;  /* siena */
+      --tipo-sopas_cremas-bg:         #ebd9cd; --tipo-sopas_cremas-fg:         #82431d;  /* cobre antiguo */
+      --tipo-legumbres-bg:            #e6dccf; --tipo-legumbres-fg:            #664527;  /* cuero */
+      --tipo-carnes-bg:               #ebd5d5; --tipo-carnes-fg:               #762828;  /* vino tinto */
+      --tipo-pescados_mariscos-bg:    #dbe3ed; --tipo-pescados_mariscos-fg:    #3a587a;  /* azul tinta */
+      --tipo-huevos-bg:               #ece6d2; --tipo-huevos-fg:               #86621c;  /* mostaza dorada */
+      --tipo-verduras_ensaladas-bg:   #dde6df; --tipo-verduras_ensaladas-fg:   #3a6b3f;  /* verde sage */
+      --tipo-salsas_fondos-bg:        #ebd5dc; --tipo-salsas_fondos-fg:        #823049;  /* borgoña */
+      --tipo-desayunos-bg:            #e0dde9; --tipo-desayunos-fg:            #564f8c;  /* lila profundo */
+      --tipo-aperitivos_tapas-bg:     #d9e3e1; --tipo-aperitivos_tapas-fg:     #326661;  /* teal apagado */
+      --tipo-bebidas-bg:              #d9e1e6; --tipo-bebidas-fg:              #306579;  /* petróleo */
+      --tipo-conservas-bg:            #e0e5d2; --tipo-conservas-fg:            #516b29;  /* oliva profundo */
     }
     /* Modo oscuro: -bg saturado oscuro, -fg pastel claro */
     :root[data-tema="oscuro"] {
@@ -2642,13 +2647,17 @@
     }
     .detalle-cabecera h1 {
       font-family: var(--font-ui);
-      font-size: 42px;
+      font-size: 40px;
       font-weight: 700;
-      letter-spacing: -0.04em;
-      line-height: 1.04;
+      letter-spacing: -0.03em;       /* menos negativo para no solapar letras */
+      line-height: 1.12;             /* +respiración vertical, no corta ascendentes */
       margin: 0 0 16px;
+      padding-bottom: 0.08em;        /* espacio para descendentes (g, j, p, y) */
+      word-break: break-word;        /* nombres largos no overflowan */
+      overflow-wrap: break-word;
+      overflow: visible;
       /* Degradado del color del tipo de receta — Apple-style.
-         Va del tono principal a una versión 25% más oscura/profunda. */
+         Va del tono principal a una versión 28% más oscura/profunda. */
       background-image: linear-gradient(
         135deg,
         var(--chip-fg, var(--accent)) 0%,
@@ -2660,7 +2669,7 @@
       -webkit-text-fill-color: transparent;
     }
     @media (min-width: 720px) {
-      .detalle-cabecera h1 { font-size: 60px; letter-spacing: -0.045em; }
+      .detalle-cabecera h1 { font-size: 56px; letter-spacing: -0.035em; }
     }
     /* En modo oscuro mezclamos con blanco para mantener legibilidad y vibración */
     :root[data-tema="oscuro"] .detalle-cabecera h1 {
@@ -2690,115 +2699,170 @@
       font-weight: 400;
     }
 
-    /* ---- Modo cocina: overlay full-color del tipo + texto blanco -------- */
+    /* ---- Modo cocina: Apple-style.
+       Fondo neutro, tipografía protagonista, color del tipo como ACENTO
+       (eyebrow, gradiente del título, barra de progreso). Sin overlays
+       de color saturado: blanco con respiración.
+       -------------------------------------------------------------------- */
     .modo-cocina {
-      background: var(--chip-fg, var(--accent));
-      color: #ffffff;
+      background: var(--bg) !important;
+      color: var(--text) !important;
     }
     :root[data-tema="oscuro"] .modo-cocina {
-      background: var(--chip-bg, var(--accent));
-      color: var(--chip-fg, #fff);
+      background: var(--bg) !important;
+      color: var(--text) !important;
     }
     .mc-head {
-      background: rgba(0,0,0,0.18);
-      border-bottom: 1px solid rgba(255,255,255,0.12);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
+      background: color-mix(in srgb, var(--bg-elev) 85%, transparent) !important;
+      border-bottom: 1px solid var(--line-soft) !important;
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
     }
-    .mc-head h1 { color: inherit; font-weight: 500; letter-spacing: -0.02em; }
-    .mc-head .pasos-contador { color: inherit; opacity: 0.85; }
-    .mc-cerrar { color: inherit; opacity: 0.9; }
-    .mc-cerrar:hover { background: rgba(255,255,255,0.15); opacity: 1; }
-    .mc-progreso { background: rgba(0,0,0,0.18); }
-    .mc-progreso-rell { background: rgba(255,255,255,0.95); }
-
-    /* Tipografía del paso — moderna, fina, con presencia */
-    .mc-paso-num {
-      color: inherit;
-      opacity: 0.7;
-      font-family: var(--font-ui);
-      font-weight: 500;
+    .mc-head h1 {
+      color: var(--text) !important;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      font-size: 15px;
+    }
+    .mc-head .pasos-contador {
+      color: var(--text-muted) !important;
+      opacity: 1;
       font-size: 12px;
-      letter-spacing: 0.12em;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
     }
+    .mc-cerrar { color: var(--text-muted) !important; opacity: 1; }
+    .mc-cerrar:hover {
+      background: var(--bg-soft) !important;
+      color: var(--text) !important;
+    }
+    /* Barra de progreso: pista neutra, relleno en color del tipo */
+    .mc-progreso { background: var(--bg-soft) !important; height: 3px; }
+    .mc-progreso-rell {
+      background: var(--chip-fg, var(--accent)) !important;
+    }
+
+    /* Eyebrow "Paso 3 de 7" en color del tipo */
+    .mc-paso-num {
+      color: var(--chip-fg, var(--accent)) !important;
+      opacity: 1;
+      font-family: var(--font-ui);
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    /* Título del paso: degradado del tipo (Apple, mismo lenguaje que la
+       cabecera de receta). Texto grande, peso 700, kerning apretado pero
+       no excesivo para no cortar letras. */
     .mc-paso-titulo {
       font-family: var(--font-ui);
       font-weight: 700;
-      letter-spacing: -0.035em;
-      font-size: 32px;
+      letter-spacing: -0.03em;
+      font-size: 34px;
       line-height: 1.12;
-      color: inherit;
+      padding-bottom: 0.08em;
+      background-image: linear-gradient(
+        135deg,
+        var(--chip-fg, var(--accent)) 0%,
+        color-mix(in srgb, var(--chip-fg, var(--accent)) 72%, #000 28%) 100%
+      );
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent !important;
+      -webkit-text-fill-color: transparent;
     }
-    @media (min-width: 720px) { .mc-paso-titulo { font-size: 48px; } }
+    @media (min-width: 720px) { .mc-paso-titulo { font-size: 52px; letter-spacing: -0.035em; } }
+    :root[data-tema="oscuro"] .mc-paso-titulo {
+      background-image: linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--chip-fg, var(--accent)) 85%, #fff 15%) 0%,
+        var(--chip-fg, var(--accent)) 100%
+      );
+    }
+
+    /* Texto del paso: gris ligero, generoso y legible */
     .mc-paso-texto {
       font-family: var(--font-ui);
       font-weight: 400;
       font-size: 20px;
       line-height: 1.6;
       letter-spacing: -0.003em;
-      color: inherit;
-      opacity: 0.96;
+      color: var(--text) !important;
+      opacity: 1;
     }
     @media (min-width: 720px) { .mc-paso-texto { font-size: 24px; line-height: 1.55; } }
 
+    /* Pills meta (Horno, Tiempo) — Apple capsule discreta */
     .mc-paso-meta .pill {
-      background: rgba(255,255,255,0.18);
-      color: inherit;
+      background: var(--bg-soft) !important;
+      color: var(--text-muted) !important;
       font-weight: 500;
+      border: 1px solid var(--line-soft);
     }
-    .mc-paso-meta .pill b { color: inherit; }
-    .mc-paso-ings {
-      background: rgba(255,255,255,0.10);
-      border-color: rgba(255,255,255,0.16);
-      color: inherit;
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+    .mc-paso-meta .pill b {
+      color: var(--chip-fg, var(--accent)) !important;
+      font-weight: 700;
     }
-    .mc-paso-ings h3 { color: inherit; opacity: 0.7; }
-    .mc-paso-ings li { border-color: rgba(255,255,255,0.12); }
-    .mc-paso-ings .ing-cant,
-    .mc-paso-ings .ing-nombre { color: inherit; }
-    .mc-paso-ings .ing-unidad { color: inherit; opacity: 0.75; }
 
-    /* Botón "Iniciar temporizador" — pill blanca contraste con fondo color */
+    /* Por si hubiera bloques de ingredientes en algún paso (legacy): neutralizamos */
+    .mc-paso-ings {
+      background: var(--bg-elev);
+      border-color: var(--line-soft);
+      color: var(--text);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+    .mc-paso-ings h3 { color: var(--text-muted); opacity: 1; }
+    .mc-paso-ings li { border-color: var(--line-soft); }
+    .mc-paso-ings .ing-cant,
+    .mc-paso-ings .ing-nombre { color: var(--text); }
+    .mc-paso-ings .ing-unidad { color: var(--text-muted); opacity: 1; }
+
+    /* Botón "Iniciar temporizador" — outline negro editorial */
     .mc-btn-temp {
-      background: #ffffff;
-      color: var(--chip-fg, var(--accent));
+      background: var(--btn-bg, #111) !important;
+      color: var(--btn-fg, #fff) !important;
       font-weight: 600;
       border: none;
+      box-shadow: 0 4px 14px -6px rgba(0,0,0,0.4);
     }
     :root[data-tema="oscuro"] .mc-btn-temp {
-      background: var(--chip-fg, #fff);
-      color: var(--chip-bg, var(--accent));
+      background: var(--btn-bg, #f4f4f5) !important;
+      color: var(--btn-fg, #0a0a0a) !important;
     }
     .mc-btn-temp:hover { transform: translateY(-2px); }
 
+    /* Pie de navegación: glass Apple */
     .mc-foot {
-      background: rgba(0,0,0,0.18);
-      border-top: 1px solid rgba(255,255,255,0.12);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
+      background: color-mix(in srgb, var(--bg-elev) 85%, transparent) !important;
+      border-top: 1px solid var(--line-soft) !important;
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
     }
     .mc-btn-nav {
-      background: rgba(255,255,255,0.15);
-      color: inherit;
-      border: 1px solid rgba(255,255,255,0.16);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      background: transparent !important;
+      color: var(--text) !important;
+      border: 1px solid var(--line) !important;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
       font-weight: 500;
     }
-    .mc-btn-nav:not([disabled]):hover { background: rgba(255,255,255,0.25); }
+    .mc-btn-nav:not([disabled]):hover { background: var(--bg-soft) !important; }
+    .mc-btn-nav[disabled] { opacity: 0.35; }
     .mc-btn-nav.principal {
-      background: #ffffff;
-      color: var(--chip-fg, var(--accent));
-      border-color: #ffffff;
+      background: var(--btn-bg, #111) !important;
+      color: var(--btn-fg, #fff) !important;
+      border-color: var(--btn-bg, #111) !important;
       font-weight: 600;
     }
     :root[data-tema="oscuro"] .mc-btn-nav.principal {
-      background: var(--chip-fg, #fff);
-      color: var(--chip-bg, var(--accent));
+      background: var(--btn-bg, #f4f4f5) !important;
+      color: var(--btn-fg, #0a0a0a) !important;
     }
-    .mc-btn-nav.principal:not([disabled]):hover { background: rgba(255,255,255,0.95); }
+    .mc-btn-nav.principal:not([disabled]):hover { background: var(--btn-bg-h, #000) !important; }
 
     /* ========================================================================
        BIBLIOTECA — vista lista, toggle vista, búsqueda, filtro favoritos
@@ -3740,69 +3804,10 @@
     .mc-head h1, .mc-head .pasos-contador { color: inherit; }
 
     /* ========================================================================
-       TARJETAS FULL-COLOR — fondo del tipo + letras blancas
+       (legacy desactivado — los estilos Apple-style están al final del CSS)
        ======================================================================== */
-    .tarjeta {
-      background: var(--chip-fg, var(--bg-elev));
-      color: #ffffff;
-      border-color: transparent;
-      position: relative;
-      overflow: hidden;
-    }
-    .tarjeta::before {
-      content: "";
-      position: absolute; inset: 0;
-      background: radial-gradient(at top right, rgba(255,255,255,0.15), transparent 55%);
-      pointer-events: none;
-    }
-    .tarjeta > * { position: relative; z-index: 1; }
-    :root[data-tema="oscuro"] .tarjeta {
-      background: var(--chip-bg, var(--bg-elev));
-      color: var(--chip-fg, #fff);
-    }
 
-    .tarjeta .tarjeta-nombre,
-    .tarjeta .tarjeta-meta dd { color: inherit; }
-    .tarjeta .tarjeta-meta dt {
-      color: inherit;
-      opacity: 0.72;
-    }
-    .tarjeta .tarjeta-fav { color: inherit; opacity: 0.85; }
-    .tarjeta .tarjeta-fav:hover { background: rgba(255,255,255,0.15); opacity: 1; }
-    .tarjeta .tarjeta-fav[aria-pressed="true"] {
-      color: #ffffff;
-      opacity: 1;
-    }
-    .tarjeta .chip-tipo {
-      background: rgba(0,0,0,0.22) !important;
-      color: #ffffff !important;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-    }
-    .tarjeta .estrellas { color: #ffffff; }
-    .tarjeta .estrellas .vacia { color: rgba(255,255,255,0.30); }
-
-    /* Misma cromática para la vista LISTA */
-    .tarjeta-lista {
-      background: var(--chip-fg, var(--bg-elev));
-      color: #ffffff;
-      border-color: transparent;
-    }
-    :root[data-tema="oscuro"] .tarjeta-lista {
-      background: var(--chip-bg, var(--bg-elev));
-      color: var(--chip-fg, #fff);
-    }
-    .tarjeta-lista .tarjeta-lista-nombre { color: inherit; }
-    .tarjeta-lista .tarjeta-lista-meta { color: inherit; opacity: 0.85; }
-    .tarjeta-lista .tarjeta-lista-meta .num { color: inherit; }
-    .tarjeta-lista .chip-tipo {
-      background: rgba(0,0,0,0.22) !important;
-      color: #ffffff !important;
-    }
-    .tarjeta-lista .tarjeta-fav { color: inherit; opacity: 0.85; }
-    .tarjeta-lista .tarjeta-fav[aria-pressed="true"] { color: #ffffff; opacity: 1; }
-    .tarjeta-lista .estrellas { color: #ffffff; }
-    .tarjeta-lista .estrellas .vacia { color: rgba(255,255,255,0.30); }
+    /* tarjeta-lista (vista en lista) — también Apple-style, definido al final */
 
     /* ========================================================================
        GATE — pantalla de login obligatorio antes de ver la app
@@ -4136,6 +4141,306 @@
       pointer-events: none;
     }
     html:not([data-perfil="invitado"]) .badge-solo-lectura { display: none; }
+
+    /* ========================================================================
+       TARJETAS — estilo editorial premium.
+       Paleta neutra (off-white + grises cálidos + tinta). El color del tipo
+       se reduce a un único acento minúsculo: un punto de 6 px junto al
+       eyebrow. Sin washes, sin gradientes ruidosos, sin halos coloreados.
+       Tipografía y aire generoso son los protagonistas — Linear / Stripe /
+       NYT Cooking.
+       ======================================================================== */
+    .tarjeta {
+      background: var(--bg-elev) !important;
+      color: var(--text) !important;
+      border: 1px solid var(--line-soft) !important;
+      border-radius: 14px !important;
+      padding: 22px 22px 20px !important;
+      box-shadow: none !important;
+      position: relative;
+      overflow: hidden;
+      min-height: 180px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: transform .2s cubic-bezier(.2,.8,.2,1),
+                  border-color .2s ease,
+                  box-shadow .2s ease !important;
+    }
+    .tarjeta::before { display: none !important; }
+    .tarjeta > * { position: relative; z-index: 1; }
+    .tarjeta:hover {
+      transform: translateY(-1px);
+      border-color: var(--line) !important;
+      box-shadow:
+        0 1px 2px rgba(15,23,42,0.03),
+        0 8px 28px -14px rgba(15,23,42,0.10) !important;
+    }
+
+    /* Header: dot del color + eyebrow del tipo + corazón */
+    .tarjeta .tarjeta-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 2px;
+    }
+    .tarjeta-eyebrow {
+      font-family: var(--font-ui);
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      flex: 1; min-width: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    /* Dot premium: una pizca de color, no más */
+    .tarjeta-eyebrow::before {
+      content: "";
+      display: inline-block;
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--chip-fg, var(--text-muted));
+      flex-shrink: 0;
+    }
+    .tarjeta .tarjeta-fav {
+      color: var(--text-muted) !important;
+      opacity: 0.5 !important;
+      background: transparent !important;
+      margin-left: auto;
+      width: 30px; height: 30px;
+      font-size: 18px;
+      transition: color .15s, opacity .15s, transform .15s;
+    }
+    .tarjeta .tarjeta-fav:hover {
+      color: var(--text) !important;
+      background: transparent !important;
+      opacity: 1 !important;
+      transform: scale(1.06);
+    }
+    .tarjeta .tarjeta-fav[aria-pressed="true"] {
+      color: var(--text) !important;
+      opacity: 1 !important;
+    }
+
+    /* Título con degradado del color del tipo — mismo lenguaje que
+       la cabecera del detalle. Apple-style: tipografía protagonista,
+       color integrado en la letra. Sin pill ni fondo. */
+    .tarjeta .tarjeta-nombre {
+      display: block !important;
+      font-family: var(--font-ui);
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.12;
+      margin: 0;
+      padding: 0 0 0.08em 0;
+      background: transparent !important;
+      background-image: linear-gradient(
+        135deg,
+        var(--chip-fg, var(--text)) 0%,
+        color-mix(in srgb, var(--chip-fg, var(--text)) 72%, #000 28%) 100%
+      ) !important;
+      -webkit-background-clip: text !important;
+      background-clip: text !important;
+      color: transparent !important;
+      -webkit-text-fill-color: transparent !important;
+      word-break: break-word;
+      overflow-wrap: break-word;
+      box-shadow: none;
+      overflow: visible;
+    }
+    @media (min-width: 720px) {
+      .tarjeta .tarjeta-nombre { font-size: 28px; }
+    }
+    :root[data-tema="oscuro"] .tarjeta .tarjeta-nombre {
+      background-image: linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--chip-fg, var(--text)) 85%, #fff 15%) 0%,
+        var(--chip-fg, var(--text)) 100%
+      ) !important;
+    }
+
+    /* Meta inline con bullets — sobria */
+    .tarjeta .tarjeta-meta-line {
+      font-family: var(--font-ui);
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text-muted);
+      letter-spacing: -0.003em;
+      line-height: 1.5;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0;
+      margin-top: 2px;
+    }
+    .tarjeta .tarjeta-meta-line .m-it { display: inline; }
+    .tarjeta .tarjeta-meta-line .m-it b {
+      color: var(--text);
+      font-weight: 600;
+    }
+    .tarjeta .tarjeta-meta-line .bull {
+      display: inline-block;
+      margin: 0 7px;
+      opacity: 0.5;
+      font-weight: 400;
+    }
+
+    /* Estrellas neutras — gris tinta, no del color del tipo */
+    .tarjeta .tarjeta-rating {
+      margin-top: auto;
+      padding-top: 8px;
+    }
+    .tarjeta .tarjeta-rating .estrellas {
+      color: var(--text-muted) !important;
+      font-size: 13px;
+      letter-spacing: 1px;
+      opacity: 0.85;
+    }
+    .tarjeta .tarjeta-rating .estrellas .vacia {
+      color: var(--line) !important;
+    }
+
+    /* ---- Vista LISTA: misma sobriedad. Hairline lateral del color. -------- */
+    .tarjeta-lista {
+      background: var(--bg-elev) !important;
+      color: var(--text) !important;
+      border: 1px solid var(--line-soft) !important;
+      border-radius: 12px !important;
+      box-shadow: none !important;
+      transition: transform .2s cubic-bezier(.2,.8,.2,1),
+                  border-color .2s ease,
+                  box-shadow .2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    /* Hairline vertical del color del tipo a la izquierda */
+    .tarjeta-lista::before {
+      content: "";
+      position: absolute; left: 0; top: 14px; bottom: 14px; width: 3px;
+      background: var(--chip-fg, var(--accent));
+      pointer-events: none;
+      border-radius: 2px;
+    }
+    .tarjeta-lista:hover {
+      transform: translateY(-1px);
+      border-color: var(--line) !important;
+      box-shadow:
+        0 1px 2px rgba(15,23,42,0.03),
+        0 6px 18px -12px rgba(15,23,42,0.10) !important;
+    }
+    .tarjeta-lista .tarjeta-lista-nombre {
+      color: var(--text) !important;
+      font-weight: 700;
+    }
+    .tarjeta-lista .tarjeta-lista-meta {
+      color: var(--text-muted) !important;
+      opacity: 1 !important;
+    }
+    .tarjeta-lista .tarjeta-lista-meta .num { color: var(--text) !important; font-weight: 600; }
+    /* chip-tipo dentro de la lista: pasa a dot + texto neutro */
+    .tarjeta-lista .chip-tipo {
+      background: transparent !important;
+      color: var(--text-muted) !important;
+      padding: 0 !important;
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tarjeta-lista .chip-tipo::before {
+      content: "";
+      display: inline-block;
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--chip-fg, var(--text-muted));
+      flex-shrink: 0;
+    }
+    .tarjeta-lista .tarjeta-fav {
+      color: var(--text-muted) !important;
+      opacity: 0.5 !important;
+      background: transparent !important;
+    }
+    .tarjeta-lista .tarjeta-fav:hover {
+      color: var(--text) !important;
+      opacity: 1 !important;
+      transform: scale(1.06);
+    }
+    .tarjeta-lista .tarjeta-fav[aria-pressed="true"] {
+      color: var(--text) !important;
+      opacity: 1 !important;
+    }
+    .tarjeta-lista .estrellas {
+      color: var(--text-muted) !important;
+      opacity: 0.85;
+    }
+    .tarjeta-lista .estrellas .vacia { color: var(--line) !important; }
+
+    /* ========================================================================
+       CHIPS DEL TIPO DE RECETA (filtros, detalle, banner) — premium dot+texto.
+       Antes eran píldoras con fondo coloreado pastel: ahora son texto neutro
+       con un dot del color al inicio. Lenguaje coherente con las tarjetas.
+       Excepción: el chip dentro de modo cocina (.mc-paso-meta) y los del
+       detalle-cabecera se mantienen en otros estilos.
+       ======================================================================== */
+    .chip-tipo {
+      background: transparent !important;
+      color: var(--text-muted) !important;
+      padding: 0 !important;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      display: inline-flex !important;
+      align-items: center;
+      gap: 8px;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+    .chip-tipo::before {
+      content: "";
+      display: inline-block;
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--chip-fg, var(--text-muted));
+      flex-shrink: 0;
+    }
+    /* Filtros — pill plana, gris suave. Activo: fondo elev + borde fino. */
+    .filtro-chip {
+      background: var(--bg-soft) !important;
+      color: var(--text-muted) !important;
+      border: 1px solid transparent;
+      font-weight: 500;
+      transition: background .15s, color .15s, border-color .15s;
+    }
+    .filtro-chip:hover { color: var(--text) !important; }
+    .filtro-chip[aria-pressed="true"] {
+      background: var(--bg-elev) !important;
+      color: var(--text) !important;
+      border-color: var(--line) !important;
+    }
+    /* Filtros de tipo de receta: dot del color al inicio (premium) */
+    .filtro-chip-tipo {
+      display: inline-flex !important;
+      align-items: center;
+      gap: 8px;
+    }
+    .filtro-chip-tipo::before {
+      content: "";
+      display: inline-block;
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--chip-fg, var(--text-muted));
+      flex-shrink: 0;
+    }
   </style>
 </head>
 <body>
@@ -6808,12 +7113,19 @@
     function tarjetaHTML(r) {
       const eu = getEstado(perfilActivo, r.id);
       const tt = tiempoTotalMin(r);
-      const valStr = eu.valoracion ? htmlEstrellas(eu.valoracion) : '<span class="estrellas"><span class="vacia">★★★★★</span></span>';
+      const tipoLbl = esc(ETIQUETA_TIPO[r.tipo] || r.tipo);
+      const dificultad = esc(ETIQUETA_DIFICULTAD[r.dificultad] || r.dificultad);
+      const metaParts = [];
+      if (tt > 0)        metaParts.push(`<span class="m-it"><b>${formateaMin(tt)}</b></span>`);
+      if (r.dificultad)  metaParts.push(`<span class="m-it">${dificultad}</span>`);
+      metaParts.push(`<span class="m-it">${r.ingredientes.length} ing</span>`);
+      const metaLineHTML = metaParts.join(`<span class="bull">·</span>`);
+      const ratingHTML = eu.valoracion ? htmlEstrellas(eu.valoracion) : "";
       return `
         <button type="button" class="tarjeta" data-accion="abrir" data-id="${esc(r.id)}"
                 style="--chip-bg: var(--tipo-${r.tipo}-bg); --chip-fg: var(--tipo-${r.tipo}-fg);">
           <div class="tarjeta-head">
-            ${chipTipoHTML(r.tipo)}
+            <span class="tarjeta-eyebrow">${tipoLbl}</span>
             <span class="tarjeta-fav" data-accion="fav" data-id="${esc(r.id)}"
               role="button" aria-pressed="${eu.favorito}"
               aria-label="${eu.favorito ? "Quitar de favoritos" : "Marcar favorito"}">
@@ -6821,12 +7133,8 @@
             </span>
           </div>
           <h2 class="tarjeta-nombre">${esc(r.nombre)}</h2>
-          <dl class="tarjeta-meta">
-            <div><dt>Tiempo</dt><dd class="num">${formateaMin(tt)}</dd></div>
-            <div><dt>Dificultad</dt><dd>${esc(ETIQUETA_DIFICULTAD[r.dificultad] || r.dificultad)}</dd></div>
-            <div><dt>Ingredientes</dt><dd class="num">${r.ingredientes.length}</dd></div>
-            <div><dt>Valoración</dt><dd>${valStr}</dd></div>
-          </dl>
+          <div class="tarjeta-meta-line">${metaLineHTML}</div>
+          ${ratingHTML ? `<div class="tarjeta-rating">${ratingHTML}</div>` : ""}
         </button>`;
     }
 
@@ -7118,38 +7426,6 @@
             ${metaInlineHTML ? `<p class="detalle-meta-line">${metaInlineHTML}</p>` : ""}
           </header>
 
-          <section class="tarjeta-usuario" id="zona-usuario">
-            <div class="grupo-usuario">
-              <span class="et">Valoración</span>
-              <span class="estrellas-edit" id="zona-estrellas">
-                ${estrellasHTML}
-                <button type="button" class="borrar" data-accion="valoracion" data-valor="0">Quitar</button>
-              </span>
-            </div>
-            <div class="grupo-usuario">
-              <span class="et">Favorito</span>
-              <button type="button" class="toggle-fav" data-accion="favorito"
-                      aria-pressed="${eu.favorito}">
-                ${eu.favorito ? "♥ Favorito" : "♡ Marcar"}
-              </button>
-            </div>
-            <div class="grupo-usuario">
-              <span class="et">Estado</span>
-              <select class="estado-select" data-accion="estado">${estadoOpts}</select>
-            </div>
-            <div class="cocinado-info" id="zona-cocinado">
-              Cocinada <b>${eu.vecesCocinada || 0}</b>
-              ${eu.ultimaVez ? ` · última <b>${esc(eu.ultimaVez)}</b>` : ""}
-            </div>
-            <div class="cocinado-ctrl" style="margin-left:auto;">
-              <button type="button" class="cocinado-btn" data-accion="cocinado-menos"
-                      aria-label="Restar una vez"
-                      ${(eu.vecesCocinada || 0) === 0 ? "disabled" : ""}>−</button>
-              <button type="button" class="cocinado-btn principal" data-accion="cocinado"
-                      aria-label="+1 cocinada">+1</button>
-            </div>
-          </section>
-
           <div class="detalle-tabs-bar">
             <div class="detalle-tabs" role="tablist">
               <button type="button" data-accion="detalle-tab" data-valor="ingredientes"
@@ -7207,6 +7483,38 @@
                        placeholder="cenas-rapidas, verano, …">
                 <span class="hint">Separadas por comas. Se normalizan como slugs.</span>
               </div>
+            </div>
+          </section>
+
+          <section class="tarjeta-usuario" id="zona-usuario">
+            <div class="grupo-usuario">
+              <span class="et">Valoración</span>
+              <span class="estrellas-edit" id="zona-estrellas">
+                ${estrellasHTML}
+                <button type="button" class="borrar" data-accion="valoracion" data-valor="0">Quitar</button>
+              </span>
+            </div>
+            <div class="grupo-usuario">
+              <span class="et">Favorito</span>
+              <button type="button" class="toggle-fav" data-accion="favorito"
+                      aria-pressed="${eu.favorito}">
+                ${eu.favorito ? "♥ Favorito" : "♡ Marcar"}
+              </button>
+            </div>
+            <div class="grupo-usuario">
+              <span class="et">Estado</span>
+              <select class="estado-select" data-accion="estado">${estadoOpts}</select>
+            </div>
+            <div class="cocinado-info" id="zona-cocinado">
+              Cocinada <b>${eu.vecesCocinada || 0}</b>
+              ${eu.ultimaVez ? ` · última <b>${esc(eu.ultimaVez)}</b>` : ""}
+            </div>
+            <div class="cocinado-ctrl" style="margin-left:auto;">
+              <button type="button" class="cocinado-btn" data-accion="cocinado-menos"
+                      aria-label="Restar una vez"
+                      ${(eu.vecesCocinada || 0) === 0 ? "disabled" : ""}>−</button>
+              <button type="button" class="cocinado-btn principal" data-accion="cocinado"
+                      aria-label="+1 cocinada">+1</button>
             </div>
           </section>
 
@@ -7306,8 +7614,9 @@
         .sort((a,c) => normaliza(a.nombre).localeCompare(normaliza(c.nombre)));
 
       const chipsTipo = Object.keys(ETIQUETA_TIPO).map(t =>
-        `<button type="button" class="filtro-chip"
+        `<button type="button" class="filtro-chip filtro-chip-tipo"
            data-accion="filtro-tipo" data-valor="${t}"
+           style="--chip-fg: var(--tipo-${t}-fg);"
            aria-pressed="${b.tipos.has(t)}">${esc(ETIQUETA_TIPO[t])}</button>`
       ).join("");
 
