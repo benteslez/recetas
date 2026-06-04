@@ -3,8 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#fbfaf6">
+  <meta name="theme-color" content="#2563eb">
   <title>Recetas</title>
+
+  <!-- PWA: manifest + iconos para instalar en pantalla de inicio -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+
+  <!-- iOS: comportamiento app nativa al "Añadir a pantalla de inicio" -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Recetas">
+  <meta name="mobile-web-app-capable" content="yes">
 
   <!-- Google Fonts: Manrope (UI + títulos) y JetBrains Mono (números) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2772,6 +2784,28 @@
     }
     .biblio-busqueda { margin-bottom: var(--gap-3); }
 
+    /* Sentinel del lazy loading */
+    .biblio-sentinel {
+      padding: var(--gap-5) 0;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 500;
+      opacity: 0.6;
+    }
+    .biblio-sentinel::before {
+      content: "";
+      display: inline-block;
+      width: 14px; height: 14px;
+      margin-right: 8px;
+      vertical-align: middle;
+      border: 2px solid var(--line);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
     /* Chips de filtro por tipo — cada uno con su color */
     .biblio-tipos {
       display: flex;
@@ -2805,6 +2839,77 @@
       border-color: var(--tipo-chip-fg, var(--accent));
       box-shadow: 0 4px 12px color-mix(in srgb, var(--tipo-chip-fg, var(--accent)) 25%, transparent);
     }
+
+    /* Fila de filtros tag (cocina, etiquetas) */
+    .biblio-tags-row {
+      display: flex; align-items: center; gap: var(--gap-3);
+      padding: 4px 2px 12px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .biblio-tags-row::-webkit-scrollbar { display: none; }
+    .biblio-tags-et {
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      font-weight: 600;
+      opacity: 0.7;
+      flex-shrink: 0;
+    }
+    .biblio-tags {
+      display: flex; gap: 6px; flex-wrap: nowrap;
+    }
+    .biblio-tag-chip {
+      flex-shrink: 0;
+      padding: 5px 12px;
+      font-size: 12.5px;
+      font-weight: 500;
+      border-radius: var(--r-pill);
+      background: var(--bg-soft);
+      color: var(--text-muted);
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: background .12s, color .12s, border-color .12s;
+      white-space: nowrap;
+    }
+    .biblio-tag-chip:hover { color: var(--text); }
+    .biblio-tag-chip[aria-pressed="true"] {
+      background: var(--accent);
+      color: var(--text-inv);
+      border-color: var(--accent);
+    }
+
+    /* Botones +/- en la sección "Tu cocina" */
+    .cocinado-ctrl {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--bg-soft);
+      border-radius: var(--r-pill);
+      padding: 3px;
+    }
+    .cocinado-btn {
+      min-width: 36px;
+      height: 32px;
+      padding: 0 10px;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: var(--r-pill);
+      color: var(--text);
+      background: transparent;
+      transition: background .12s, color .12s, transform .12s;
+    }
+    .cocinado-btn:hover:not([disabled]) {
+      background: var(--bg-elev);
+    }
+    .cocinado-btn:active:not([disabled]) { transform: scale(0.95); }
+    .cocinado-btn[disabled] { opacity: 0.3; cursor: not-allowed; }
+    .cocinado-btn.principal {
+      background: var(--accent);
+      color: var(--text-inv);
+    }
+    .cocinado-btn.principal:hover { box-shadow: var(--sh-1); }
     .biblio-input {
       padding: 14px 18px;
       font-size: 15px;
@@ -4136,6 +4241,20 @@
     const ETIQUETA_ESTADO = {
       por_probar: "Por probar", favorita: "Favorita", descartada: "Descartada"
     };
+    /* Etiquetas booleanas: filtros rápidos tipo Notion (familiar, internacional, dieta).
+       Vegetariano se deduce de 'dieta' (enum 2). */
+    const ETIQUETAS_RECETA = ["internacional", "familiar", "dieta"];
+    const ETIQUETA_ETIQUETA = {
+      internacional: "Internacional",
+      familiar:      "Familiar",
+      dieta:         "Dieta"
+    };
+    /* Cocinas habituales sugeridas (texto libre, autocomplete via datalist). */
+    const COCINAS_SUGERIDAS = [
+      "Española","Italiana","Francesa","Mexicana","Japonesa","China","Asiática",
+      "Árabe","India","Mediterránea","Colombiana","Peruana","Argentina","Estadounidense",
+      "Vegetariana","Internacional","Casera"
+    ];
     const ETIQUETA_CATEGORIA_COMPRA = {
       verduras_fruta: "Verduras y fruta",
       carniceria: "Carnicería",
@@ -4214,6 +4333,7 @@
     const KEY_ALTO_CONTRASTE= "recetas:a11y-contraste";    // "1" si activo
     const KEY_BIBLIOTECA_MODO = "recetas:biblioteca-modo"; // tarjetas | lista
     const KEY_SUPABASE        = "recetas:supabase";        // sesión + tokens auth
+    const KEY_BORRADOS        = "recetas:borrados-pendientes"; // cola de DELETEs no enviados
     const KEY_MODO_DEV        = "recetas:modo-dev";        // "1" para mostrar config avanzada
 
     /* Configuración Supabase precargada (anon key es pública, no es secreta). */
@@ -4281,12 +4401,17 @@
       bibliotecaTexto: "",          // efimero, no persiste
       bibliotecaSoloFav: false,     // efimero
       bibliotecaTipos: new Set(),   // filtro por tipo (multi, efimero)
+      bibliotecaCocinas: new Set(), // filtro por cocina (multi, efimero)
+      bibliotecaEtiquetas: new Set(),// filtro por etiqueta (multi: vegetariano,internacional,familiar,dieta)
+      bibliotecaLimite: 30,         // lazy loading: cuantas tarjetas mostrar
       /* Accesibilidad — nivel 0..3 (persistido). */
       fuenteNivel: 0,
       /* Datos — tab interna y estado del editor (efimero). */
       datosTab: "recetas",   // recetas | ingredientes | iox | sync
       /* Refs detectadas como huérfanas en la última importación. */
       refsHuerfanas: [],     // [{clave, nombre, categoriaCompraSugerida}]
+      /* Cola de IDs/claves borradas que aún no se han enviado a Supabase. */
+      borradosPendientes: { recetas: [], ingredientes: [] },
       editor: {
         modo: null,          // null | "receta" | "ingrediente"
         receta: null,        // copia editable
@@ -4472,7 +4597,8 @@
 
     function cargarOrdenGuardado() {
       const o = localStorage.getItem(KEY_ORDEN_BIB);
-      sesion.ordenBiblioteca = ORDENES_VALIDOS.includes(o) ? o : "nombre";
+      // Default: por veces cocinada (más a menos), luego alfabético.
+      sesion.ordenBiblioteca = ORDENES_VALIDOS.includes(o) ? o : "veces";
     }
 
     function cargarBibliotecaModo() {
@@ -4516,6 +4642,22 @@
         autoSync: s.autoSync
       }));
     }
+    function cargarBorradosPendientes() {
+      try {
+        const raw = localStorage.getItem(KEY_BORRADOS);
+        if (!raw) return;
+        const o = JSON.parse(raw);
+        if (o && typeof o === "object") {
+          sesion.borradosPendientes = {
+            recetas:      Array.isArray(o.recetas)      ? o.recetas.filter(x => typeof x === "string")      : [],
+            ingredientes: Array.isArray(o.ingredientes) ? o.ingredientes.filter(x => typeof x === "string") : []
+          };
+        }
+      } catch (_) {/* ignora */}
+    }
+    function guardarBorradosPendientes() {
+      localStorage.setItem(KEY_BORRADOS, JSON.stringify(sesion.borradosPendientes));
+    }
     function fijarBibliotecaModo(m) {
       if (m !== "tarjetas" && m !== "lista") return;
       sesion.bibliotecaModo = m;
@@ -4527,6 +4669,7 @@
       if (!ORDENES_VALIDOS.includes(o)) return;
       sesion.ordenBiblioteca = o;
       localStorage.setItem(KEY_ORDEN_BIB, o);
+      sesion.bibliotecaLimite = 30;   // reset lazy loading
       renderBibliotecaLista();
     }
 
@@ -5694,6 +5837,59 @@
       mostrarGate();
     }
 
+    /* --------- Borrados (DELETE en Supabase + cola offline) -------------- */
+
+    /** Ejecuta un DELETE en Supabase. Devuelve true si OK, false si falló. */
+    async function borrarEnSupabase(tabla, campo, valor) {
+      try {
+        await supaFetch(
+          `/rest/v1/${tabla}?${campo}=eq.${encodeURIComponent(valor)}`,
+          { method: "DELETE", headers: { "Prefer": "return=minimal" } }
+        );
+        return true;
+      } catch (_) {
+        return false;
+      }
+    }
+
+    /** Añade un borrado a la cola y lo intenta enviar inmediatamente. */
+    function encolarBorrado(tabla, valor) {
+      const cola = sesion.borradosPendientes[tabla] || [];
+      if (!cola.includes(valor)) {
+        cola.push(valor);
+        sesion.borradosPendientes[tabla] = cola;
+        guardarBorradosPendientes();
+      }
+      // Intentar borrar inmediatamente en Supabase (fire-and-forget).
+      if (sesion.supabase.token) {
+        const campo = tabla === "recetas" ? "id" : "clave";
+        borrarEnSupabase(tabla, campo, valor).then(ok => {
+          if (ok) {
+            sesion.borradosPendientes[tabla] =
+              (sesion.borradosPendientes[tabla] || []).filter(v => v !== valor);
+            guardarBorradosPendientes();
+          }
+        });
+      }
+    }
+
+    /** Procesa toda la cola de borrados pendientes. Llamado al sincronizar. */
+    async function procesarBorradosPendientes() {
+      if (!sesion.supabase.token) return;
+      for (const tabla of ["recetas", "ingredientes"]) {
+        const lista = sesion.borradosPendientes[tabla] || [];
+        if (!lista.length) continue;
+        const campo = tabla === "recetas" ? "id" : "clave";
+        const restantes = [];
+        for (const valor of lista) {
+          const ok = await borrarEnSupabase(tabla, campo, valor);
+          if (!ok) restantes.push(valor);
+        }
+        sesion.borradosPendientes[tabla] = restantes;
+      }
+      guardarBorradosPendientes();
+    }
+
     /* --------- Mappers entre modelo SPEC (camelCase) y Supabase (snake_case) ----- */
 
     function ingLocalASupa(i) {
@@ -5798,6 +5994,11 @@
       try {
         const desde = s.ultimoSync || "1970-01-01T00:00:00Z";
 
+        // 0) Procesar cola de borrados pendientes ANTES de bajar
+        await procesarBorradosPendientes();
+        const idsRecBorradas = new Set(sesion.borradosPendientes.recetas || []);
+        const idsIngBorradas = new Set(sesion.borradosPendientes.ingredientes || []);
+
         // 1) Bajar cambios remotos desde `desde`.
         const filtro = "modificado=gte." + encodeURIComponent(desde);
         const [remIng, remRec, remEU] = await Promise.all([
@@ -5806,9 +6007,10 @@
           supaFetch("/rest/v1/estado_usuario?" + filtro)
         ]);
 
-        // 2) Aplicar last-write-wins
+        // 2) Aplicar last-write-wins (ignorando items que tengamos borrados pendientes)
         let aplicados = 0;
         for (const rem of (remIng || [])) {
+          if (idsIngBorradas.has(rem.clave)) continue; // lo hemos borrado nosotros
           const local = estado.ingredientes.find(x => x.clave === rem.clave);
           const remL = ingSupaALocal(rem);
           if (!local) { estado.ingredientes.push(remL); aplicados++; }
@@ -5817,6 +6019,7 @@
           }
         }
         for (const rem of (remRec || [])) {
+          if (idsRecBorradas.has(rem.id)) continue;
           const local = estado.recetas.find(x => x.id === rem.id);
           const remL = recetaSupaALocal(rem);
           if (!local) { estado.recetas.push(remL); aplicados++; }
@@ -5854,7 +6057,6 @@
           }
         });
 
-        // upsert por lotes (Prefer: resolution=merge-duplicates)
         const upsertHdr = { "Prefer": "resolution=merge-duplicates,return=minimal" };
         if (subirIng.length) await supaFetch("/rest/v1/ingredientes", {
           method: "POST", headers: upsertHdr, body: JSON.stringify(subirIng)
@@ -5866,11 +6068,50 @@
           method: "POST", headers: upsertHdr, body: JSON.stringify(subirEU)
         });
 
+        // 4) Detectar BORRADOS REMOTOS: si una receta/ingrediente NO está en
+        //    Supabase pero sí en local Y ya había sido sincronizada antes,
+        //    fue borrada en otro dispositivo -> eliminar local.
+        //    Solo aplicamos esto si ya hubo un sync previo (para no perder
+        //    recetas locales que aún no se hubieran subido por error).
+        let borradosLocal = 0;
+        if (s.ultimoSync) {
+          const [todosIdsRec, todosClavesIng] = await Promise.all([
+            supaFetch("/rest/v1/recetas?select=id"),
+            supaFetch("/rest/v1/ingredientes?select=clave")
+          ]);
+          const setRec = new Set((todosIdsRec || []).map(r => r.id));
+          const setIng = new Set((todosClavesIng || []).map(r => r.clave));
+          const antesRec = estado.recetas.length;
+          const antesIng = estado.ingredientes.length;
+          estado.recetas      = estado.recetas.filter(r => setRec.has(r.id));
+          estado.ingredientes = estado.ingredientes.filter(i => setIng.has(i.clave));
+          borradosLocal = (antesRec - estado.recetas.length) + (antesIng - estado.ingredientes.length);
+          // Si se borraron localmente, limpiar referencias en compra, plan, etc.
+          if (antesRec !== estado.recetas.length) {
+            const setLocal = new Set(estado.recetas.map(r => r.id));
+            sesion.compra.items = sesion.compra.items.filter(x => setLocal.has(x.id));
+            Object.keys(sesion.planificador.mes).forEach(fecha => {
+              const d = sesion.planificador.mes[fecha];
+              COMIDAS.forEach(c => { if (d[c] && !setLocal.has(d[c])) d[c] = null; });
+              if (!d.desayuno && !d.comida && !d.cena) delete sesion.planificador.mes[fecha];
+            });
+            if (sesion.recetaAbierta && !setLocal.has(sesion.recetaAbierta)) {
+              sesion.recetaAbierta = null;
+            }
+            guardarCompra(); guardarPlan();
+          }
+          if (borradosLocal) guardarEstado();
+        }
+
         s.ultimoSync = nowISO();
         s.estadoSync = "idle";
         guardarSupabase();
         renderTodo();
-        return { aplicados, subidos: subirIng.length + subirRec.length + subirEU.length };
+        return {
+          aplicados,
+          subidos: subirIng.length + subirRec.length + subirEU.length,
+          borradosLocal
+        };
       } catch (e) {
         s.estadoSync = "error";
         s.ultimoError = e.message || String(e);
@@ -5937,7 +6178,27 @@
 
     /* ---- Biblioteca: lista de tarjetas ---------------------------------- */
 
-    /** Aplica búsqueda + filtro de favoritos + tipos antes de ordenar. */
+    /** Lazy loading: observa el sentinel y carga 30 más cuando entra en viewport. */
+    let _biblioObserver = null;
+    function configurarObserverBiblioteca() {
+      if (!("IntersectionObserver" in window)) return;
+      if (_biblioObserver) _biblioObserver.disconnect();
+      const sentinel = document.getElementById("biblio-sentinel");
+      if (!sentinel) return;
+      _biblioObserver = new IntersectionObserver((entries) => {
+        if (entries.some(e => e.isIntersecting)) {
+          sesion.bibliotecaLimite = (sesion.bibliotecaLimite || 30) + 30;
+          actualizarResultadosBiblioteca();
+        }
+      }, { rootMargin: "300px" });
+      _biblioObserver.observe(sentinel);
+    }
+    /** Reset al cambiar filtros: vuelve a mostrar solo los primeros 30. */
+    function resetLimiteBiblioteca() {
+      sesion.bibliotecaLimite = 30;
+    }
+
+    /** Aplica búsqueda + filtro de favoritos + tipos + cocinas + etiquetas. */
     function bibliotecaFiltrada() {
       const txt = normaliza(sesion.bibliotecaTexto || "").trim();
       let lista = estado.recetas;
@@ -5945,11 +6206,26 @@
         lista = lista.filter(r =>
           normaliza(r.nombre).includes(txt) ||
           (r.tags || []).some(t => normaliza(t).includes(txt)) ||
+          (r.cocina && normaliza(r.cocina).includes(txt)) ||
           r.ingredientes.some(i => normaliza(i.nombre).includes(txt))
         );
       }
       if (sesion.bibliotecaTipos.size > 0) {
         lista = lista.filter(r => sesion.bibliotecaTipos.has(r.tipo));
+      }
+      if (sesion.bibliotecaCocinas.size > 0) {
+        lista = lista.filter(r => r.cocina && sesion.bibliotecaCocinas.has(r.cocina));
+      }
+      if (sesion.bibliotecaEtiquetas.size > 0) {
+        lista = lista.filter(r => {
+          const etqs = Array.isArray(r.etiquetas) ? r.etiquetas : [];
+          const dietas = Array.isArray(r.dieta) ? r.dieta : [];
+          for (const e of sesion.bibliotecaEtiquetas) {
+            if (e === "vegetariano") { if (!dietas.includes("vegetariano")) return false; }
+            else if (!etqs.includes(e)) return false;
+          }
+          return true;
+        });
       }
       if (sesion.bibliotecaSoloFav) {
         lista = lista.filter(r => getEstado(perfilActivo, r.id).favorito);
@@ -6064,7 +6340,10 @@
         ["ultima",     "Última vez"]
       ].map(([v,l]) => `<option value="${v}" ${v===ord?"selected":""}>${l}</option>`).join("");
 
-      const filtroActivo = sesion.bibliotecaTexto || soloFav || sesion.bibliotecaTipos.size > 0;
+      const filtroActivo = sesion.bibliotecaTexto || soloFav
+        || sesion.bibliotecaTipos.size > 0
+        || sesion.bibliotecaCocinas.size > 0
+        || sesion.bibliotecaEtiquetas.size > 0;
       const vacioMsg = filtroActivo
         ? "Sin resultados con esos filtros."
         : "No hay recetas todavía.";
@@ -6077,6 +6356,22 @@
         <button type="button" class="biblio-tipo-chip" data-accion="biblio-tipo" data-valor="${esc(t)}"
                 style="--tipo-chip-bg: var(--tipo-${t}-bg); --tipo-chip-fg: var(--tipo-${t}-fg);"
                 aria-pressed="${sesion.bibliotecaTipos.has(t)}">${esc(ETIQUETA_TIPO[t])}</button>`
+      ).join("");
+
+      // Chips de cocina (origen) — solo los que aparecen.
+      const cocinasPresentes = [...new Set(estado.recetas.map(r => r.cocina).filter(Boolean))]
+        .sort((a,b) => normaliza(a).localeCompare(normaliza(b)));
+      const cocinasChipsHTML = cocinasPresentes.map(c => `
+        <button type="button" class="biblio-tag-chip" data-accion="biblio-cocina" data-valor="${esc(c)}"
+                aria-pressed="${sesion.bibliotecaCocinas.has(c)}">${esc(c)}</button>`
+      ).join("");
+
+      // Chips de etiquetas rápidas (booleanos).
+      const etquTodas = ["vegetariano", ...ETIQUETAS_RECETA];
+      const etqLabel = { vegetariano: "Vegetariano", ...ETIQUETA_ETIQUETA };
+      const etiquetasChipsHTML = etquTodas.map(e => `
+        <button type="button" class="biblio-tag-chip" data-accion="biblio-etiqueta" data-valor="${esc(e)}"
+                aria-pressed="${sesion.bibliotecaEtiquetas.has(e)}">${esc(etqLabel[e] || e)}</button>`
       ).join("");
 
       cont.innerHTML = `
@@ -6109,14 +6404,37 @@
         </div>
 
         <div class="biblio-tipos">${tiposChipsHTML}</div>
+        ${cocinasPresentes.length ? `
+          <div class="biblio-tags-row">
+            <span class="biblio-tags-et">Cocina</span>
+            <div class="biblio-tags">${cocinasChipsHTML}</div>
+          </div>` : ""}
+        <div class="biblio-tags-row">
+          <span class="biblio-tags-et">Etiquetas</span>
+          <div class="biblio-tags">${etiquetasChipsHTML}</div>
+        </div>
 
         <div id="biblio-resultados">${
           recetas.length === 0
             ? `<div class="vacio">${vacioMsg}</div>`
-            : (modo === "lista"
-              ? `<div class="tarjetas-lista">${recetas.map(tarjetaListaHTML).join("")}</div>`
-              : `<div class="tarjetas">${recetas.map(tarjetaHTML).join("")}</div>`)
+            : renderResultadosBibliotecaHTML(recetas, modo)
         }</div>`;
+      // Configurar observer tras render (microtask para que el sentinel exista en DOM)
+      setTimeout(configurarObserverBiblioteca, 0);
+    }
+
+    /** Trocea la lista por el límite de lazy loading y añade un sentinel si hay más. */
+    function renderResultadosBibliotecaHTML(recetas, modo) {
+      const limite = sesion.bibliotecaLimite || 30;
+      const visibles = recetas.slice(0, limite);
+      const hayMas   = recetas.length > limite;
+      const sentinel = hayMas
+        ? `<div id="biblio-sentinel" class="biblio-sentinel">Cargando más recetas…</div>`
+        : "";
+      if (modo === "lista") {
+        return `<div class="tarjetas-lista">${visibles.map(tarjetaListaHTML).join("")}</div>${sentinel}`;
+      }
+      return `<div class="tarjetas">${visibles.map(tarjetaHTML).join("")}</div>${sentinel}`;
     }
 
     /** Refresca solo la zona de resultados (al teclear o cambiar filtros). */
@@ -6127,15 +6445,17 @@
       if (!zona) return;
       const recetas = bibliotecaFiltrada();
       const modo = sesion.bibliotecaModo;
-      const filtroActivo = sesion.bibliotecaTexto || sesion.bibliotecaSoloFav || sesion.bibliotecaTipos.size > 0;
+      const filtroActivo = sesion.bibliotecaTexto || sesion.bibliotecaSoloFav
+        || sesion.bibliotecaTipos.size > 0
+        || sesion.bibliotecaCocinas.size > 0
+        || sesion.bibliotecaEtiquetas.size > 0;
       const vacioMsg = filtroActivo
         ? "Sin resultados con esos filtros."
         : "No hay recetas todavía.";
       zona.innerHTML = recetas.length === 0
         ? `<div class="vacio">${vacioMsg}</div>`
-        : (modo === "lista"
-          ? `<div class="tarjetas-lista">${recetas.map(tarjetaListaHTML).join("")}</div>`
-          : `<div class="tarjetas">${recetas.map(tarjetaHTML).join("")}</div>`);
+        : renderResultadosBibliotecaHTML(recetas, modo);
+      configurarObserverBiblioteca();
       // Refrescar contador
       const p = cont.querySelector(".titulo-grupo p");
       if (p) {
@@ -6291,8 +6611,13 @@
               Cocinada <b>${eu.vecesCocinada || 0}</b>
               ${eu.ultimaVez ? ` · última <b>${esc(eu.ultimaVez)}</b>` : ""}
             </div>
-            <button type="button" class="iox-boton secundario" data-accion="cocinado"
-                    style="margin-left:auto;">+1 cocinada</button>
+            <div class="cocinado-ctrl" style="margin-left:auto;">
+              <button type="button" class="cocinado-btn" data-accion="cocinado-menos"
+                      aria-label="Restar una vez"
+                      ${(eu.vecesCocinada || 0) === 0 ? "disabled" : ""}>−</button>
+              <button type="button" class="cocinado-btn principal" data-accion="cocinado"
+                      aria-label="+1 cocinada">+1</button>
+            </div>
           </section>
 
           <div class="detalle-tabs-bar">
@@ -6401,6 +6726,12 @@
       if (coc) {
         coc.innerHTML = `Cocinada <b>${eu.vecesCocinada || 0}</b>` +
           (eu.ultimaVez ? ` · última <b>${esc(eu.ultimaVez)}</b>` : "");
+      }
+      // Habilitar/deshabilitar el botón "−" según el contador
+      const btnMenos = document.querySelector("#zona-usuario [data-accion='cocinado-menos']");
+      if (btnMenos) {
+        const v = eu.vecesCocinada || 0;
+        if (v === 0) btnMenos.setAttribute("disabled", ""); else btnMenos.removeAttribute("disabled");
       }
     }
 
@@ -7763,6 +8094,8 @@
     function recetaVacia() {
       return {
         id: "", nombre: "", tipo: "huevos",
+        cocina: null,            // origen geográfico/cultural (texto libre)
+        etiquetas: [],           // ["familiar","internacional","dieta"]
         tags: [], dieta: [],
         racionesBase: 4, tiempoPrep: 0, tiempoCoccion: 0,
         dificultad: "media", fuente: null, imagen: null,
@@ -7888,6 +8221,8 @@
       sesion.compra.items = sesion.compra.items.filter(x => x.id !== id);
       if (sesion.recetaAbierta === id) sesion.recetaAbierta = null;
       guardarEstado(); guardarPlan(); guardarCompra();
+      // Propagar borrado a Supabase (con cola offline).
+      encolarBorrado("recetas", id);
       renderTodo();
     }
     function borrarIngrediente(clave) {
@@ -7903,6 +8238,8 @@
       estado.recetas.forEach(r => aplicarInvariante2(r, estado.ingredientes));
       sesion.disponibles.delete(clave);
       guardarEstado(); guardarDisponibles();
+      // Propagar borrado a Supabase (con cola offline).
+      encolarBorrado("ingredientes", clave);
       renderTodo();
     }
 
@@ -7979,6 +8316,14 @@
                   style="margin-right:4px;">${esc(ETIQUETA_DIETA[d])}
          </label>`
       ).join("");
+      const chkEtiquetas = ETIQUETAS_RECETA.map(e =>
+        `<label class="filtro-chip" style="cursor:pointer;">
+           <input type="checkbox" data-cmp="etiqueta" value="${e}" ${(r.etiquetas||[]).includes(e) ? "checked" : ""}
+                  style="margin-right:4px;">${esc(ETIQUETA_ETIQUETA[e])}
+         </label>`
+      ).join("");
+      const cocinasOptionsHTML = COCINAS_SUGERIDAS
+        .map(c => `<option value="${esc(c)}"></option>`).join("");
 
       return `
         <form class="editor" id="editor-receta" autocomplete="off">
@@ -8020,6 +8365,11 @@
                 <input type="number" min="0" data-cmp="r-cocc" value="${r.tiempoCoccion || 0}">
               </div>
               <div class="campo">
+                <label>Cocina / origen (texto libre)</label>
+                <input type="text" data-cmp="r-cocina" list="lista-cocinas" value="${esc(r.cocina || "")}" placeholder="Ej. Española, Italiana, Árabe…">
+                <datalist id="lista-cocinas">${cocinasOptionsHTML}</datalist>
+              </div>
+              <div class="campo">
                 <label>Fuente (opcional)</label>
                 <input type="text" data-cmp="r-fuente" value="${esc(r.fuente || "")}">
               </div>
@@ -8030,6 +8380,10 @@
               <div class="campo col-completo">
                 <label>Dieta</label>
                 <div class="editor-chips" data-rol="dieta">${chkDieta}</div>
+              </div>
+              <div class="campo col-completo">
+                <label>Etiquetas rápidas</label>
+                <div class="editor-chips" data-rol="etiquetas">${chkEtiquetas}</div>
               </div>
             </div>
           </div>
@@ -8153,6 +8507,8 @@
       "id": "mi-receta-ejemplo",
       "nombre": "Mi receta de ejemplo",
       "tipo": "huevos",
+      "cocina": "Española",
+      "etiquetas": ["familiar"],
       "tags": ["clasico", "tapas"],
       "dieta": ["vegetariano"],
       "racionesBase": 4,
@@ -8287,6 +8643,8 @@
                 <b>Enums permitidos</b><br>
                 <b>tipo</b>: <code>${esc(Object.keys(ETIQUETA_TIPO).join(", "))}</code><br>
                 <b>dieta</b>: <code>${esc(Object.keys(ETIQUETA_DIETA).join(", "))}</code><br>
+                <b>etiquetas</b>: <code>${esc(ETIQUETAS_RECETA.join(", "))}</code> (opcional)<br>
+                <b>cocina</b>: texto libre (Española, Italiana, Árabe, Colombiana…) o <code>null</code><br>
                 <b>dificultad</b>: <code>facil, media, dificil</code><br>
                 <b>unidad</b>: <code>${esc(Object.keys(ETIQUETA_UNIDAD).join(", "))}</code> o <code>null</code><br>
                 <br>
@@ -8295,7 +8653,8 @@
                 · <code>tiempo</code> del paso en <b>segundos</b>; <code>tiempoPrep</code>/<code>tiempoCoccion</code> en <b>minutos</b>.<br>
                 · <code>cantidad: null</code> = "al gusto", no escala con raciones.<br>
                 · <code>pasos[].n</code> debe ir desde 1 sin saltos.<br>
-                · <code>creado</code> y <code>modificado</code> en ISO 8601 UTC.
+                · <code>creado</code> y <code>modificado</code> en ISO 8601 UTC.<br>
+                · <code>cocina</code> y <code>etiquetas</code> son opcionales — si no los pones, la receta funciona igual.
               </div>
             </div>
           </details>
@@ -8369,6 +8728,17 @@
             <div id="sync-msg" class="iox-info"></div>
           `}
         </div>
+        <div class="datos-card">
+          <div class="datos-card-head">
+            <h2>¿La app no se actualiza?</h2>
+            <p>Si has subido cambios y no se reflejan, fuerza el reinstalado: limpia el service worker y la caché del navegador.</p>
+          </div>
+          <div class="iox-grupo">
+            <button type="button" class="iox-boton secundario" data-accion="forzar-recarga">🔄 Forzar reinstalación (limpiar caché)</button>
+          </div>
+          <p class="iox-info">Tras pulsar, la app se cierra, borra su caché y vuelve a abrir con la versión más nueva.</p>
+        </div>
+
         ${sesion.modoDev ? `
         <div class="datos-card">
           <div class="datos-card-head">
@@ -8494,8 +8864,39 @@
       sesion.raciones = r.racionesBase;
       sesion.ticsIng.clear();
       sesion.ticsPaso.clear();
+      // Actualizar URL para que se pueda compartir el enlace de esta receta.
+      actualizarHashReceta(id);
       renderBibliotecaDetalle();
       window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    /* ---- Hash routing: #/receta/<id> para enlazar a una receta concreta */
+    let _hashIgnorar = false;
+    function actualizarHashReceta(id) {
+      _hashIgnorar = true;
+      try {
+        if (id) history.replaceState(null, "", "#/receta/" + id);
+        else    history.replaceState(null, "", window.location.pathname + window.location.search);
+      } catch (_) {}
+      setTimeout(() => { _hashIgnorar = false; }, 50);
+    }
+    function aplicarHash() {
+      if (_hashIgnorar) return;
+      const h = window.location.hash || "";
+      const mR = h.match(/^#\/receta\/([a-z0-9-]+)/i);
+      if (mR) {
+        const id = mR[1].toLowerCase();
+        if (recetaPorId(id)) {
+          fijarVista("biblioteca");
+          if (sesion.recetaAbierta !== id) abrirReceta(id);
+          return;
+        }
+      }
+      const mV = h.match(/^#\/vista\/([a-z]+)/i);
+      if (mV) {
+        const v = mV[1].toLowerCase();
+        if (VISTAS.some(x => x.id === v)) fijarVista(v);
+      }
     }
 
     /** Toggle favorito en cualquier vista (sincroniza los chips visibles en otras vistas). */
@@ -8514,6 +8915,7 @@
       sesion.recetaAbierta = null;
       sesion.ticsIng.clear();
       sesion.ticsPaso.clear();
+      actualizarHashReceta(null);
       renderBibliotecaLista();
     }
 
@@ -8541,6 +8943,7 @@
       cargarA11y();
       cargarModoDev();
       cargarSupabase();
+      cargarBorradosPendientes();
       actualizarThemeColor(document.documentElement.dataset.tema);
       // Si quedaron timers activos al cargar, arrancar el ticker.
       if (sesion.timers.some(t => !t.pausado && !t.vencido)) arrancarTicker();
@@ -8662,7 +9065,7 @@
           return;
         }
 
-        // "He cocinado esto".
+        // "+1 cocinada" — incrementa el contador y fija la fecha de hoy.
         if (ev.target.closest("[data-accion='cocinado']")) {
           const r = recetaPorId(sesion.recetaAbierta); if (!r) return;
           const eu = getEstado(perfilActivo, r.id);
@@ -8670,6 +9073,15 @@
             vecesCocinada: (eu.vecesCocinada || 0) + 1,
             ultimaVez: hoyISO()
           });
+          actualizarZonaUsuario();
+          return;
+        }
+        // "−1 cocinada" — decrementa si > 0 (no toca ultimaVez por simplicidad).
+        if (ev.target.closest("[data-accion='cocinado-menos']")) {
+          const r = recetaPorId(sesion.recetaAbierta); if (!r) return;
+          const eu = getEstado(perfilActivo, r.id);
+          const nuevo = Math.max(0, (eu.vecesCocinada || 0) - 1);
+          setEstado(perfilActivo, r.id, { vecesCocinada: nuevo });
           actualizarZonaUsuario();
           return;
         }
@@ -8693,13 +9105,16 @@
 
         // ---- Toolbar biblioteca: vista / favoritos ---------------------
         if (ev.target.closest("[data-accion='biblio-modo-tarjetas']")) {
+          resetLimiteBiblioteca();
           fijarBibliotecaModo("tarjetas"); return;
         }
         if (ev.target.closest("[data-accion='biblio-modo-lista']")) {
+          resetLimiteBiblioteca();
           fijarBibliotecaModo("lista"); return;
         }
         if (ev.target.closest("[data-accion='biblio-toggle-fav']")) {
           sesion.bibliotecaSoloFav = !sesion.bibliotecaSoloFav;
+          resetLimiteBiblioteca();
           renderBibliotecaLista();
           return;
         }
@@ -8709,6 +9124,27 @@
           if (sesion.bibliotecaTipos.has(t)) sesion.bibliotecaTipos.delete(t);
           else sesion.bibliotecaTipos.add(t);
           fTipo.setAttribute("aria-pressed", String(sesion.bibliotecaTipos.has(t)));
+          resetLimiteBiblioteca();
+          actualizarResultadosBiblioteca();
+          return;
+        }
+        const fCoc = ev.target.closest("[data-accion='biblio-cocina']");
+        if (fCoc) {
+          const c = fCoc.dataset.valor;
+          if (sesion.bibliotecaCocinas.has(c)) sesion.bibliotecaCocinas.delete(c);
+          else sesion.bibliotecaCocinas.add(c);
+          fCoc.setAttribute("aria-pressed", String(sesion.bibliotecaCocinas.has(c)));
+          resetLimiteBiblioteca();
+          actualizarResultadosBiblioteca();
+          return;
+        }
+        const fEtq = ev.target.closest("[data-accion='biblio-etiqueta']");
+        if (fEtq) {
+          const e = fEtq.dataset.valor;
+          if (sesion.bibliotecaEtiquetas.has(e)) sesion.bibliotecaEtiquetas.delete(e);
+          else sesion.bibliotecaEtiquetas.add(e);
+          fEtq.setAttribute("aria-pressed", String(sesion.bibliotecaEtiquetas.has(e)));
+          resetLimiteBiblioteca();
           actualizarResultadosBiblioteca();
           return;
         }
@@ -8718,6 +9154,7 @@
       cont.addEventListener("input", (ev) => {
         if (ev.target.id === "biblio-buscar") {
           sesion.bibliotecaTexto = ev.target.value;
+          resetLimiteBiblioteca();
           actualizarResultadosBiblioteca();
         }
       });
@@ -9340,7 +9777,9 @@
           const msg = document.getElementById("sync-msg");
           if (msg) msg.textContent = "Sincronizando…";
           sincronizar().then(r => {
-            if (msg) msg.innerHTML = `OK · ${r.aplicados} aplicados, ${r.subidos} subidos.`;
+            const partes = [`${r.aplicados} aplicados`, `${r.subidos} subidos`];
+            if (r.borradosLocal) partes.push(`${r.borradosLocal} borrados`);
+            if (msg) msg.innerHTML = `OK · ${partes.join(", ")}.`;
           }).catch(e => {
             if (msg) msg.innerHTML = `<span style="color:var(--danger);">${esc(e.message)}</span>`;
           });
@@ -9368,6 +9807,10 @@
         }
         if (ev.target.closest("[data-accion='toggle-modo-dev']")) {
           alternarModoDev();
+          return;
+        }
+        if (ev.target.closest("[data-accion='forzar-recarga']")) {
+          forzarReinstalacion();
           return;
         }
 
@@ -9398,6 +9841,7 @@
         if (r && sesion.editor.modo === "receta") {
           if (cmp === "r-id")        { r.id = t.value.trim(); return; }
           if (cmp === "r-nombre")    { r.nombre = t.value; return; }
+          if (cmp === "r-cocina")    { r.cocina = t.value.trim() || null; return; }
           if (cmp === "r-fuente")    { r.fuente = t.value.trim() || null; return; }
           if (cmp === "r-notas")     { r.notas = t.value.trim() || null; return; }
           if (cmp === "r-raciones")  { r.racionesBase = Math.max(1, Number(t.value) || 1); return; }
@@ -9457,6 +9901,13 @@
             const d = t.value;
             if (t.checked) { if (!r.dieta.includes(d)) r.dieta.push(d); }
             else { r.dieta = r.dieta.filter(x => x !== d); }
+            return;
+          }
+          if (cmp === "etiqueta") {
+            const e = t.value;
+            if (!Array.isArray(r.etiquetas)) r.etiquetas = [];
+            if (t.checked) { if (!r.etiquetas.includes(e)) r.etiquetas.push(e); }
+            else { r.etiquetas = r.etiquetas.filter(x => x !== e); }
             return;
           }
           if (fila && fila.dataset.tipoFila === "ing") {
@@ -9658,12 +10109,16 @@
 
       renderTodo();
 
+      // Hash routing: navegar entre cambios de hash sin recargar
+      window.addEventListener("hashchange", aplicarHash);
+
       // Procesar callback de magic link (#access_token=... en la URL)
       procesarCallbackAuth().then(ok => {
         if (ok) {
           fijarPerfil(perfilDesdeEmail(sesion.supabase.email));
           ocultarGate();
           renderTodo();
+          aplicarHash();              // navegar a #/receta/... si lo había
           sincronizar().catch(() => {});
         } else if (gateNecesario()) {
           mostrarGate();
@@ -9671,6 +10126,7 @@
           // Ya autenticado: asegurar perfil correcto según email
           const p = perfilDesdeEmail(sesion.supabase.email);
           if (p !== perfilActivo) fijarPerfil(p);
+          aplicarHash();              // abrir receta del hash si la URL la tiene
           // Sync silencioso de fondo al cargar
           sincronizar().catch(() => {});
         }
@@ -9749,6 +10205,66 @@
       document.addEventListener("DOMContentLoaded", init);
     } else {
       init();
+    }
+
+    /* ---- Service Worker (PWA, offline) --------------------------------
+       Estrategia: el SW usa network-first para HTML, así que normalmente
+       recibes la versión nueva al recargar. Si la red falla, sirve la cacheada.
+       Aviso al usuario cuando hay versión nueva instalada en background. */
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("sw.js").then((reg) => {
+          // Detectar nueva versión instalada en background
+          reg.addEventListener("updatefound", () => {
+            const sw = reg.installing;
+            if (!sw) return;
+            sw.addEventListener("statechange", () => {
+              if (sw.state === "installed" && navigator.serviceWorker.controller) {
+                mostrarBannerActualizacion();
+              }
+            });
+          });
+        }).catch(() => {/* silencio */});
+
+        // Cuando el SW nuevo toma control, recargar para usarlo.
+        let recargado = false;
+        navigator.serviceWorker.addEventListener("controllerchange", () => {
+          if (recargado) return;
+          recargado = true;
+          window.location.reload();
+        });
+      });
+    }
+    /** Limpia service workers + caches y recarga con bypass de caché. */
+    async function forzarReinstalacion() {
+      if (!confirm("Esto cerrará la app, limpiará la caché y la abrirá de nuevo. ¿Continuar?")) return;
+      try {
+        if ("serviceWorker" in navigator) {
+          const regs = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(regs.map(r => r.unregister()));
+        }
+        if ("caches" in window) {
+          const names = await caches.keys();
+          await Promise.all(names.map(n => caches.delete(n)));
+        }
+      } catch (_) {}
+      // Recarga con bypass del caché HTTP del navegador.
+      window.location.reload();
+    }
+
+    function mostrarBannerActualizacion() {
+      if (document.getElementById("banner-actualizar")) return;
+      const div = document.createElement("div");
+      div.id = "banner-actualizar";
+      div.style.cssText = "position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:9999;background:#2563eb;color:#fff;padding:12px 20px;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.18);font-family:Manrope,system-ui,sans-serif;font-size:14px;font-weight:600;display:flex;align-items:center;gap:12px;";
+      div.innerHTML = '🔄 Hay una versión nueva disponible <button style="background:#fff;color:#2563eb;border:none;border-radius:999px;padding:6px 14px;font-weight:600;cursor:pointer;font-family:inherit;">Actualizar</button>';
+      div.querySelector("button").addEventListener("click", () => {
+        navigator.serviceWorker.getRegistration().then(reg => {
+          if (reg && reg.waiting) reg.waiting.postMessage({ type: "SKIP_WAITING" });
+          else window.location.reload();
+        });
+      });
+      document.body.appendChild(div);
     }
   })();
   </script>
