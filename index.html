@@ -3950,6 +3950,34 @@
     }
     :root[data-tema="oscuro"] .iox-boton.secundario { color: var(--btn-bg); }
 
+    /* Chips de navegación (Biblioteca, Buscar, Cocina inversa, …)
+       Activo → negro sólido (sustituye el gradiente azul→cian). */
+    .chip[aria-current="page"] {
+      background: var(--btn-bg) !important;
+      color: var(--btn-fg) !important;
+      box-shadow: 0 4px 14px -6px rgba(0,0,0,0.4) !important;
+    }
+
+    /* Estrellas de valoración — antes en azul, ahora en negro editorial */
+    .estrellas,
+    .estrellas-edit button.activa,
+    .detalle .estrellas {
+      color: var(--btn-bg) !important;
+    }
+    :root[data-tema="oscuro"] .estrellas,
+    :root[data-tema="oscuro"] .estrellas-edit button.activa { color: var(--btn-bg) !important; }
+
+    /* Corazón de favorito — antes en azul, ahora en negro */
+    .tarjeta-fav[aria-pressed="true"] { color: var(--btn-bg) !important; }
+    :root[data-tema="oscuro"] .tarjeta-fav[aria-pressed="true"] { color: var(--btn-bg) !important; }
+
+    /* Contador "+1 cocinada" — pill negra */
+    .cocinado-btn.principal {
+      background: var(--btn-bg);
+      color: var(--btn-fg);
+    }
+    .cocinado-btn.principal:hover { background: var(--btn-bg-h); }
+
     /* ========================================================================
        PERFIL INVITADO — solo lectura.
        Oculta todos los affordances de edición. Las funciones JS también
