@@ -2614,49 +2614,80 @@
     }
 
     /* ========================================================================
-       CABECERA DE RECETA — sin banner color, título grande coloreado.
-       Modo cocina sigue full-color (más abajo).
+       CABECERA DE RECETA — estilo Apple: sin caja, sin border, sin pills.
+       Solo tipografía: caption del tipo, título XXL, meta inline gris.
+       Modo cocina mantiene fondo de color (más abajo).
        ======================================================================== */
     .detalle-cabecera {
-      background: var(--bg-elev);
-      color: var(--text);
-      border: 1px solid var(--line-soft);
-      border-left: 6px solid var(--chip-fg, var(--accent));
-      box-shadow: var(--sh-1);
-      position: relative;
-      overflow: hidden;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      padding: 8px 0 24px !important;
+      margin-bottom: 4px;
+      overflow: visible;
     }
     .detalle-cabecera::before { display: none; }
     :root[data-tema="oscuro"] .detalle-cabecera {
-      background: var(--bg-elev);
-      color: var(--text);
-      border-left-color: var(--chip-fg, var(--accent));
+      background: transparent !important;
+      border: none !important;
+    }
+    .detalle-eyebrow {
+      font-family: var(--font-ui);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--chip-fg, var(--text-muted));
+      margin-bottom: 14px;
     }
     .detalle-cabecera h1 {
-      color: var(--chip-fg, var(--accent));
-      font-size: 38px;
-      font-weight: 800;
-      letter-spacing: -0.035em;
-      line-height: 1.05;
+      font-family: var(--font-ui);
+      font-size: 42px;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1.04;
+      margin: 0 0 16px;
+      /* Degradado del color del tipo de receta — Apple-style.
+         Va del tono principal a una versión 25% más oscura/profunda. */
+      background-image: linear-gradient(
+        135deg,
+        var(--chip-fg, var(--accent)) 0%,
+        color-mix(in srgb, var(--chip-fg, var(--accent)) 72%, #000 28%) 100%
+      );
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
     }
     @media (min-width: 720px) {
-      .detalle-cabecera h1 { font-size: 52px; }
+      .detalle-cabecera h1 { font-size: 60px; letter-spacing: -0.045em; }
     }
-    .detalle-cabecera .detalle-tiempos { color: var(--text-muted); opacity: 1; }
-    .detalle-cabecera .detalle-tiempos b { color: var(--text); }
-    .detalle-cabecera .chip-tipo {
-      background: var(--chip-bg, var(--bg-soft));
-      color: var(--chip-fg, var(--text-muted));
-      backdrop-filter: none;
-      -webkit-backdrop-filter: none;
+    /* En modo oscuro mezclamos con blanco para mantener legibilidad y vibración */
+    :root[data-tema="oscuro"] .detalle-cabecera h1 {
+      background-image: linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--chip-fg, var(--accent)) 85%, #fff 15%) 0%,
+        var(--chip-fg, var(--accent)) 100%
+      );
     }
-    .detalle-cabecera .pill {
-      background: var(--chip-bg, var(--bg-soft));
-      color: var(--chip-fg, var(--text-muted));
+    .detalle-meta-line {
+      font-family: var(--font-ui);
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--text-muted);
+      letter-spacing: -0.005em;
+      line-height: 1.5;
+      margin: 0;
     }
-    .detalle-cabecera .pill-dieta {
-      background: var(--chip-bg, var(--bg-soft));
-      color: var(--chip-fg, var(--text-muted));
+    .detalle-meta-line b {
+      color: var(--text);
+      font-weight: 500;
+    }
+    .detalle-meta-line .bull {
+      display: inline-block;
+      margin: 0 8px;
+      opacity: 0.55;
+      font-weight: 400;
     }
 
     /* ---- Modo cocina: overlay full-color del tipo + texto blanco -------- */
@@ -7061,6 +7092,17 @@
 
       const tt = tiempoTotalMin(r);
 
+      // Meta línea Apple-style — bullets entre tiempo, dificultad, dieta y etiquetas.
+      const _dietaTxt = (r.dieta || []).map(d => ETIQUETA_DIETA[d] || d).join(" · ");
+      const _etqTxt = (r.etiquetas || []).filter(Boolean)
+        .map(e => e.charAt(0).toUpperCase() + e.slice(1)).join(" · ");
+      const _metaParts = [];
+      if (tt > 0)               _metaParts.push(`<b>${formateaMin(tt)}</b>`);
+      if (r.dificultad)         _metaParts.push(`<b>${esc(ETIQUETA_DIFICULTAD[r.dificultad]||r.dificultad)}</b>`);
+      if (_dietaTxt)            _metaParts.push(esc(_dietaTxt));
+      if (_etqTxt)              _metaParts.push(esc(_etqTxt));
+      const metaInlineHTML = _metaParts.join(`<span class="bull">·</span>`);
+
       cont.innerHTML = `
         <div class="detalle"
              style="--chip-bg: var(--tipo-${r.tipo}-bg); --chip-fg: var(--tipo-${r.tipo}-fg);">
@@ -7071,17 +7113,9 @@
           </div>
 
           <header class="detalle-cabecera">
-            ${chipTipoHTML(r.tipo)}
+            <div class="detalle-eyebrow">${esc(ETIQUETA_TIPO[r.tipo] || r.tipo)}</div>
             <h1>${esc(r.nombre)}</h1>
-            ${(tagsHTML || dietaHTML)
-              ? `<div class="detalle-tags">${dietaHTML}${tagsHTML}</div>`
-              : ""}
-            <div class="detalle-tiempos">
-              ${r.tiempoPrep > 0 ? `<span>Prep <b>${formateaMin(r.tiempoPrep)}</b></span>` : ""}
-              ${r.tiempoCoccion > 0 ? `<span>Cocción <b>${formateaMin(r.tiempoCoccion)}</b></span>` : ""}
-              <span>Total <b>${formateaMin(tt)}</b></span>
-              <span>Dificultad <b>${esc(ETIQUETA_DIFICULTAD[r.dificultad]||r.dificultad)}</b></span>
-            </div>
+            ${metaInlineHTML ? `<p class="detalle-meta-line">${metaInlineHTML}</p>` : ""}
           </header>
 
           <section class="tarjeta-usuario" id="zona-usuario">

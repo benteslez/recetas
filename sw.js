@@ -3,7 +3,7 @@
    - Iconos/manifest: cache-first (no cambian).
    Cambia CACHE_NAME tras un cambio importante para invalidar el cache.
 */
-const CACHE_NAME = "recetas-v11";
+const CACHE_NAME = "recetas-v14";
 const ASSETS_ESTATICOS = [
   "./manifest.json",
   "./icon.svg",
