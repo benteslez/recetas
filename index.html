@@ -1156,18 +1156,20 @@
     }
     .mc-paso-titulo {
       font-family: var(--font-titulo);
-      font-size: 28px;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-      margin-bottom: var(--gap-3);
-    }
-    @media (min-width: 720px) { .mc-paso-titulo { font-size: 36px; } }
-    .mc-paso-texto {
-      font-size: 19px;
-      line-height: 1.55;
+      font-size: 38px;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1.12;
       margin-bottom: var(--gap-4);
     }
-    @media (min-width: 720px) { .mc-paso-texto { font-size: 22px; } }
+    @media (min-width: 720px) { .mc-paso-titulo { font-size: 52px; } }
+    .mc-paso-texto {
+      font-size: 24px;
+      line-height: 1.55;
+      margin-bottom: var(--gap-4);
+      font-weight: 400;
+    }
+    @media (min-width: 720px) { .mc-paso-texto { font-size: 28px; line-height: 1.5; } }
     .mc-paso-meta {
       display: flex; gap: var(--gap-2); flex-wrap: wrap;
       margin-bottom: var(--gap-4);
@@ -2689,23 +2691,23 @@
     }
     .mc-paso-titulo {
       font-family: var(--font-ui);
-      font-weight: 700;
+      font-weight: 800;
       letter-spacing: -0.045em;
-      font-size: 40px;
-      line-height: 1.02;
+      font-size: 44px;
+      line-height: 1.05;
       color: inherit;
     }
-    @media (min-width: 720px) { .mc-paso-titulo { font-size: 64px; } }
+    @media (min-width: 720px) { .mc-paso-titulo { font-size: 72px; } }
     .mc-paso-texto {
       font-family: var(--font-ui);
       font-weight: 400;
-      font-size: 21px;
-      line-height: 1.55;
+      font-size: 25px;
+      line-height: 1.5;
       letter-spacing: -0.005em;
       color: inherit;
       opacity: 0.96;
     }
-    @media (min-width: 720px) { .mc-paso-texto { font-size: 26px; line-height: 1.5; } }
+    @media (min-width: 720px) { .mc-paso-texto { font-size: 30px; line-height: 1.45; } }
 
     .mc-paso-meta .pill {
       background: rgba(255,255,255,0.18);
@@ -3072,11 +3074,11 @@
     @media (min-width: 720px) { html.a11y-fuente-3 .vista-titulo { font-size: 48px; } }
     html.a11y-fuente-3 .tarjeta-nombre { font-size: 24px; }
     html.a11y-fuente-3 .lista-ing li, html.a11y-fuente-3 .lista-paso li { font-size: 18px; padding: 10px 12px; }
-    html.a11y-fuente-3 .mc-paso-texto { font-size: 24px; }
-    html.a11y-fuente-3 .mc-paso-titulo { font-size: 48px; }
+    html.a11y-fuente-3 .mc-paso-texto { font-size: 28px; }
+    html.a11y-fuente-3 .mc-paso-titulo { font-size: 52px; }
     @media (min-width: 720px) {
-      html.a11y-fuente-3 .mc-paso-texto { font-size: 30px; }
-      html.a11y-fuente-3 .mc-paso-titulo { font-size: 76px; }
+      html.a11y-fuente-3 .mc-paso-texto { font-size: 34px; }
+      html.a11y-fuente-3 .mc-paso-titulo { font-size: 86px; }
     }
 
     /* ========================================================================
@@ -3977,6 +3979,54 @@
       color: var(--btn-fg);
     }
     .cocinado-btn.principal:hover { background: var(--btn-bg-h); }
+
+    /* ========================================================================
+       INGREDIENTES — fila principal (nombre + cantidad) y nota debajo,
+       pegada. Antes la nota tenía width:100% y descuadraba el wrap del flex.
+       ======================================================================== */
+    .detalle .bloque .lista-ing .ing-texto {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;            /* nota muy pegada al nombre */
+      flex: 1;
+      min-width: 0;
+    }
+    .detalle .bloque .lista-ing .ing-fila-principal {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 8px;
+      min-width: 0;
+    }
+    .detalle .bloque .lista-ing .ing-nota {
+      width: auto;          /* anula el width:100% anterior */
+      display: block;
+      margin-top: 0;
+      line-height: 1.3;
+    }
+
+    /* ========================================================================
+       TARJETAS MÓVIL — antes ocupaban borde-a-borde, ahora respiran.
+       Más aire lateral, gap mayor, sombra editorial muy sutil.
+       ======================================================================== */
+    @media (max-width: 599px) {
+      main {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+      .tarjetas {
+        gap: 14px;
+      }
+      .tarjeta {
+        padding: 18px 18px 16px;
+        border-radius: 16px;
+        box-shadow: 0 1px 2px rgba(15,23,42,0.04),
+                    0 4px 14px -8px rgba(15,23,42,0.10);
+      }
+      /* La barra superior y la nav también con más respiración lateral */
+      .cabecera-inner { padding-left: 20px; padding-right: 20px; }
+      .nav { padding-left: 20px; padding-right: 20px; }
+    }
 
     /* ========================================================================
        PERFIL INVITADO — solo lectura.
@@ -6917,8 +6967,10 @@
             <input type="checkbox" ${sesion.ticsIng.has(idx) ? "checked" : ""}
                    aria-label="Tachar ${esc(ing.nombre)}">
             <span class="ing-texto">
-              <span class="ing-nombre">${esc(ing.nombre)}</span>
-              ${detallesHTML}
+              <span class="ing-fila-principal">
+                <span class="ing-nombre">${esc(ing.nombre)}</span>
+                ${detallesHTML}
+              </span>
               ${nota}
             </span>
           </li>`;
@@ -7552,7 +7604,9 @@
       if (!r || !r.pasos || !r.pasos.length) return;
       // Inicio inteligente: si hay pasos tickeados, ir al primer NO tickeado.
       // Si no hay tics, empezar en la portada.
-      let inicio = -2;
+      // pagina: -1 portada · 0..N-1 pasos. (Se eliminó la pantalla intermedia
+      // de ingredientes: el modo cocina solo muestra portada + pasos).
+      let inicio = -1;
       if (sesion.ticsPaso.size > 0) {
         let primero = -1;
         for (let i = 0; i < r.pasos.length; i++) {
@@ -7579,7 +7633,7 @@
 
     function pasoAnterior() {
       if (!sesion.modoCocina.activo) return;
-      if (sesion.modoCocina.pagina > -2) {
+      if (sesion.modoCocina.pagina > -1) {
         sesion.modoCocina.pagina--;
         renderModoCocina();
       }
@@ -7597,21 +7651,21 @@
     function renderModoCocina() {
       const r = recetaPorId(sesion.modoCocina.idReceta);
       if (!r) { cerrarCocina(); return; }
+      // Defensa: redirige cualquier valor antiguo (-2) a la nueva portada (-1).
+      if (sesion.modoCocina.pagina < -1) sesion.modoCocina.pagina = -1;
       const pagina = sesion.modoCocina.pagina;
       const total = r.pasos.length;
-      const totalPag = total + 2;          // portada + ingredientes + N pasos
-      const idxAbs = pagina + 2;           // 0..totalPag-1
+      const totalPag = total + 1;          // portada + N pasos (sin pantalla de ingredientes)
+      const idxAbs = pagina + 1;           // 0..totalPag-1
       const pct = Math.round((idxAbs + 1) / totalPag * 100);
-      const factor = (sesion.raciones || r.racionesBase) / r.racionesBase;
       const tt = tiempoTotalMin(r);
 
       let etiqueta;
-      if (pagina === -2)      etiqueta = "Inicio";
-      else if (pagina === -1) etiqueta = "Ingredientes";
-      else                    etiqueta = `Paso ${pagina + 1} / ${total}`;
+      if (pagina === -1) etiqueta = "Inicio";
+      else               etiqueta = `Paso ${pagina + 1} / ${total}`;
 
       let cuerpoHTML;
-      if (pagina === -2) {
+      if (pagina === -1) {
         // PORTADA
         cuerpoHTML = `
           <div class="mc-portada">
@@ -7622,54 +7676,10 @@
               · ${sesion.raciones || r.racionesBase} raciones
             </p>
           </div>`;
-      } else if (pagina === -1) {
-        // INGREDIENTES con checkboxes (reutiliza sesion.ticsIng).
-        const items = r.ingredientes.map((ing, i) => {
-          const cant    = ing.cantidad    == null ? null : ing.cantidad    * factor;
-          const cantMax = ing.cantidadMax == null ? null : ing.cantidadMax * factor;
-          const { html: pillHTML } = pillCantidadHTML(cant, cantMax, ing.unidad);
-          const tachado = sesion.ticsIng.has(i) ? " tachado" : "";
-          const checked = sesion.ticsIng.has(i) ? "checked" : "";
-          const opc = ing.opcional ? `<span class="ing-opcional">opcional</span>` : "";
-          const det = (pillHTML || opc)
-            ? `<span class="ing-detalles">${pillHTML}${opc}</span>` : "";
-          return `
-            <li class="${tachado.trim()}" data-tic-ing-cocina="${i}">
-              <input type="checkbox" ${checked} aria-label="Tachar ${esc(ing.nombre)}">
-              <span class="ing-texto">
-                <span class="ing-nombre">${esc(ing.nombre)}</span>
-                ${det}
-              </span>
-            </li>`;
-        }).join("");
-        cuerpoHTML = `
-          <div class="mc-ingredientes-full">
-            <div class="mc-paso-num">Ingredientes</div>
-            <h2 class="mc-paso-titulo mc-tit-medio">Para ${sesion.raciones || r.racionesBase} raciones</h2>
-            <ul class="mc-ing-lista">${items}</ul>
-          </div>`;
       } else {
-        // PASO normal
+        // PASO normal — sin bloque de ingredientes del paso.
         const p = r.pasos[pagina];
         if (!p) { cerrarCocina(); return; }
-        const refsPaso = new Set(p.usa || []);
-        const ingsPaso = refsPaso.size
-          ? r.ingredientes.filter(i => i.ref && refsPaso.has(i.ref))
-          : [];
-        const itemsHTML = ingsPaso.map(ing => {
-          const cant    = ing.cantidad    == null ? null : ing.cantidad    * factor;
-          const cantMax = ing.cantidadMax == null ? null : ing.cantidadMax * factor;
-          const { html: pillHTML, aviso } = pillCantidadHTML(cant, cantMax, ing.unidad);
-          const avisoHTML = aviso ? `<span class="ing-aviso">(${esc(aviso)})</span>` : "";
-          const det = (pillHTML || avisoHTML)
-            ? `<span class="ing-detalles">${pillHTML}${avisoHTML}</span>` : "";
-          return `<li>
-            <span class="ing-texto">
-              <span class="ing-nombre">${esc(ing.nombre)}</span>
-              ${det}
-            </span>
-          </li>`;
-        }).join("");
         const meta = [];
         const conTemp = necesitaTemporizador(p);
         if (p.temperatura != null) meta.push(`<span class="pill">Horno <b>${esc(p.temperatura)}°C</b></span>`);
@@ -7685,16 +7695,13 @@
             <div class="mc-paso-texto">${destacarAccion(p.texto)}</div>
             ${meta.length ? `<div class="mc-paso-meta">${meta.join("")}</div>` : ""}
             ${tempBtn}
-            ${itemsHTML
-              ? `<div class="mc-paso-ings"><h3>Ingredientes del paso</h3><ul>${itemsHTML}</ul></div>`
-              : ""}
           </div>`;
       }
 
       const ov = document.getElementById("modo-cocina");
       ov.style.setProperty("--chip-bg", `var(--tipo-${r.tipo}-bg)`);
       ov.style.setProperty("--chip-fg", `var(--tipo-${r.tipo}-fg)`);
-      const labelSig = (pagina === -2) ? "Empezar" : (pagina === -1 ? "Cocinar" : "Siguiente");
+      const labelSig = (pagina === -1) ? "Empezar" : "Siguiente";
       ov.innerHTML = `
         <div class="mc-head">
           <h1>${esc(r.nombre)}</h1>
@@ -7708,7 +7715,7 @@
         <div class="mc-body">${cuerpoHTML}</div>
         <div class="mc-foot">
           <button type="button" class="mc-btn-nav" data-accion="paso-anterior"
-                  ${pagina === -2 ? "disabled" : ""} aria-label="Anterior">
+                  ${pagina === -1 ? "disabled" : ""} aria-label="Anterior">
             <span class="mc-flecha">‹</span><span class="mc-label">Anterior</span>
           </button>
           <button type="button" class="mc-btn-nav principal" data-accion="paso-siguiente"
@@ -7716,7 +7723,7 @@
             <span class="mc-label">${labelSig}</span><span class="mc-flecha">›</span>
           </button>
         </div>
-        ${pagina === -2 ? `<div class="mc-hint-swipe">Desliza para avanzar</div>` : ""}`;
+        ${pagina === -1 ? `<div class="mc-hint-swipe">Desliza para avanzar</div>` : ""}`;
     }
 
     /* ---- Temporizadores -------------------------------------------------- */
