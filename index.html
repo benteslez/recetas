@@ -4146,6 +4146,20 @@
     }
     html:not([data-perfil="invitado"]) .badge-solo-lectura { display: none; }
 
+    /* Botón "Eliminar receta" — outline rojo, hover rellena */
+    .iox-boton.peligro {
+      background: transparent !important;
+      color: #b91c1c !important;
+      border: 1px solid #fca5a5 !important;
+    }
+    .iox-boton.peligro:hover {
+      background: #b91c1c !important;
+      color: #ffffff !important;
+      border-color: #b91c1c !important;
+    }
+    .iox-boton.peligro[disabled],
+    .iox-boton.peligro:disabled { opacity: 0.4; cursor: not-allowed; }
+
     /* Pista para el usuario en el editor cuando edita una receta fija */
     .editor-pista-fija {
       display: inline-flex;
@@ -4814,6 +4828,13 @@
       { clave: "peras-maduras", nombre: "Peras maduras", categoriaCompra: "verduras_fruta", densidad: null, gramosPorUnidad: null, alias: ["peras maduras"] },
       { clave: "galleta-molida", nombre: "Galleta molida", categoriaCompra: "despensa_secos", densidad: null, gramosPorUnidad: null, alias: ["galleta molida"] },
       { clave: "que-dar-vuelta", nombre: "Que dar vuelta", categoriaCompra: "otros", densidad: null, gramosPorUnidad: null, alias: ["recipiente que se pueda dar la vuelta"] },
+      { clave: "alga-nori", nombre: "Alga nori", categoriaCompra: "despensa_secos", densidad: null, gramosPorUnidad: 3, alias: ["nori", "hoja nori"] },
+      { clave: "mirin", nombre: "Mirin", categoriaCompra: "especias_condimentos", densidad: 1.1, gramosPorUnidad: null, alias: ["sake mirin"] },
+      { clave: "sake", nombre: "Sake", categoriaCompra: "otros", densidad: 0.97, gramosPorUnidad: null, alias: ["sake cocina"] },
+      { clave: "almejas", nombre: "Almejas", categoriaCompra: "carniceria", densidad: null, gramosPorUnidad: 10, alias: ["almeja"] },
+      { clave: "sepia", nombre: "Sepia", categoriaCompra: "carniceria", densidad: null, gramosPorUnidad: 300, alias: ["sepia limpia"] },
+      { clave: "kombu", nombre: "Alga kombu", categoriaCompra: "despensa_secos", densidad: null, gramosPorUnidad: null, alias: ["kombu seco"] },
+      { clave: "semola", nombre: "Sémola de trigo duro", categoriaCompra: "despensa_secos", densidad: 0.7, gramosPorUnidad: null, alias: ["semola fina", "sémola fina", "semola trigo duro"] }
         ];
 
     const RECETAS_FIJAS = [
@@ -7202,52 +7223,6 @@
         modificado: "2026-06-04T10:00:00Z"
       },
       {
-        id: "mini-pizzas-de-calabacin",
-        nombre: "Mini Pizzas de Calabacín",
-        tipo: "pizzas",
-        cocina: "Dieta",
-        pais: null,
-        etiquetas: [],
-        tags: ["pollo", "calabacín", "pizza", "verduras"],
-        dieta: ["vegetariano"],
-        racionesBase: 4,
-        tiempoPrep: 0, tiempoCoccion: 0,
-        dificultad: "media",
-        fuente: null, imagen: null,
-        ingredientes: [
-          { ref: "calabacin", nombre: "calabacín grande cortado en rodajas de 1 cm de grosor", cantidad: 1, cantidadMax: null, unidad: "ud", grupo: null, opcional: false, nota: "≈ 300 g" },
-          { ref: "tomate", nombre: "salsa de tomate natural suave", cantidad: 120, cantidadMax: null, unidad: "g", grupo: null, opcional: false, nota: "sin picante, mejor casera o triturada" },
-          { ref: "mozzarella", nombre: "mozzarella fresca light", cantidad: 80, cantidadMax: null, unidad: "g", grupo: null, opcional: false, nota: "bien escurrida y en trocitos" },
-          { ref: "pollo", nombre: "pechuga de pollo cocida o jamón cocido bajo en sal, en trocitos", cantidad: 40, cantidadMax: null, unidad: "g", grupo: null, opcional: false, nota: null },
-          { ref: "oregano", nombre: "Orégano o albahaca seca", cantidad: null, cantidadMax: null, unidad: "al_gusto", grupo: null, opcional: false, nota: null },
-          { ref: "aceite-oliva", nombre: "aceite de oliva virgen extra", cantidad: 1, cantidadMax: null, unidad: "cdta", grupo: null, opcional: false, nota: "5 ml" },
-          { ref: "sal", nombre: "Sal suave", cantidad: null, cantidadMax: null, unidad: null, grupo: null, opcional: true, nota: null }
-        ],
-        pasos: [
-          { n: 1, titulo: null, texto: "Preparar las bases", tiempo: null, temperatura: null, usa: [] },
-          { n: 2, titulo: null, texto: "Lava el calabacín y córtalo en rodajas de ≈1 cm de grosor.", tiempo: null, temperatura: null, usa: ["calabacin"] },
-          { n: 3, titulo: null, texto: "Sécalas bien con papel de cocina para que no suelten demasiada agua.", tiempo: null, temperatura: null, usa: [] },
-          { n: 4, titulo: null, texto: "️ Prehornear el calabacín", tiempo: null, temperatura: null, usa: ["calabacin"] },
-          { n: 5, titulo: null, texto: "Coloca las rodajas en una bandeja con papel de horno.", tiempo: null, temperatura: null, usa: [] },
-          { n: 6, titulo: null, texto: "Pincela con un poco de aceite.", tiempo: null, temperatura: null, usa: ["aceite-oliva"] },
-          { n: 7, titulo: null, texto: "Hornea 8 minutos a 200 ºC (para que pierdan parte del agua y no queden aguadas).", tiempo: 480, temperatura: null, usa: [] },
-          { n: 8, titulo: null, texto: "Añadir la salsa", tiempo: null, temperatura: null, usa: ["tomate"] },
-          { n: 9, titulo: null, texto: "Retira del horno y pon 1 cdita de salsa de tomate sobre cada rodaja.", tiempo: null, temperatura: null, usa: ["tomate"] },
-          { n: 10, titulo: null, texto: "Espolvorea un poco de orégano o albahaca.", tiempo: null, temperatura: null, usa: ["oregano"] },
-          { n: 11, titulo: null, texto: "Poner los toppings", tiempo: null, temperatura: null, usa: [] },
-          { n: 12, titulo: null, texto: "Añade los trocitos de mozzarella light.", tiempo: null, temperatura: null, usa: ["mozzarella"] },
-          { n: 13, titulo: null, texto: "Reparte el pollo cocido o el jamón cocido bajo en sal.", tiempo: null, temperatura: null, usa: ["pollo"] },
-          { n: 14, titulo: null, texto: "Gratinar", tiempo: null, temperatura: null, usa: [] },
-          { n: 15, titulo: null, texto: "Vuelve a meter al horno 8–10 min a 200 ºC, hasta que el queso esté fundido y doradito.", tiempo: 540, temperatura: null, usa: [] },
-          { n: 16, titulo: null, texto: "Finalizar y servir", tiempo: null, temperatura: null, usa: [] },
-          { n: 17, titulo: null, texto: "Añade al salir del horno un poco más de hierbas frescas si deseas.", tiempo: null, temperatura: null, usa: [] },
-          { n: 18, titulo: null, texto: "Sirve caliente como plato principal o acompañante. ---", tiempo: null, temperatura: null, usa: [] }
-        ],
-        notas: "Consejos de chefs y abuelas: Usa tomate natural rallado en lugar de salsa industrial: más digestivo y ligero. Escurre bien la mozzarella en un colador antes de ponerla, así no suelta agua. Si tu estómago está sensible, evita la cebolla o el pimiento como topping, quédate con proteína magra (pollo/jamón) y hierbas suaves. Se pueden hacer también en airfryer: 180 ºC, 10–12 minutos, quedan muy ricas y rápidas. Una pizca de queso",
-        creado:     "2026-06-04T10:00:00Z",
-        modificado: "2026-06-04T10:00:00Z"
-      },
-      {
         id: "mini-pizzas-de-calabacin-vegetales-con-pimiento-c",
         nombre: "Mini pizzas de calabacín vegetales con pimiento, cebolla, aceitunas y parmesano",
         tipo: "pizzas",
@@ -8088,165 +8063,6 @@
           { n: 18, titulo: null, texto: "Hornea 7–10 min o hasta que el borde esté dorado y crujiente.", tiempo: 480, temperatura: null, usa: [] }
         ],
         notas: "Truco final de pizzería:: Cuando saques la pizza del horno, ponle un chorrito de aceite de oliva crudo y unas hojas de albahaca fresca para potenciar aromas. · Consejo del pizzaiolo:: No hace falta cocerla demasiado ni añadir cebolla, vino ni especias fuertes. Esta salsa debe resaltar el sabor del tomate y combinar bien con la mozzarella y la masa. Si la passata es buena, menos es más.",
-        creado:     "2026-06-04T10:00:00Z",
-        modificado: "2026-06-04T10:00:00Z"
-      },
-      {
-        id: "pizza-rectangular",
-        nombre: "Pizza rectangular",
-        tipo: "pizzas",
-        cocina: null,
-        pais: null,
-        etiquetas: [],
-        tags: [],
-        dieta: [],
-        racionesBase: 4,
-        tiempoPrep: 0, tiempoCoccion: 0,
-        dificultad: "media",
-        fuente: null, imagen: null,
-        ingredientes: [
-          { ref: "harina", nombre: "harina Haz de Oros", cantidad: 500, cantidadMax: null, unidad: "g", grupo: "masa", opcional: false, nota: null },
-          { ref: "agua", nombre: "agua fría o fresca", cantidad: 375, cantidadMax: null, unidad: "g", grupo: "masa", opcional: false, nota: "75% de hidratación" },
-          { ref: "sal", nombre: "sal fina", cantidad: 10, cantidadMax: null, unidad: "g", grupo: "masa", opcional: false, nota: null },
-          { ref: "azucar", nombre: "azúcar o miel", cantidad: 5, cantidadMax: null, unidad: "g", grupo: "masa", opcional: false, nota: null },
-          { ref: "levadura-quimica", nombre: "levadura seca de panadería", cantidad: 3, cantidadMax: null, unidad: "g", grupo: "masa", opcional: false, nota: "o 9 g de levadura fresca" },
-          { ref: "aceite-oliva", nombre: "aceite de oliva virgen extra para la masa", cantidad: 20, cantidadMax: null, unidad: "g", grupo: "masa", opcional: false, nota: null },
-          { ref: "aceite-oliva", nombre: "aceite de oliva virgen extra para untar bien la bandeja y la masa", cantidad: 30, cantidadMax: 40, unidad: "g", grupo: "bandeja y acabado", opcional: false, nota: null },
-          { ref: "tomate", nombre: "salsa de tomate espesa para pizza", cantidad: 180, cantidadMax: 220, unidad: "g", grupo: "bandeja y acabado", opcional: false, nota: null },
-          { ref: "mozzarella", nombre: "mozzarella bien escurrida", cantidad: 250, cantidadMax: 300, unidad: "g", grupo: "bandeja y acabado", opcional: false, nota: null },
-          { ref: "sal", nombre: "Sal fina", cantidad: null, cantidadMax: null, unidad: "al_gusto", grupo: "bandeja y acabado", opcional: false, nota: null },
-          { ref: "oregano", nombre: "Orégano seco", cantidad: null, cantidadMax: null, unidad: "al_gusto", grupo: "bandeja y acabado", opcional: false, nota: null },
-          { ref: "queso-rallado", nombre: "Opcional pero muy recomendable: 30–40 g de queso curado rallado fino para potenc", cantidad: null, cantidadMax: null, unidad: null, grupo: "bandeja y acabado", opcional: true, nota: null },
-          { ref: "aceite-oliva", nombre: "️ Opcional: unas gotas de aceite picante al final", cantidad: null, cantidadMax: null, unidad: null, grupo: "bandeja y acabado", opcional: true, nota: null }
-        ],
-        pasos: [
-          { n: 1, titulo: "1️⃣ Mezcla inicial", texto: "Pon en un bol grande 375 g de agua, 5 g de azúcar o miel y 3 g de levadura seca.", tiempo: null, temperatura: null, usa: ["agua", "azucar", "levadura-quimica"] },
-          { n: 2, titulo: null, texto: "Remueve solo hasta disolver.", tiempo: null, temperatura: null, usa: [] },
-          { n: 3, titulo: null, texto: "Añade 500 g de harina Haz de Oros y mezcla hasta que no queden restos secos.", tiempo: null, temperatura: null, usa: ["harina", "oregano"] },
-          { n: 4, titulo: null, texto: "Deja reposar 10 minutos.", tiempo: 600, temperatura: null, usa: [] },
-          { n: 5, titulo: null, texto: "Añade 10 g de sal fina y 20 g de aceite de oliva virgen extra.", tiempo: null, temperatura: null, usa: ["sal", "aceite-oliva"] },
-          { n: 6, titulo: null, texto: "Mezcla y amasa 5–8 minutos, solo hasta obtener una masa lisa, pegajosa pero ya cohesionada.", tiempo: 360, temperatura: null, usa: ["queso-rallado"] },
-          { n: 7, titulo: "2️⃣ Reposos y pliegues para una masa más profesion", texto: "️ Deja reposar la masa 15 minutos tapada.", tiempo: 900, temperatura: null, usa: [] },
-          { n: 8, titulo: "Haz un pliegue simple", texto: "moja ligeramente tus manos, levanta un lado de la masa y dóblalo hacia el centro; repite por los 4 lados.", tiempo: null, temperatura: null, usa: [] },
-          { n: 9, titulo: null, texto: "Deja reposar otros 15 minutos.", tiempo: 900, temperatura: null, usa: [] },
-          { n: 10, titulo: null, texto: "Repite un segundo pliegue igual.", tiempo: null, temperatura: null, usa: [] },
-          { n: 11, titulo: null, texto: "Este sistema desarrolla gluten sin volver la masa dura ni meter harina de más, que luego le quitaría ligereza.", tiempo: null, temperatura: null, usa: ["harina"] },
-          { n: 12, titulo: "3️⃣ Fermentación lenta para sabor de verdad", texto: "Pasa la masa a un recipiente ligeramente aceitado y tápalo bien.", tiempo: null, temperatura: null, usa: ["mozzarella"] },
-          { n: 13, titulo: null, texto: "️ Déjala en nevera 24 horas como mínimo.", tiempo: 86400, temperatura: null, usa: [] },
-          { n: 14, titulo: "Si puedes, déjala 36–48 horas", texto: "quedará con mucho más sabor, mejor digestibilidad y una textura más bonita.", tiempo: null, temperatura: null, usa: [] },
-          { n: 15, titulo: null, texto: "El día de hornear, saca la masa de la nevera 2 horas antes.", tiempo: 7200, temperatura: null, usa: [] },
-          { n: 16, titulo: null, texto: "Unta la bandeja metálica del horno con 30 g de aceite de oliva aproximadamente. No seas tímido: la base crujiente depende mucho de esto.", tiempo: null, temperatura: null, usa: ["aceite-oliva"] },
-          { n: 17, titulo: null, texto: "Vuelca la masa sobre la bandeja sin desgarrarla.", tiempo: null, temperatura: null, usa: [] },
-          { n: 18, titulo: null, texto: "Con las yemas de los dedos bien aceitadas, empieza a empujarla suavemente desde el centro hacia las esquinas.", tiempo: null, temperatura: null, usa: ["mozzarella"] },
-          { n: 19, titulo: null, texto: "No tires de la masa como si fuera una sábana ni la aplastes con fuerza, porque expulsarías el aire.", tiempo: null, temperatura: null, usa: [] },
-          { n: 20, titulo: null, texto: "Si se encoge y no llega a las esquinas, déjala reposar 15 minutos y vuelve a estirarla.", tiempo: 900, temperatura: null, usa: [] },
-          { n: 21, titulo: null, texto: "Repite las veces necesarias hasta que cubra toda la bandeja o casi toda. Al final ella sola terminará de relajarse.", tiempo: null, temperatura: null, usa: ["sal"] },
-          { n: 22, titulo: "5️⃣ Segunda fermentación en bandeja", texto: "️ Tapa la bandeja con film ligeramente aceitado o con otra bandeja invertida.", tiempo: null, temperatura: null, usa: [] },
-          { n: 23, titulo: null, texto: "Deja fermentar 45–90 minutos a temperatura ambiente, hasta que la masa se vea hinchada, viva y con pequeñas burbujas.", tiempo: 4020, temperatura: null, usa: ["mozzarella"] },
-          { n: 24, titulo: null, texto: "Justo antes de montar, haz una ligera presión con las yemas por toda la superficie para crear pequeñas hendiduras: eso ayuda a una cocción más uniforme y a que retenga mejor el aceite y la salsa.", tiempo: null, temperatura: null, usa: ["aceite-oliva", "tomate"] },
-          { n: 25, titulo: "6️⃣ Precalentado serio del horno", texto: "Precalienta el horno al máximo real que tenga, idealmente 250 °C, durante al menos 30–40 minutos.", tiempo: 2100, temperatura: 250, usa: [] },
-          { n: 26, titulo: null, texto: "Coloca la rejilla en la parte baja del horno.", tiempo: null, temperatura: null, usa: [] },
-          { n: 27, titulo: null, texto: "En horno doméstico, esta posición ayuda mucho a que el suelo de la pizza quede bien dorado y crujiente antes de que la parte superior se pase.", tiempo: null, temperatura: null, usa: ["mozzarella"] },
-          { n: 28, titulo: "7️⃣ Montaje inteligente para que no quede húmeda", texto: "Extiende una capa fina de salsa de tomate espesa: no la ahogues.", tiempo: null, temperatura: null, usa: ["sal", "tomate"] },
-          { n: 29, titulo: null, texto: "Añade una pizca de sal y un poco de orégano.", tiempo: null, temperatura: null, usa: ["oregano"] },
-          { n: 30, titulo: null, texto: "Reparte la mozzarella muy bien escurrida.", tiempo: null, temperatura: null, usa: ["mozzarella"] },
-          { n: 31, titulo: null, texto: "Si quieres un acabado más profesional y sabroso, añade 30–40 g de queso curado rallado fino repartido por encima.", tiempo: null, temperatura: null, usa: [] },
-          { n: 32, titulo: null, texto: "️ Mantén los ingredientes equilibrados: una pizza de bandeja gordita necesita cobertura generosa, pero no un exceso de agua.", tiempo: null, temperatura: null, usa: ["agua", "queso-rallado"] },
-          { n: 33, titulo: "8️⃣ Horneado en dos fases para base crujiente + in", texto: "Mete la pizza en la parte baja del horno y hornea 10–12 minutos.", tiempo: 660, temperatura: null, usa: [] },
-          { n: 34, titulo: null, texto: "Cuando veas que la base ya ha empezado a fijarse y los bordes suben bien, gira la bandeja si tu horno dora desigual.", tiempo: null, temperatura: null, usa: ["mozzarella"] },
-          { n: 35, titulo: null, texto: "Sube luego la bandeja a una zona media-alta 3–6 minutos más, hasta que el queso esté bien fundido y los bordes muy dorados.", tiempo: 240, temperatura: null, usa: ["mozzarella"] },
-          { n: 36, titulo: null, texto: "Si ves que arriba está perfecta pero abajo todavía flojea, saca la pizza de la bandeja con una espátula grande y déjala 1–2 minutos directamente sobre la rejilla del horno o sobre la base del horno con mucho cuidado. Esto da un extra brutal de crujiente.", tiempo: 60, temperatura: null, usa: ["queso-rallado"] },
-          { n: 37, titulo: "9️⃣ Acabado final para que no se ablande", texto: "️ Saca la pizza y déjala reposar 2 minutos, no más.", tiempo: 120, temperatura: null, usa: [] },
-          { n: 38, titulo: null, texto: "Pásala a una rejilla o tabla; no la dejes mucho tiempo dentro de la bandeja caliente porque el vapor reblandece la base.", tiempo: null, temperatura: null, usa: [] },
-          { n: 39, titulo: null, texto: "Termina con unas gotas de buen aceite de oliva.", tiempo: null, temperatura: null, usa: ["aceite-oliva"] },
-          { n: 40, titulo: null, texto: "Añade un poco más de orégano si te gusta.", tiempo: null, temperatura: null, usa: ["oregano"] },
-          { n: 41, titulo: null, texto: "Corta en porciones rectangulares y sírvela enseguida.", tiempo: null, temperatura: null, usa: [] },
-          { n: 42, titulo: null, texto: "La bandeja tiene que llevar bastante aceite: no es un detalle menor, es parte de la técnica que crea la base frita-crujiente.", tiempo: null, temperatura: null, usa: ["aceite-oliva"] },
-          { n: 43, titulo: null, texto: "️ La fermentación en frío cambia muchísimo el resultado: más sabor, mejor color y mejor textura.", tiempo: null, temperatura: null, usa: [] },
-          { n: 44, titulo: null, texto: "No cargues la pizza de ingredientes húmedos; eso mata el crujiente.", tiempo: null, temperatura: null, usa: [] },
-          { n: 45, titulo: null, texto: "La mozzarella hay que escurrirla muy bien o incluso secarla con papel si viene muy mojada.", tiempo: null, temperatura: null, usa: ["levadura-quimica", "mozzarella"] },
-          { n: 46, titulo: "Cada horno miente un poco", texto: "vigila la base, no solo el queso.", tiempo: null, temperatura: null, usa: [] },
-          { n: 47, titulo: null, texto: "Si tu bandeja es fina y poco conductora, ponla sobre la parte más baja del horno para ayudar al dorado inferior.", tiempo: null, temperatura: null, usa: ["sal"] },
-          { n: 48, titulo: null, texto: "Aceite en manos mejor que harina extra al estirar: así no endureces la masa ni ensucias la base.", tiempo: null, temperatura: null, usa: ["harina", "aceite-oliva"] },
-          { n: 49, titulo: null, texto: "La salsa mejor espesa y en poca cantidad; siempre puedes añadir un poco más la próxima vez, pero una pizza aguada ya no se arregla.", tiempo: null, temperatura: null, usa: ["agua", "tomate", "queso-rallado"] },
-          { n: 50, titulo: null, texto: "Reposar la masa cuando se encoge es de las claves más infravaloradas para que quede bien extendida sin romperse.", tiempo: null, temperatura: null, usa: ["mozzarella"] },
-          { n: 51, titulo: null, texto: "Salsa de tomate espesa", tiempo: null, temperatura: null, usa: ["tomate"] },
-          { n: 52, titulo: null, texto: "Mozzarella bien escurrida", tiempo: null, temperatura: null, usa: ["mozzarella"] },
-          { n: 53, titulo: null, texto: "Un poco de queso curado rallado", tiempo: null, temperatura: null, usa: [] },
-          { n: 54, titulo: null, texto: "Orégano", tiempo: null, temperatura: null, usa: ["oregano"] },
-          { n: 55, titulo: null, texto: "Aceite de oliva al salir", tiempo: null, temperatura: null, usa: ["aceite-oliva"] },
-          { n: 56, titulo: null, texto: "Base bien dorada y crujiente", tiempo: null, temperatura: null, usa: ["mozzarella"] },
-          { n: 57, titulo: null, texto: "️ Interior esponjoso y alveolado", tiempo: null, temperatura: null, usa: [] },
-          { n: 58, titulo: null, texto: "Queso fundido pero no aguado", tiempo: null, temperatura: null, usa: ["agua", "queso-rallado"] },
-          { n: 59, titulo: null, texto: "Sabor intenso a masa fermentada y aceite de oliva", tiempo: null, temperatura: null, usa: ["aceite-oliva"] },
-          { n: 60, titulo: null, texto: "Borde gordito, ligero y con mordida profesional", tiempo: null, temperatura: null, usa: [] }
-        ],
-        notas: null,
-        creado:     "2026-06-04T10:00:00Z",
-        modificado: "2026-06-04T10:00:00Z"
-      },
-      {
-        id: "pizza-rectangular-de-bandeja",
-        nombre: "Pizza rectangular de bandeja",
-        tipo: "pizzas",
-        cocina: null,
-        pais: "Italia",
-        etiquetas: [],
-        tags: ["pizza"],
-        dieta: ["vegetariano"],
-        racionesBase: 4,
-        tiempoPrep: 0, tiempoCoccion: 0,
-        dificultad: "media",
-        fuente: null, imagen: null,
-        ingredientes: [
-          { ref: "harina", nombre: "harina Haz de Oros", cantidad: 500, cantidadMax: null, unidad: "g", grupo: "masa (ajustada para fermentacion corta) - 4 horas", opcional: false, nota: null },
-          { ref: "agua", nombre: "agua", cantidad: 340, cantidadMax: null, unidad: "g", grupo: "masa (ajustada para fermentacion corta) - 4 horas", opcional: false, nota: "68% hidratación → más controlable en fermentación corta" },
-          { ref: "sal", nombre: "sal fina", cantidad: 10, cantidadMax: null, unidad: "g", grupo: "masa (ajustada para fermentacion corta) - 4 horas", opcional: false, nota: null },
-          { ref: "azucar", nombre: "azúcar o miel", cantidad: 8, cantidadMax: null, unidad: "g", grupo: "masa (ajustada para fermentacion corta) - 4 horas", opcional: false, nota: "ayuda a fermentación rápida + dorado" },
-          { ref: "levadura-quimica", nombre: "levadura seca", cantidad: 7, cantidadMax: null, unidad: "g", grupo: "masa (ajustada para fermentacion corta) - 4 horas", opcional: false, nota: "o 20 g fresca" },
-          { ref: "aceite-oliva", nombre: "aceite de oliva virgen extra", cantidad: 25, cantidadMax: null, unidad: "g", grupo: "masa (ajustada para fermentacion corta) - 4 horas", opcional: false, nota: null },
-          { ref: "aceite-oliva", nombre: "aceite de oliva", cantidad: 25, cantidadMax: 30, unidad: "g", grupo: "masa (ajustada para fermentacion corta) - 4 horas", opcional: false, nota: "MUY importante aunque uses papel" },
-          { ref: "tomate", nombre: "salsa de tomate espesa", cantidad: 180, cantidadMax: 200, unidad: "g", grupo: "toppings (base)", opcional: false, nota: null },
-          { ref: "mozzarella", nombre: "mozzarella bien escurrida", cantidad: 250, cantidadMax: null, unidad: "g", grupo: "toppings (base)", opcional: false, nota: null },
-          { ref: "queso-rallado", nombre: "queso curado rallado", cantidad: 30, cantidadMax: null, unidad: "g", grupo: "toppings (base)", opcional: true, nota: null },
-          { ref: "oregano", nombre: "Orégano", cantidad: null, cantidadMax: null, unidad: null, grupo: "toppings (base)", opcional: false, nota: null },
-          { ref: "sal", nombre: "Sal fina", cantidad: null, cantidadMax: null, unidad: null, grupo: "toppings (base)", opcional: false, nota: null }
-        ],
-        pasos: [
-          { n: 1, titulo: "1️⃣ Activar y mezclar", texto: "Mezcla 340 g de agua + 8 g azúcar + 7 g levadura seca", tiempo: null, temperatura: null, usa: ["agua", "azucar", "levadura-quimica"] },
-          { n: 2, titulo: null, texto: "Añade 500 g harina y mezcla", tiempo: null, temperatura: null, usa: ["harina"] },
-          { n: 3, titulo: null, texto: "Reposo 5–10 min", tiempo: 420, temperatura: null, usa: [] },
-          { n: 4, titulo: null, texto: "Añade 10 g sal + 25 g aceite", tiempo: null, temperatura: null, usa: ["aceite-oliva"] },
-          { n: 5, titulo: null, texto: "Amasa 6–8 min hasta masa lisa (ligeramente pegajosa pero manejable) ---", tiempo: 420, temperatura: null, usa: [] },
-          { n: 6, titulo: "2️⃣ Desarrollo rápido de gluten (clave sin ferment", texto: "️ Reposa 10 min", tiempo: 600, temperatura: null, usa: [] },
-          { n: 7, titulo: null, texto: "Haz pliegue (4 lados hacia el centro)", tiempo: null, temperatura: null, usa: [] },
-          { n: 8, titulo: null, texto: "Reposa 10 min", tiempo: 600, temperatura: null, usa: [] },
-          { n: 9, titulo: null, texto: "Repite otro pliegue Esto sustituye parte del efecto de la fermentación larga ---", tiempo: null, temperatura: null, usa: [] },
-          { n: 10, titulo: "3️⃣ Fermentación (4 horas total)", texto: "Deja la masa en bol ligeramente aceitado", tiempo: null, temperatura: null, usa: [] },
-          { n: 11, titulo: null, texto: "Fermenta 2,5–3 h a temperatura ambiente (tapado) Debe doblar volumen ---", tiempo: 14400, temperatura: null, usa: ["mozzarella"] },
-          { n: 12, titulo: null, texto: "Coloca papel de horno en la bandeja", tiempo: null, temperatura: null, usa: [] },
-          { n: 13, titulo: null, texto: "Añade 25–30 g de aceite ENCIMA del papel", tiempo: null, temperatura: null, usa: ["aceite-oliva"] },
-          { n: 14, titulo: "Extiéndelo bien Esto es CLAVE", texto: "el aceite encima del papel compensa la pérdida de contacto directo ---", tiempo: null, temperatura: null, usa: ["aceite-oliva"] },
-          { n: 15, titulo: "5️⃣ Formado correcto", texto: "Vuelca la masa sobre el papel aceitado", tiempo: null, temperatura: null, usa: [] },
-          { n: 16, titulo: null, texto: "Aceita tus manos", tiempo: null, temperatura: null, usa: [] },
-          { n: 17, titulo: null, texto: "Presiona suavemente desde el centro hacia fuera", tiempo: null, temperatura: null, usa: [] },
-          { n: 18, titulo: null, texto: "No estires ni desgarras Si se encoge:", tiempo: null, temperatura: null, usa: [] },
-          { n: 19, titulo: null, texto: "Espera 10–15 min", tiempo: 720, temperatura: null, usa: [] },
-          { n: 20, titulo: null, texto: "Continúa ---", tiempo: null, temperatura: null, usa: [] },
-          { n: 21, titulo: "6️⃣ Segunda fermentación (en bandeja)", texto: "️ Deja reposar 45–60 min", tiempo: 3120, temperatura: null, usa: [] },
-          { n: 22, titulo: null, texto: "Debe verse aireada, con burbujas suaves Antes de hornear:", tiempo: null, temperatura: null, usa: [] },
-          { n: 23, titulo: null, texto: "Presiona ligeramente con dedos (crear alveolos) ---", tiempo: null, temperatura: null, usa: [] },
-          { n: 24, titulo: "7️⃣ Precalentado serio", texto: "Horno a 250°C (máximo)", tiempo: null, temperatura: 250, usa: [] },
-          { n: 25, titulo: null, texto: "30–40 min mínimo", tiempo: 2100, temperatura: null, usa: [] },
-          { n: 26, titulo: null, texto: "Rejilla en parte baja ---", tiempo: null, temperatura: null, usa: [] },
-          { n: 27, titulo: "8️⃣ Montaje", texto: "Añade capa fina de 180–200 g de tomate", tiempo: null, temperatura: null, usa: ["sal", "tomate"] },
-          { n: 28, titulo: null, texto: "Sal ligera + orégano", tiempo: null, temperatura: null, usa: ["oregano"] },
-          { n: 29, titulo: null, texto: "Mozzarella bien seca", tiempo: null, temperatura: null, usa: ["levadura-quimica", "mozzarella"] },
-          { n: 30, titulo: null, texto: "Queso curado rallado ---", tiempo: null, temperatura: null, usa: ["queso-rallado"] },
-          { n: 31, titulo: "9️⃣ Horneado optimizado (clave con papel)", texto: "Parte baja → 10–12 min", tiempo: 660, temperatura: null, usa: [] },
-          { n: 32, titulo: null, texto: "Luego parte media-alta → 3–5 min", tiempo: 240, temperatura: null, usa: [] }
-        ],
-        notas: "Truco pro con papel:: En los últimos 2–3 min, levanta la pizza con espátula y quita el papel Déjala directamente sobre la bandeja o rejilla Esto recupera el crujiente perdido por el papel ---",
         creado:     "2026-06-04T10:00:00Z",
         modificado: "2026-06-04T10:00:00Z"
       },
@@ -10046,6 +9862,143 @@
           { n: 10, titulo: null, texto: "Para servir, da la vuelta al molde sobre una bandeja y retira con cuidado.", tiempo: null, temperatura: null, usa: [] }
         ],
         notas: null,
+        creado:     "2026-06-04T10:00:00Z",
+        modificado: "2026-06-04T10:00:00Z"
+      },
+      {
+        id: "sushi",
+        nombre: "Sushi",
+        tipo: "pescados_mariscos",
+        cocina: null,
+        pais: "Japón",
+        etiquetas: ["internacional"],
+        tags: ["arroz", "pescado", "japones", "rollos"],
+        dieta: [],
+        racionesBase: 2,
+        tiempoPrep: 60, tiempoCoccion: 25,
+        dificultad: "media",
+        fuente: null, imagen: null,
+        ingredientes: [
+          { ref: "arroz",         nombre: "Arroz japonés grano corto",     cantidad: 250,  cantidadMax: null, unidad: "g",        grupo: "shari", opcional: false, nota: "Para 4 rollos de 120 g" },
+          { ref: "agua",          nombre: "Agua fría",                     cantidad: 250,  cantidadMax: null, unidad: "ml",       grupo: "shari", opcional: false, nota: "Proporción 1:1 con el arroz" },
+          { ref: "vinagre",       nombre: "Vinagre de arroz",              cantidad: 38,   cantidadMax: null, unidad: "g",        grupo: "su",    opcional: false, nota: null },
+          { ref: "azucar",        nombre: "Azúcar",                        cantidad: 24,   cantidadMax: null, unidad: "g",        grupo: "su",    opcional: false, nota: null },
+          { ref: "sal",           nombre: "Sal fina",                      cantidad: 5,    cantidadMax: null, unidad: "g",        grupo: "su",    opcional: false, nota: null },
+          { ref: "mirin",         nombre: "Mirin o sake",                  cantidad: 0.5,  cantidadMax: null, unidad: "cdta",     grupo: "su",    opcional: true,  nota: "Aporta un toque extra de equilibrio" },
+          { ref: "kombu",         nombre: "Alga kombu",                    cantidad: null, cantidadMax: null, unidad: "pizca",    grupo: "shari", opcional: true,  nota: "Trozo pequeño durante el reposo del arroz" },
+          { ref: "alga-nori",     nombre: "Hojas de alga nori",            cantidad: 4,    cantidadMax: null, unidad: "hoja",     grupo: "montaje", opcional: false, nota: "Una por rollo" },
+          { ref: "salmon",        nombre: "Pescado fresco (salmón, atún…)", cantidad: 160,  cantidadMax: 180,  unidad: "g",        grupo: "montaje", opcional: false, nota: "35–45 g por rollo. Si es marino, congelado a –20 °C 24h" }
+        ],
+        pasos: [
+          { n: 1,  titulo: "Preparar el SU",            texto: "Coloca el vinagre de arroz, el azúcar y la sal en un cazo pequeño. Calienta a fuego muy bajo y remueve hasta disolver completamente. NO hervir. Deja enfriar totalmente a temperatura ambiente antes de usar.",                                                                                tiempo: 300,  temperatura: null, usa: ["vinagre", "azucar", "sal"] },
+          { n: 2,  titulo: "Primer lavado del arroz",   texto: "Coloca el arroz en un bol amplio. Cubre con abundante agua fría, remueve 10 segundos y desecha inmediatamente el agua (el arroz absorbe esa agua blanca, hay que ir rápido).",                                                                                                            tiempo: 30,   temperatura: null, usa: ["arroz"] },
+          { n: 3,  titulo: "Lavados sucesivos",         texto: "Repite el lavado 5–6 veces más: cubre con agua, movimientos circulares suaves, presiona ligeramente con la palma 15–20 segundos y cambia el agua. Los últimos lavados deben ser muy suaves. El agua final debe quedar casi transparente (ligeramente turbia, no cristalina).",          tiempo: 180,  temperatura: null, usa: ["arroz"] },
+          { n: 4,  titulo: "Escurrir y reposar",        texto: "Escurre completamente el arroz, pásalo a la olla donde se va a cocinar y añade los 250 ml de agua fría de cocción. Reposar 30 minutos sin tocar. Opcional: añade un trozo pequeño de kombu (retirar antes de hervir).",                                                                  tiempo: 1800, temperatura: null, usa: ["arroz", "agua", "kombu"] },
+          { n: 5,  titulo: "Cocción controlada",        texto: "Lleva a fuego medio hasta que empiece a hervir. En cuanto hierva, baja inmediatamente a mínimo. Cocina 9–11 minutos sin destapar. Apaga el fuego.",                                                                                                                                       tiempo: 600,  temperatura: null, usa: ["arroz"] },
+          { n: 6,  titulo: "Reposo del arroz",          texto: "Reposa 10 minutos sin abrir. Destapa, afloja ligeramente el arroz levantando desde el fondo con una pala de madera (sin mezclar fuerte). Coloca un paño limpio encima y vuelve a tapar 5 minutos más.",                                                                                  tiempo: 900,  temperatura: null, usa: [] },
+          { n: 7,  titulo: "Transferir al hangiri",     texto: "Humedece ligeramente el hangiri (o bandeja amplia de madera) con agua fría, espera 1 minuto y seca con paño hasta que quede apenas húmedo. Transfiere el arroz inmediatamente y extiende en capa uniforme de 3–4 cm. Nunca dejarlo en montaña.",                                          tiempo: 60,   temperatura: null, usa: [] },
+          { n: 8,  titulo: "Primera tanda de SU",       texto: "Vierte la mitad del SU (frío) en forma de lluvia fina haciendo líneas horizontales. Corta el arroz con la pala 15–20 segundos, gira ligeramente el hangiri mientras cortas, abanica constantemente. No buscas mezclar perfecto: solo empezar a distribuir.",                            tiempo: 30,   temperatura: null, usa: ["vinagre"] },
+          { n: 9,  titulo: "Segunda y tercera tanda",   texto: "Añade el 30% del SU haciendo líneas verticales: corta 15–20 segundos, gira y abanica. Aquí empieza a verse brillo. Añade el 20% restante en zigzag diagonal suave, corta otros 15–20 segundos y abanica 20–30 segundos más sin mezclar en exceso. Total: máximo 2–3 minutos.",         tiempo: 90,   temperatura: null, usa: [] },
+          { n: 10, titulo: "Cortar el pescado",         texto: "Sobre tabla limpia, seca la superficie del pescado. Con cuchillo muy afilado y un solo movimiento largo (nunca serruchar), corta tiras de 0,5–1 cm para maki.",                                                                                                                            tiempo: 300,  temperatura: null, usa: ["salmon"] },
+          { n: 11, titulo: "Extender el arroz en nori", texto: "Coloca la hoja de nori lado rugoso arriba sobre la makisu. Humedécete las manos con agua + vinagre. Extiende 120 g de arroz por rollo en capa uniforme de máximo 5 mm. Deja 1–2 cm libres en el borde superior y 1–2 mm sin arroz en los laterales.",                                       tiempo: 180,  temperatura: null, usa: ["alga-nori", "arroz"] },
+          { n: 12, titulo: "Montar y enrollar",         texto: "Coloca el pescado en línea central (35–45 g por rollo). Enrolla firme con la makisu sin aplastar. Deja reposar el rollo 30–45 segundos antes de cortar.",                                                                                                                                   tiempo: 60,   temperatura: null, usa: ["salmon"] },
+          { n: 13, titulo: "Cortar y servir",           texto: "Corta primero en mitades, luego cada mitad en 4 piezas. Limpia el cuchillo (paño húmedo) entre cortes. Sirve inmediatamente: el nori pierde textura con humedad. El contraste ideal es arroz tibio + pescado fresco.",                                                                      tiempo: 120,  temperatura: null, usa: [] }
+        ],
+        notas: "El shari (arroz avinagrado) es el 70% del resultado. Trabaja con precisión: no mezcles cuando ya esté brillante, no aplastes con la pala, no trabajes más de 3 minutos. Si el arroz parece húmedo, abanica 20 segundos más. Si el ambiente es húmedo, tuesta el nori 2 segundos antes de montar. Mejor 4 rollos equilibrados que 5 pesados. El sushi perfecto no impresiona por tamaño, impresiona por precisión.",
+        creado:     "2026-06-04T10:00:00Z",
+        modificado: "2026-06-04T10:00:00Z"
+      },
+      {
+        id: "paella-mixta-bogota",
+        nombre: "Paella mixta",
+        tipo: "arroces",
+        cocina: null,
+        pais: "España",
+        etiquetas: ["familiar"],
+        tags: ["paella", "arroz", "pollo", "marisco", "domingo"],
+        dieta: [],
+        racionesBase: 4,
+        tiempoPrep: 30, tiempoCoccion: 60,
+        dificultad: "media",
+        fuente: null, imagen: null,
+        ingredientes: [
+          { ref: "arroz",                  nombre: "Arroz redondo (bomba si encuentras)", cantidad: 400,  cantidadMax: null, unidad: "g",     grupo: "arroz",   opcional: false, nota: "Grano corto/medio, no vaporizado ni aromático" },
+          { ref: "pollo",                  nombre: "Contramuslos de pollo",               cantidad: 600,  cantidadMax: null, unidad: "g",     grupo: "proteina", opcional: false, nota: "Deshuesados, sin piel, en trozos medianos" },
+          { ref: "sepia",                  nombre: "Sepia o calamar limpio",              cantidad: 300,  cantidadMax: null, unidad: "g",     grupo: "proteina", opcional: false, nota: "En trozos medianos. Secar si viene muy húmeda" },
+          { ref: "camarones",              nombre: "Gambas o gambones",                   cantidad: 18,   cantidadMax: null, unidad: "ud",    grupo: "proteina", opcional: false, nota: "10 peladas para integrar + 8 enteras para el acabado. Quitar la tripa" },
+          { ref: "espinas-cabeza-pescado", nombre: "Espinas y cabeza de pescado",         cantidad: 1000, cantidadMax: 1200, unidad: "g",     grupo: "caldo",   opcional: false, nota: null },
+          { ref: "ajo",                    nombre: "Ajos para el caldo",                  cantidad: 2,    cantidadMax: null, unidad: "diente", grupo: "caldo",   opcional: false, nota: "Chafados" },
+          { ref: "tomate",                 nombre: "Tomate maduro para el caldo",         cantidad: 1,    cantidadMax: null, unidad: "ud",    grupo: "caldo",   opcional: false, nota: "Pequeño, o 3 cdas de tomate rallado" },
+          { ref: "aceite-oliva",           nombre: "Aceite de oliva para el caldo",       cantidad: 3,    cantidadMax: null, unidad: "cda",   grupo: "caldo",   opcional: false, nota: null },
+          { ref: "agua",                   nombre: "Agua para el caldo",                  cantidad: 2200, cantidadMax: 2300, unidad: "ml",    grupo: "caldo",   opcional: false, nota: "Reducirá a ~2 L; usaremos solo 1,4 L en la paella" },
+          { ref: "sal",                    nombre: "Sal para el caldo",                   cantidad: 1,    cantidadMax: null, unidad: "cdta",  grupo: "caldo",   opcional: false, nota: "Rasa" },
+          { ref: "ajo",                    nombre: "Ajos para el sofrito",                cantidad: 4,    cantidadMax: null, unidad: "diente", grupo: "sofrito", opcional: false, nota: "Laminados o picados" },
+          { ref: "tomate",                 nombre: "Tomate rallado",                      cantidad: 250,  cantidadMax: null, unidad: "g",     grupo: "sofrito", opcional: false, nota: "2 tomates grandes aprox." },
+          { ref: "pimiento-verde",         nombre: "Pimiento verde italiano",             cantidad: 1,    cantidadMax: null, unidad: "ud",    grupo: "sofrito", opcional: false, nota: "Picado fino" },
+          { ref: "pimiento-rojo",          nombre: "Pimiento rojo",                       cantidad: 1,    cantidadMax: null, unidad: "ud",    grupo: "sofrito", opcional: false, nota: "En tiras de 1,5–2 cm" },
+          { ref: "aceite-oliva",           nombre: "Aceite de oliva para la paella",      cantidad: 4,    cantidadMax: null, unidad: "cda",   grupo: "sofrito", opcional: false, nota: null },
+          { ref: "sal",                    nombre: "Sal para la paella",                  cantidad: 1,    cantidadMax: null, unidad: "cdta",  grupo: "sofrito", opcional: false, nota: "Rasa, luego ajustar" },
+          { ref: "azafran",                nombre: "Azafrán en hebras",                   cantidad: 12,   cantidadMax: 16,   unidad: "hoja",  grupo: "sofrito", opcional: false, nota: "Infusionar en un poco de caldo caliente" },
+          { ref: "almejas",                nombre: "Almejas o mejillones",                cantidad: null, cantidadMax: null, unidad: "al_gusto", grupo: "sofrito", opcional: true,  nota: "Abiertos aparte" }
+        ],
+        pasos: [
+          { n: 1,  titulo: "Preparar el caldo",         texto: "Pon una olla con 3 cucharadas de aceite de oliva al fuego. Añade las cabezas y pieles de gambas (apriétalas con espátula para que suelten su jugo), la carcasa de pollo y las espinas. Dora todo bien 6–7 minutos a fuego medio-alto, removiendo, hasta que huela intenso.",          tiempo: 420,  temperatura: null, usa: ["aceite-oliva", "camarones", "pollo", "espinas-cabeza-pescado"] },
+          { n: 2,  titulo: "Completar y cocer el caldo", texto: "Añade los 2 ajos chafados y el tomate (o 3 cdas de tomate rallado). Rehoga 2 minutos. Añade 2,2 L de agua y 1 cucharadita rasa de sal. Cuando hierva, baja a fuego suave, retira la espuma si aparece y cuece 25 minutos. Cuela y mantén caliente. Resultado: ~1,4 L de caldo útil.", tiempo: 1500, temperatura: null, usa: ["ajo", "tomate", "agua", "sal"] },
+          { n: 3,  titulo: "Mise en place",             texto: "Mientras se reduce el caldo: corta el pollo en trozos medianos y sazona con sal. Corta la sepia en trozos medianos (secar si viene húmeda). Pela 10 gambas y reserva 8 enteras; quita la tripa a todas. Corta el pimiento rojo en tiras de 1,5–2 cm, pica fino el verde, lamina los 4 ajos y ralla los tomates. Pon el azafrán a infusionar en un poco de caldo caliente.", tiempo: 1200, temperatura: null, usa: ["pollo", "sepia", "camarones", "pimiento-rojo", "pimiento-verde", "ajo", "tomate", "azafran"] },
+          { n: 4,  titulo: "Freír y reservar pimiento", texto: "Pon la paellera bien nivelada. Añade 1 cucharada de aceite y fríe las tiras de pimiento rojo a fuego medio hasta que estén tiernas y ligeramente doradas. Sácalas y resérvalas para decorar al final.",                                                                                tiempo: 300,  temperatura: null, usa: ["aceite-oliva", "pimiento-rojo"] },
+          { n: 5,  titulo: "Dorar el pollo",            texto: "Añade 3 cucharadas más de aceite y los ajos laminados (solo unos segundos para que perfumen). Añade el pollo extendido. Cocina 8–10 minutos a fuego medio-alto, moviendo para dorar por varias caras. El pollo NO se saca: el fondo dorado que va dejando es sabor para la paella.",   tiempo: 540,  temperatura: null, usa: ["aceite-oliva", "ajo", "pollo"] },
+          { n: 6,  titulo: "Añadir la sepia",           texto: "Cuando el pollo esté dorado, añade la sepia directamente. Mantén fuego medio-alto. La sepia soltará líquido: cocínala hasta que ese líquido se evapore casi por completo. Cuando deje de hervir y empiece a rehacerse en el aceite, ya está. La sepia tampoco se saca.",              tiempo: 480,  temperatura: null, usa: ["sepia"] },
+          { n: 7,  titulo: "Hacer el sofrito",          texto: "Añade el pimiento verde picado junto al pollo y la sepia. Sofríe 4–5 minutos a fuego medio. Incorpora el tomate rallado y cocina todo junto 8–10 minutos a fuego medio, removiendo de vez en cuando. Rasca bien el fondo. El sofrito NO se tritura: debe quedar oscuro, espeso, concentrado y con el aceite reapareciendo.", tiempo: 780,  temperatura: null, usa: ["pimiento-verde", "tomate"] },
+          { n: 8,  titulo: "Añadir el arroz y nacarar", texto: "Añade los 400 g de arroz directamente en la paellera. Remueve 1–2 minutos para que se impregne bien del aceite y del sofrito. Este es el último momento en el que puedes remover con libertad.",                                                                                       tiempo: 90,   temperatura: null, usa: ["arroz"] },
+          { n: 9,  titulo: "Añadir el caldo de golpe",  texto: "Comprueba que el caldo está muy caliente. Añade de golpe 1,30 L de caldo caliente y el azafrán infusionado. Prueba de sal el líquido y ajusta si falta. Reparte suavemente el contenido. Desde aquí no se vuelve a remover el arroz.",                                                  tiempo: 60,   temperatura: null, usa: ["agua", "azafran", "sal"] },
+          { n: 10, titulo: "Cocción del arroz",         texto: "Fase 1 (6 min): fuego medio-alto, ebullición viva pero no salvaje. Fase 2 (8–10 min): baja un poco, el líquido va bajando uniformemente. Fase 3 (3–4 min): fuego algo más suave para rematar. Si al minuto 12–13 el arroz va serio, el caldo ha bajado y el grano empieza a asomar, vas bien.", tiempo: 1080, temperatura: null, usa: ["arroz"] },
+          { n: 11, titulo: "Añadir las gambas",         texto: "Cuando falten 5 minutos para terminar, coloca las 8 gambas enteras por encima. Si las 10 peladas no se han integrado antes, repártelas también ahora entre los huecos. Coloca las tiras de pimiento rojo reservadas. Si usas almejas o mejillones ya abiertos, añádelos en este punto.", tiempo: 60,   temperatura: null, usa: ["camarones", "pimiento-rojo", "almejas"] },
+          { n: 12, titulo: "Socarrat controlado",       texto: "Cuando casi no quede líquido visible, escucha el fondo. Si quieres socarrat, sube un poco el fuego 30–60 segundos al final. Debe sonar un crepitar fino y oler a tostado rico. No lo alargues más de 1 minuto: si huele a chamuscado agresivo, ya te has pasado.",                          tiempo: 60,   temperatura: null, usa: [] },
+          { n: 13, titulo: "Reposo final",              texto: "Apaga el fuego. Deja reposar la paella 5 minutos. Puedes taparla muy suavemente con un paño limpio (no herméticamente). Este reposo termina de asentar el grano y redondea la textura. Sirve con limón aparte si te gusta.",                                                                tiempo: 300,  temperatura: null, usa: [] }
+        ],
+        notas: "Receta adaptada para paellero de gas con aro interior y exterior, y para altitudes como Bogotá (evaporación y cocción algo distintas). Señales de que va bien: el caldo huele intenso, el pollo está dorado (no hervido), la sepia integrada (sin flotar en líquido), el sofrito oscuro y concentrado, el grano final suelto y sabroso. Fallos típicos a evitar: usar pechuga en vez de contramuslo, caldo flojo, sofrito mal trabajado, ambos aros demasiado fuertes toda la cocción, añadir las gambas demasiado pronto, remover después del caldo, meter más mariscos «porque sí» y pasarse con el socarrat final.",
+        creado:     "2026-06-04T10:00:00Z",
+        modificado: "2026-06-04T10:00:00Z"
+      },
+      {
+        id: "pizza-rectangular-crujiente",
+        nombre: "Pizza rectangular crujiente (mismo día)",
+        tipo: "pizzas",
+        cocina: "Italia",
+        pais: null,
+        etiquetas: [],
+        tags: ["pizza", "horno", "bandeja", "crujiente", "casero"],
+        dieta: ["vegetariano"],
+        racionesBase: 5,
+        tiempoPrep: 30, tiempoCoccion: 15,
+        dificultad: "media",
+        fuente: null, imagen: null,
+        ingredientes: [
+          { ref: "harina-fuerza",    nombre: "Harina de fuerza (W≥300) o tipo «00»", cantidad: 500,  cantidadMax: null, unidad: "g",   grupo: "masa",      opcional: false, nota: null },
+          { ref: "agua",             nombre: "Agua fría",                             cantidad: 300,  cantidadMax: null, unidad: "ml",  grupo: "masa",      opcional: false, nota: "50 ml separados, templados, para activar la levadura" },
+          { ref: "sal",              nombre: "Sal fina",                              cantidad: 10,   cantidadMax: null, unidad: "g",   grupo: "masa",      opcional: false, nota: null },
+          { ref: "levadura-fresca",  nombre: "Levadura seca de panadería",            cantidad: 3,    cantidadMax: null, unidad: "g",   grupo: "masa",      opcional: false, nota: "O 9 g de levadura fresca" },
+          { ref: "aceite-oliva",     nombre: "Aceite de oliva virgen extra",          cantidad: 15,   cantidadMax: null, unidad: "ml",  grupo: "masa",      opcional: false, nota: "Para la masa" },
+          { ref: "azucar",           nombre: "Azúcar",                                cantidad: 5,    cantidadMax: null, unidad: "g",   grupo: "masa",      opcional: false, nota: "1 cdta, para activar la levadura" },
+          { ref: "semola",           nombre: "Sémola fina de trigo duro",             cantidad: null, cantidadMax: null, unidad: "al_gusto", grupo: "estirado", opcional: false, nota: "Para estirar y para el papel de horno" },
+          { ref: "aceite-oliva",     nombre: "Aceite de oliva",                       cantidad: null, cantidadMax: null, unidad: "al_gusto", grupo: "extras",   opcional: false, nota: "Para engrasar el bol y rematar la pizza" }
+        ],
+        pasos: [
+          { n: 1,  titulo: "Activar la levadura",          texto: "Mezcla 50 ml de agua templada + 5 g de azúcar + 3 g de levadura seca en un vaso. Deja reposar hasta que aparezca espuma en superficie (5–10 min). Esto confirma que la levadura está viva.",                                                                                                                          tiempo: 600,  temperatura: null, usa: ["agua", "azucar", "levadura-fresca"] },
+          { n: 2,  titulo: "Mezclar la masa",              texto: "Pon 500 g de harina en un bol grande, haz un hueco en el centro y vierte la mezcla de levadura + 250 ml de agua fría restantes + 15 ml de aceite de oliva. Mezcla hasta que no quede harina seca.",                                                                                                                  tiempo: 120,  temperatura: null, usa: ["harina-fuerza", "agua", "aceite-oliva"] },
+          { n: 3,  titulo: "Añadir la sal",                texto: "Añade los 10 g de sal cuando ya no haya harina seca — nunca antes ni en contacto directo con la levadura. Integra removiendo.",                                                                                                                                                                                       tiempo: 120,  temperatura: null, usa: ["sal"] },
+          { n: 4,  titulo: "Amasar",                       texto: "Vuelca sobre la encimera sin enharinar y amasa con técnica de plegado y empuje hasta obtener masa lisa, elástica y ligeramente pegajosa. Si se pega, deja reposar 5 min tapada y vuelve a amasar — no añadas harina. Test de la membrana: estira un trozo entre los dedos; si forma película fina translúcida sin romperse, está lista.", tiempo: 660,  temperatura: null, usa: [] },
+          { n: 5,  titulo: "Primera fermentación",         texto: "Forma una bola, colócala en un bol engrasado con aceite de oliva, tapa con film o paño húmedo y deja fermentar a temperatura ambiente (20–24 °C) hasta que doble el volumen.",                                                                                                                                       tiempo: 12600, temperatura: null, usa: ["aceite-oliva"] },
+          { n: 6,  titulo: "Boleado",                      texto: "Vuelca la masa sobre la encimera enharinada y forma una sola bola tensa, plegando hacia adentro y sellando por abajo. Para una sola pizza de bandeja grande.",                                                                                                                                                        tiempo: 120,  temperatura: null, usa: [] },
+          { n: 7,  titulo: "Segundo reposo",               texto: "Coloca la bola en bandeja enharinada, tapa y deja reposar a temperatura ambiente.",                                                                                                                                                                                                                                 tiempo: 2700, temperatura: null, usa: [] },
+          { n: 8,  titulo: "Precalentar el horno",         texto: "En paralelo con el segundo reposo, precalienta el horno al máximo (250–275 °C), calor arriba y abajo sin ventilador, con la bandeja de hornear dentro desde el principio para que se caliente bien. Mínimo 30 minutos de precalentado.",                                                                              tiempo: 1800, temperatura: 275,  usa: [] },
+          { n: 9,  titulo: "Estirado sobre papel",         texto: "Coloca el papel de horno sobre la encimera y espolvorea con sémola fina. Aplasta la bola desde el centro hacia las esquinas con las yemas de los dedos. Cuando la masa resista y se encoja, tápala 5 min con un paño y vuelve a estirar — el gluten se relaja solo. Para bandeja rectangular puedes usar rodillo sobre el papel. Objetivo: 2–3 mm en el centro.", tiempo: 420,  temperatura: null, usa: ["semola"] },
+          { n: 10, titulo: "Primera cocción (solo la masa)", texto: "Saca la bandeja caliente del horno con guantes y desliza el papel con la masa encima de la bandeja caliente en menos de 30 segundos. Introdúcela inmediatamente en el horno en la posición más baja o segunda ranura desde abajo. Hornea solo la masa, sin nada encima, a 250–275 °C hasta que empiece a tomar color pero sin dorarse del todo.", tiempo: 270,  temperatura: 275,  usa: [] },
+          { n: 11, titulo: "Montaje",                      texto: "Saca la masa, añade una capa fina de salsa de tomate, el queso y los toppings en menos de 2 min. La capa de salsa debe ser fina para no humedecer la base sellada. Termina con un hilo fino de aceite de oliva virgen extra por encima.",                                                                            tiempo: 120,  temperatura: null, usa: ["aceite-oliva"] },
+          { n: 12, titulo: "Segunda cocción (con toppings)", texto: "Introduce la bandeja en posición centro o centro-alto del horno a 250–275 °C durante 5–7 min. Los últimos 1–2 min activa el grill superior para tostar los bordes y el queso. Si la base aún no está todo lo crujiente que quieres, retira el papel los últimos 2 min y deja la masa directamente sobre la bandeja caliente.", tiempo: 360,  temperatura: 275,  usa: [] },
+          { n: 13, titulo: "Reposo y servicio",            texto: "Saca la pizza y deja reposar 1 min sobre una rejilla (nunca sobre plato cerrado — el vapor reblandece la base). Corta y sirve inmediatamente.",                                                                                                                                                                       tiempo: 60,   temperatura: null, usa: [] }
+        ],
+        notas: "La sémola sobre el papel es mejor que la harina: da más crujiente, no se quema y evita que la masa se pegue. Cuando la masa resista al estirar, no fuerces — 5 minutos de reposo tapada y cede sola; forzarla la rompe o la encoge. El choque térmico entre la masa y la bandeja muy caliente es el factor más determinante para una base crujiente en horno doméstico — no te saltes el precalentado de la bandeja. El doble horneado compensa las limitaciones de cualquier horno doméstico: la primera cocción sella la base antes de que los toppings aporten humedad. Si el fondo se oscurece demasiado rápido en la primera cocción, sube una ranura — cada horno calienta distinto por abajo.",
         creado:     "2026-06-04T10:00:00Z",
         modificado: "2026-06-04T10:00:00Z"
       }
@@ -12849,7 +12802,7 @@
     function sugerenciasIngrediente(texto, yaSeleccionados, grupo, max) {
       max = max || 20;
       const q = normaliza(texto || "");
-      const ings = estado.ingredientes
+      const ings = ingredientesResueltos()
         .filter(i => !yaSeleccionados.has(i.clave))
         .filter(i => {
           if (!q) return true;
@@ -13121,9 +13074,9 @@
       const modo = sesion.inversaModo;
       const lista = listadoInversa();
 
-      // Agrupar catalogo por categoria de compra.
+      // Agrupar catalogo por categoria de compra. Incluir ING_FIJOS también.
       const grupos = {};
-      estado.ingredientes.forEach(i => {
+      ingredientesResueltos().forEach(i => {
         const c = i.categoriaCompra || "otros";
         if (!grupos[c]) grupos[c] = [];
         grupos[c].push(i);
@@ -13599,7 +13552,7 @@
       const cfg = _selectorCfg || {};
       const q = normaliza(filtro || "");
       const excluir = cfg.excluir || new Set();
-      const recetas = estado.recetas
+      const recetas = recetasResueltas()
         .filter(r => !excluir.has(r.id))
         .filter(r => {
           if (!q) return true;
@@ -13993,7 +13946,7 @@
 
       // ---- 1) Masa <-> volumen por densidad ----------------------------
       const refOpts = ['<option value="">Selecciona ingrediente…</option>']
-        .concat(estado.ingredientes
+        .concat(ingredientesResueltos()
           .slice()
           .sort((a,b) => normaliza(a.nombre).localeCompare(normaliza(b.nombre)))
           .map(i => `<option value="${esc(i.clave)}" ${c.masa.ref === i.clave ? "selected" : ""}>${esc(i.nombre)}${i.densidad ? "" : " (sin densidad)"}</option>`))
@@ -14385,7 +14338,7 @@
     }
     function opcionesRefIngrediente(actual) {
       return ['<option value="">(ad-hoc)</option>'].concat(
-        estado.ingredientes
+        ingredientesResueltos()
           .slice()
           .sort((a,b) => normaliza(a.nombre).localeCompare(normaliza(b.nombre)))
           .map(i => `<option value="${esc(i.clave)}" ${i.clave === actual ? "selected" : ""}>${esc(i.nombre)}</option>`)
@@ -14540,9 +14493,13 @@
 
           <div class="editor-acciones">
             <button type="button" class="iox-boton secundario" data-accion="cancelar-editor">Cancelar</button>
-            ${esRecetaFija(r.id) && tieneOverride(r.id)
-              ? `<button type="button" class="iox-boton secundario" data-accion="restaurar-fija">↺ Restaurar versión original</button>`
-              : ""}
+            ${(r.id && recetaPorId(r.id)) ? `
+              <button type="button" class="iox-boton peligro" data-accion="borrar-receta-editor"
+                      data-id="${esc(r.id)}">
+                ${esRecetaFija(r.id)
+                  ? (tieneOverride(r.id) ? "↺ Restaurar versión original" : "✕ Eliminar (fija — no permitido)")
+                  : "✕ Eliminar receta"}
+              </button>` : ""}
             ${esRecetaFija(r.id)
               ? `<span class="editor-pista-fija">Receta fija · al guardar se creará un <b>override</b> local sincronizado.</span>`
               : ""}
@@ -14602,7 +14559,7 @@
     }
 
     function htmlListaRecetas() {
-      const recetas = estado.recetas
+      const recetas = recetasResueltas()
         .slice()
         .sort((a,b) => normaliza(a.nombre).localeCompare(normaliza(b.nombre)));
       if (!recetas.length) return `<div class="vacio">No hay recetas. Crea una nueva.</div>`;
@@ -14617,7 +14574,7 @@
     }
 
     function htmlListaIngredientes() {
-      const ings = estado.ingredientes
+      const ings = ingredientesResueltos()
         .slice()
         .sort((a,b) => normaliza(a.nombre).localeCompare(normaliza(b.nombre)));
       if (!ings.length) return `<div class="vacio">Catálogo vacío.</div>`;
@@ -15755,11 +15712,28 @@
         const borI = ev.target.closest("[data-accion='borrar-ing-cat']");
         if (borI) { borrarIngrediente(borI.dataset.clave); return; }
 
-        // -- Editor: cancelar/guardar/restaurar fija
+        // -- Editor: cancelar/guardar/restaurar fija/borrar
         if (ev.target.closest("[data-accion='cancelar-editor']")) { cerrarEditor(); return; }
         if (ev.target.closest("[data-accion='guardar-receta']")) { guardarRecetaDesdeEditor(); return; }
         if (ev.target.closest("[data-accion='guardar-ingrediente']")) { guardarIngredienteDesdeEditor(); return; }
         if (ev.target.closest("[data-accion='restaurar-fija']")) { restaurarRecetaFijaDesdeEditor(); return; }
+        const borEd = ev.target.closest("[data-accion='borrar-receta-editor']");
+        if (borEd) {
+          const id = borEd.dataset.id;
+          if (esRecetaFija(id) && !tieneOverride(id)) {
+            toast("Receta fija: no se puede borrar (viene del HTML)");
+            return;
+          }
+          // Si es fija con override: usa la lógica de "restaurar".
+          // Si es propia del usuario: usa borrar normal.
+          if (esRecetaFija(id) && tieneOverride(id)) {
+            restaurarRecetaFijaDesdeEditor();
+          } else {
+            borrarReceta(id);
+            cerrarEditor();
+          }
+          return;
+        }
 
         // -- Editor receta: ingredientes/pasos
         const r = sesion.editor.receta;
