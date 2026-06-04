@@ -4153,6 +4153,36 @@
     }
     html:not([data-perfil="invitado"]) .badge-solo-lectura { display: none; }
 
+    /* Botón ✕ para limpiar barra de búsqueda — overlay sobre el input */
+    .busc-wrap { position: relative; }
+    .busc-wrap input[type="search"] {
+      padding-right: 40px !important;
+    }
+    .busc-wrap input[type="search"]::-webkit-search-cancel-button {
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .busc-clear {
+      position: absolute;
+      right: 10px; top: 50%;
+      transform: translateY(-50%);
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      background: var(--bg-soft);
+      color: var(--text-muted);
+      font-size: 11px; font-weight: 600;
+      display: inline-flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: background .15s, color .15s, transform .15s;
+      z-index: 1;
+    }
+    .busc-clear:hover {
+      background: var(--text);
+      color: var(--bg);
+      transform: translateY(-50%) scale(1.08);
+    }
+    .busc-clear[hidden] { display: none !important; }
+
     /* Botón "Eliminar receta" — outline rojo, hover rellena */
     .iox-boton.peligro {
       background: transparent !important;
@@ -5259,7 +5289,7 @@
         tags: ["canelones", "champiñones", "espinacas", "verduras"],
         dieta: ["vegetariano"],
         racionesBase: 4,
-        tiempoPrep: 0, tiempoCoccion: 0,
+        tiempoPrep: 30, tiempoCoccion: 45,
         dificultad: "media",
         fuente: null, imagen: null,
         ingredientes: [
@@ -5287,99 +5317,29 @@
           { ref: "aceite-oliva", nombre: "Aceite de oliva con trufa blanca", cantidad: 2, cantidadMax: 3, unidad: "cdta", grupo: "bechamel", opcional: false, nota: null }
         ],
         pasos: [
-          { n: 1, titulo: null, texto: "Picar la cebolla y el ajo muy finos.", tiempo: null, temperatura: null, usa: ["cebolla"] },
-          { n: 2, titulo: null, texto: "Sofreír con mantequilla y un chorrito de aceite hasta dorar.", tiempo: null, temperatura: null, usa: ["mantequilla", "aceite-oliva"] },
-          { n: 3, titulo: null, texto: "Añadir los champiñones picados y cocinar a fuego alto hasta que pierdan el agua.", tiempo: null, temperatura: null, usa: ["champinones"] },
-          { n: 4, titulo: null, texto: "Agregar las espinacas troceadas y saltear hasta que reduzcan completamente.", tiempo: null, temperatura: null, usa: ["espinacas"] },
-          { n: 5, titulo: null, texto: "Escurrir bien si queda líquido y dejar templar unos minutos.", tiempo: null, temperatura: null, usa: [] },
-          { n: 6, titulo: "En un bol grande mezclar", texto: "verduras salteadas + nueces + ricotta + parmesano + mozzarella + 3-4 cucharadas de bechamel.", tiempo: null, temperatura: null, usa: ["nueces", "ricotta", "parmesano", "mozzarella", "bechamel"] },
-          { n: 7, titulo: null, texto: "Cuando la mezcla esté templada, añadir la yema de huevo y mezclar rápidamente para integrarla (aportará cremosidad).", tiempo: null, temperatura: null, usa: ["huevo"] },
-          { n: 8, titulo: null, texto: "Condimentar con sal, pimienta, nuez moscada y un poco de ralladura de limón. Bechamel", tiempo: null, temperatura: null, usa: ["bechamel", "pimienta-negra", "limon"] },
-          { n: 9, titulo: null, texto: "Derretir la mantequilla en una cazuela.", tiempo: null, temperatura: null, usa: ["mantequilla"] },
-          { n: 10, titulo: null, texto: "Añadir la harina y remover 2-3 min (roux).", tiempo: 120, temperatura: null, usa: ["harina"] },
-          { n: 11, titulo: null, texto: "Verter la leche caliente poco a poco, batiendo con varillas.", tiempo: null, temperatura: null, usa: ["leche"] },
-          { n: 12, titulo: null, texto: "Cocinar a fuego medio hasta que espese y quede sedosa.", tiempo: null, temperatura: null, usa: [] },
-          { n: 13, titulo: null, texto: "Añadir sal, pimienta y nuez moscada.", tiempo: null, temperatura: null, usa: ["pimienta-negra"] },
-          { n: 14, titulo: null, texto: "Para un sabor más intenso, integrar 30 g de queso azul suave (opcional). Montaje", tiempo: null, temperatura: null, usa: ["queso-rallado"] },
-          { n: 15, titulo: null, texto: "Cocer las láminas de canelón, enfriar en agua con hielo y secar en paños de algodón.", tiempo: null, temperatura: null, usa: ["laminas-canelones"] },
-          { n: 16, titulo: null, texto: "Rellenar cada lámina con la mezcla cremosa de verduras y yema.", tiempo: null, temperatura: null, usa: ["huevo"] },
-          { n: 17, titulo: null, texto: "Colocar en bandeja de horno ligeramente engrasada.", tiempo: null, temperatura: null, usa: [] },
-          { n: 18, titulo: null, texto: "Cubrir con la bechamel caliente.", tiempo: null, temperatura: null, usa: ["bechamel"] },
-          { n: 19, titulo: null, texto: "Espolvorear con abundante queso rallado (emmental + parmesano).", tiempo: null, temperatura: null, usa: ["parmesano", "queso-rallado"] },
-          { n: 20, titulo: null, texto: "Gratinar en horno a 200 °C hasta dorar bien la superficie.", tiempo: null, temperatura: 200, usa: [] },
-          { n: 21, titulo: null, texto: "Al sacar del horno, dejar reposar 5 min y regar con 2–3 cucharaditas de aceite de trufa blanca en crudo justo antes de servir.", tiempo: 300, temperatura: null, usa: ["aceite-oliva"] }
+          { n: 1,  titulo: "Relleno",    texto: "Picar la cebolla y el ajo muy finos.",                                                                                                                                          tiempo: null, temperatura: null, usa: ["cebolla", "ajo"] },
+          { n: 2,  titulo: null,         texto: "Sofreír con mantequilla y un chorrito de aceite hasta dorar.",                                                                                                                   tiempo: null, temperatura: null, usa: ["mantequilla", "aceite-oliva"] },
+          { n: 3,  titulo: null,         texto: "Añadir los champiñones picados y cocinar a fuego alto hasta que pierdan el agua.",                                                                                              tiempo: null, temperatura: null, usa: ["champinones"] },
+          { n: 4,  titulo: null,         texto: "Agregar las espinacas troceadas y saltear hasta que reduzcan completamente.",                                                                                                    tiempo: null, temperatura: null, usa: ["espinacas"] },
+          { n: 5,  titulo: null,         texto: "Escurrir bien si queda líquido y dejar templar unos minutos.",                                                                                                                   tiempo: null, temperatura: null, usa: [] },
+          { n: 6,  titulo: "Mezcla del relleno", texto: "En un bol grande, mezclar las verduras salteadas + nueces + ricotta + parmesano + mozzarella + 3–4 cucharadas de bechamel.",                                            tiempo: null, temperatura: null, usa: ["nueces", "ricotta", "parmesano", "mozzarella", "bechamel"] },
+          { n: 7,  titulo: null,         texto: "Cuando la mezcla esté templada, añadir la yema de huevo y mezclar rápidamente para integrarla (aportará cremosidad).",                                                          tiempo: null, temperatura: null, usa: ["huevo"] },
+          { n: 8,  titulo: null,         texto: "Condimentar con sal, pimienta, nuez moscada y un poco de ralladura de limón.",                                                                                                  tiempo: null, temperatura: null, usa: ["pimienta-negra", "limon"] },
+          { n: 9,  titulo: "Bechamel",   texto: "Derretir la mantequilla en una cazuela.",                                                                                                                                        tiempo: null, temperatura: null, usa: ["mantequilla"] },
+          { n: 10, titulo: null,         texto: "Añadir la harina y remover 2–3 min (roux), hasta que pierda el sabor a crudo.",                                                                                                  tiempo: 120,  temperatura: null, usa: ["harina"] },
+          { n: 11, titulo: null,         texto: "Verter la leche caliente poco a poco, batiendo con varillas para evitar grumos.",                                                                                                tiempo: null, temperatura: null, usa: ["leche"] },
+          { n: 12, titulo: null,         texto: "Cocinar a fuego medio hasta que espese y quede sedosa.",                                                                                                                         tiempo: null, temperatura: null, usa: [] },
+          { n: 13, titulo: null,         texto: "Añadir sal, pimienta y nuez moscada.",                                                                                                                                            tiempo: null, temperatura: null, usa: ["pimienta-negra"] },
+          { n: 14, titulo: null,         texto: "Opcional: para un sabor más intenso, integrar 30 g de queso azul suave desmenuzado.",                                                                                            tiempo: null, temperatura: null, usa: ["queso-rallado"] },
+          { n: 15, titulo: "Montaje",    texto: "Cocer las láminas de canelón, enfriar en agua con hielo y secar en paños de algodón.",                                                                                          tiempo: null, temperatura: null, usa: ["laminas-canelones"] },
+          { n: 16, titulo: null,         texto: "Rellenar cada lámina con la mezcla cremosa de verduras y yema.",                                                                                                                 tiempo: null, temperatura: null, usa: [] },
+          { n: 17, titulo: null,         texto: "Colocar en bandeja de horno ligeramente engrasada.",                                                                                                                              tiempo: null, temperatura: null, usa: [] },
+          { n: 18, titulo: null,         texto: "Cubrir con la bechamel caliente.",                                                                                                                                                tiempo: null, temperatura: null, usa: ["bechamel"] },
+          { n: 19, titulo: null,         texto: "Espolvorear con abundante queso rallado (emmental + parmesano recomendado).",                                                                                                    tiempo: null, temperatura: null, usa: ["parmesano", "queso-rallado"] },
+          { n: 20, titulo: "Gratinar",   texto: "Gratinar en horno a 200 °C hasta dorar bien la superficie.",                                                                                                                     tiempo: null, temperatura: 200,  usa: [] },
+          { n: 21, titulo: "Servir",     texto: "Al sacar del horno, dejar reposar 5 min y regar con 2–3 cucharaditas de aceite de trufa blanca en crudo justo antes de servir.",                                                tiempo: 300,  temperatura: null, usa: ["aceite-oliva"] }
         ],
         notas: "Sugerencias y mejoras: Añadir unas lascas finas de parmesano o grana padano al servir. Para un contraste fresco, acompaña con ensalada de rúcula y tomates cherry. El aceite de trufa blanca no debe cocinarse: siempre al final. Marida perfecto con un vino blanco seco y aromático (Sauvignon Blanc, Chardonnay joven o incluso un cava brut nature).",
-        creado:     "2026-06-04T10:00:00Z",
-        modificado: "2026-06-04T10:00:00Z"
-      },
-      {
-        id: "canelones-de-espinacas-ricotta-y-camarones-colomb",
-        nombre: "Canelones de Espinacas, Ricotta y Camarones Colombianos al Aroma de Trufa Blanca",
-        tipo: "pasta",
-        cocina: null,
-        pais: null,
-        etiquetas: [],
-        tags: [],
-        dieta: [],
-        racionesBase: 4,
-        tiempoPrep: 0, tiempoCoccion: 0,
-        dificultad: "media",
-        fuente: null, imagen: null,
-        ingredientes: [
-          { ref: "camarones", nombre: "Camarones colombianos", cantidad: 350, cantidadMax: null, unidad: "g", grupo: "relleno", opcional: false, nota: "limpios y sin vena" },
-          { ref: "espinacas", nombre: "Espinacas frescas", cantidad: 400, cantidadMax: null, unidad: "g", grupo: "relleno", opcional: false, nota: "lavadas y bien escurridas" },
-          { ref: "champinones", nombre: "Champiñones frescos", cantidad: 300, cantidadMax: null, unidad: "g", grupo: "relleno", opcional: false, nota: null },
-          { ref: "cebolla", nombre: "Cebolla grande", cantidad: 1, cantidadMax: null, unidad: "ud", grupo: "relleno", opcional: false, nota: null },
-          { ref: "ajo", nombre: "ajo", cantidad: 2, cantidadMax: null, unidad: "diente", grupo: "relleno", opcional: false, nota: null },
-          { ref: "nueces", nombre: "Nueces tostadas y picadas", cantidad: 40, cantidadMax: null, unidad: "g", grupo: "relleno", opcional: false, nota: null },
-          { ref: "ricotta", nombre: "Ricotta", cantidad: 250, cantidadMax: null, unidad: "g", grupo: "relleno", opcional: false, nota: "o requesón cremoso" },
-          { ref: "parmesano", nombre: "Parmesano rallado", cantidad: 60, cantidadMax: null, unidad: "g", grupo: "relleno", opcional: false, nota: null },
-          { ref: "mozzarella", nombre: "Mozzarella rallada", cantidad: 80, cantidadMax: null, unidad: "g", grupo: "relleno", opcional: false, nota: null },
-          { ref: "bechamel", nombre: "bechamel", cantidad: 3, cantidadMax: 4, unidad: "cda", grupo: "relleno", opcional: false, nota: "de la que prepares para cubrir" },
-          { ref: "huevo", nombre: "Yema de huevo", cantidad: 1, cantidadMax: null, unidad: "ud", grupo: "relleno", opcional: false, nota: null },
-          { ref: "mantequilla", nombre: "Mantequilla", cantidad: 30, cantidadMax: null, unidad: "g", grupo: "relleno", opcional: false, nota: null },
-          { ref: "aceite-oliva", nombre: "Aceite de oliva virgen extra", cantidad: null, cantidadMax: null, unidad: null, grupo: "relleno", opcional: false, nota: null },
-          { ref: "pimienta-negra", nombre: "Sal, pimienta negra y nuez moscada", cantidad: null, cantidadMax: null, unidad: null, grupo: "relleno", opcional: false, nota: null },
-          { ref: "pimienta-negra", nombre: "️ Una pizca de pimienta cayena o ají dulce", cantidad: null, cantidadMax: null, unidad: null, grupo: "relleno", opcional: true, nota: null },
-          { ref: "limon", nombre: "Ralladura muy fina de ½ limón", cantidad: null, cantidadMax: null, unidad: null, grupo: "relleno", opcional: false, nota: null },
-          { ref: "mantequilla", nombre: "Mantequilla", cantidad: 60, cantidadMax: null, unidad: "g", grupo: "bechamel", opcional: false, nota: null },
-          { ref: "harina", nombre: "Harina de trigo", cantidad: 60, cantidadMax: null, unidad: "g", grupo: "bechamel", opcional: false, nota: null },
-          { ref: "leche", nombre: "Leche entera", cantidad: 800, cantidadMax: null, unidad: "ml", grupo: "bechamel", opcional: false, nota: "templada" },
-          { ref: "pimienta-negra", nombre: "Sal, pimienta y nuez moscada", cantidad: null, cantidadMax: null, unidad: null, grupo: "bechamel", opcional: false, nota: null },
-          { ref: "queso-rallado", nombre: "Opcional: 30 g de queso azul suave desmenuzado", cantidad: null, cantidadMax: null, unidad: null, grupo: "bechamel", opcional: true, nota: null },
-          { ref: "laminas-canelones", nombre: "Láminas de canelones", cantidad: 20, cantidadMax: 24, unidad: "ud", grupo: "montar", opcional: false, nota: "cocer y enfriar según instrucciones" },
-          { ref: "queso-rallado", nombre: "Queso rallado para gratinar", cantidad: null, cantidadMax: null, unidad: null, grupo: "montar", opcional: false, nota: "emmental + parmesano recomendado" },
-          { ref: "aceite-oliva", nombre: "Aceite de oliva con trufa blanca", cantidad: 1, cantidadMax: 2, unidad: "cdta", grupo: "montar", opcional: false, nota: null },
-          { ref: "camarones", nombre: "Camarones enteros", cantidad: 4, cantidadMax: 6, unidad: "ud", grupo: "montar", opcional: false, nota: "para decorar" }
-        ],
-        pasos: [
-          { n: 1, titulo: "Relleno", texto: "Picar la cebolla y el ajo muy finos.", tiempo: null, temperatura: null, usa: ["cebolla"] },
-          { n: 2, titulo: null, texto: "Sofreír con mantequilla y un chorrito de aceite hasta dorar.", tiempo: null, temperatura: null, usa: ["mantequilla", "aceite-oliva"] },
-          { n: 3, titulo: null, texto: "Añadir los champiñones picados y cocinar a fuego alto hasta que pierdan el agua.", tiempo: null, temperatura: null, usa: ["champinones"] },
-          { n: 4, titulo: null, texto: "Agregar las espinacas troceadas y saltear hasta que reduzcan completamente.", tiempo: null, temperatura: null, usa: ["espinacas"] },
-          { n: 5, titulo: null, texto: "Escurrir si queda líquido y dejar templar.", tiempo: null, temperatura: null, usa: [] },
-          { n: 6, titulo: null, texto: "Aparte, saltear los camarones troceados en aceite de oliva con un poco de ajo y una pizca de cayena o ají dulce (2–3 min máximo).", tiempo: 120, temperatura: null, usa: ["camarones", "aceite-oliva", "pimienta-negra"] },
-          { n: 7, titulo: null, texto: "Reservar 4–6 camarones enteros para decorar al final.", tiempo: null, temperatura: null, usa: ["camarones", "limon"] },
-          { n: 8, titulo: "Mezclar en un bol", texto: "verduras salteadas + camarones troceados + nueces + ricotta + parmesano + mozzarella + 3-4 cucharadas de bechamel.", tiempo: null, temperatura: null, usa: ["camarones", "nueces", "ricotta", "parmesano", "mozzarella", "bechamel"] },
-          { n: 9, titulo: null, texto: "Cuando la mezcla esté templada, añadir la yema de huevo y la ralladura de limón.", tiempo: null, temperatura: null, usa: ["huevo", "limon"] },
-          { n: 10, titulo: null, texto: "Rectificar de sal, pimienta y nuez moscada.", tiempo: null, temperatura: null, usa: ["pimienta-negra"] },
-          { n: 11, titulo: "Bechamel", texto: "Derretir la mantequilla en una cazuela.", tiempo: null, temperatura: null, usa: ["mantequilla"] },
-          { n: 12, titulo: null, texto: "Añadir la harina y remover 2-3 min (roux).", tiempo: 120, temperatura: null, usa: ["harina"] },
-          { n: 13, titulo: null, texto: "Verter la leche caliente poco a poco, batiendo con varillas.", tiempo: null, temperatura: null, usa: ["leche"] },
-          { n: 14, titulo: null, texto: "Cocinar a fuego medio hasta que espese y quede sedosa.", tiempo: null, temperatura: null, usa: [] },
-          { n: 15, titulo: null, texto: "Añadir sal, pimienta y nuez moscada.", tiempo: null, temperatura: null, usa: ["pimienta-negra"] },
-          { n: 16, titulo: null, texto: "(Opcional) Integrar 30 g de queso azul para más sabor.", tiempo: null, temperatura: null, usa: ["queso-rallado"] },
-          { n: 17, titulo: "Montaje", texto: "Cocer las láminas de canelón, enfriar en agua con hielo y secar en paños de algodón.", tiempo: null, temperatura: null, usa: ["laminas-canelones"] },
-          { n: 18, titulo: null, texto: "Rellenar cada lámina con la mezcla cremosa de espinacas y camarones.", tiempo: null, temperatura: null, usa: ["camarones", "espinacas"] },
-          { n: 19, titulo: null, texto: "Colocar en bandeja de horno ligeramente engrasada.", tiempo: null, temperatura: null, usa: [] },
-          { n: 20, titulo: null, texto: "Cubrir con la bechamel caliente.", tiempo: null, temperatura: null, usa: ["bechamel"] },
-          { n: 21, titulo: null, texto: "Espolvorear con abundante queso rallado (emmental + parmesano).", tiempo: null, temperatura: null, usa: ["parmesano", "queso-rallado"] },
-          { n: 22, titulo: null, texto: "Gratinar en horno a 200 °C hasta dorar bien la superficie.", tiempo: null, temperatura: 200, usa: [] },
-          { n: 23, titulo: null, texto: "Al sacar del horno, dejar reposar 5 min y regar con 1–2 cucharaditas de aceite de trufa blanca en crudo.", tiempo: 300, temperatura: null, usa: ["aceite-oliva"] },
-          { n: 24, titulo: null, texto: "Decorar con los camarones enteros reservados encima de los canelones. ---", tiempo: null, temperatura: null, usa: ["camarones", "laminas-canelones"] }
-        ],
-        notas: "Sugerencias y mejoras: Usa camarones medianos colombianos: son más carnosos y sabrosos. No cocines demasiado los camarones: perderían jugosidad. Sirve con ensalada fresca de rúcula y aguacate → contraste tropical. Un vino blanco colombiano (Chardonnay de Viñedo Marqués de Villa de Leyva) acompaña perfecto. Para un aire más mediterráneo, añade unas hojitas de albahaca fresca al servir junto con la trufa.",
         creado:     "2026-06-04T10:00:00Z",
         modificado: "2026-06-04T10:00:00Z"
       },
@@ -12431,10 +12391,13 @@
           </div>
         </div>
 
-        <div class="biblio-busqueda">
+        <div class="biblio-busqueda busc-wrap">
           <input type="search" id="biblio-buscar" class="busc-input biblio-input"
                  placeholder="Buscar por nombre, ingrediente o tag…"
                  value="${esc(sesion.bibliotecaTexto)}" autocomplete="off">
+          <button type="button" class="busc-clear" data-accion="biblio-buscar-clear"
+                  aria-label="Limpiar búsqueda"
+                  ${sesion.bibliotecaTexto ? "" : "hidden"}>✕</button>
         </div>
 
         <div class="biblio-tipos">${tiposChipsHTML}</div>
@@ -12868,10 +12831,13 @@
         <h1 class="vista-titulo">Buscar</h1>
         <p class="vista-subtitulo">Texto libre y filtros que se combinan.</p>
 
-        <div class="busc-caja">
+        <div class="busc-caja busc-wrap">
           <input type="search" id="busc-texto" class="busc-input"
                  placeholder="Buscar en nombre, tags o ingredientes…"
                  value="${esc(b.texto)}" autocomplete="off">
+          <button type="button" class="busc-clear" data-accion="busc-clear-input"
+                  data-target="busc-texto" aria-label="Limpiar búsqueda"
+                  ${b.texto ? "" : "hidden"}>✕</button>
         </div>
 
         <div class="busc-caja">
@@ -13512,7 +13478,11 @@
       modal.innerHTML = `
         <div class="modal modal-selector">
           <h3>${esc(cfg.titulo || "Seleccionar receta")}</h3>
-          <input type="search" id="sel-buscar" class="sel-buscar" placeholder="Buscar…" autocomplete="off">
+          <div class="busc-wrap" style="margin-bottom: var(--gap-2);">
+            <input type="search" id="sel-buscar" class="sel-buscar" placeholder="Buscar…" autocomplete="off">
+            <button type="button" class="busc-clear" data-accion="busc-clear-input"
+                    data-target="sel-buscar" aria-label="Limpiar búsqueda" hidden>✕</button>
+          </div>
           ${cfg.mostrarQuitar
             ? `<button type="button" class="sel-quitar" data-accion="sel-quitar">Quitar de aquí</button>`
             : ""}
@@ -15235,6 +15205,28 @@
           resetLimiteBiblioteca();
           actualizarResultadosBiblioteca();
         }
+      });
+
+      /* Botón ✕ para limpiar barra de búsqueda (genérico: cualquier
+         `.busc-clear` dentro de un `.busc-wrap` vacía su input hermano). */
+      document.addEventListener("click", (ev) => {
+        const btn = ev.target.closest(".busc-clear");
+        if (!btn) return;
+        const wrap = btn.closest(".busc-wrap");
+        const inp = wrap?.querySelector('input[type="search"]');
+        if (!inp) return;
+        inp.value = "";
+        // Disparar input event para que el handler de cada vista actualice estado
+        inp.dispatchEvent(new Event("input", { bubbles: true }));
+        inp.focus();
+        btn.hidden = true;
+      });
+      // Mostrar/ocultar ✕ según contenido del input
+      document.addEventListener("input", (ev) => {
+        const inp = ev.target;
+        if (!inp || !inp.matches || !inp.matches('.busc-wrap input[type="search"]')) return;
+        const btn = inp.closest(".busc-wrap")?.querySelector(".busc-clear");
+        if (btn) btn.hidden = !inp.value;
       });
 
       // Cambios en checkbox de tic (click directo o teclado).
