@@ -1149,9 +1149,11 @@
 
     .mc-body {
       flex: 1; overflow-y: auto;
-      padding: 32px 24px 40px;
+      padding: 32px 28px 40px;
     }
-    @media (min-width: 720px) { .mc-body { padding: 56px 40px 64px; } }
+    @media (min-width: 600px) { .mc-body { padding: 44px 48px 56px; } }
+    @media (min-width: 900px) { .mc-body { padding: 64px 80px 72px; } }
+    @media (min-width: 1280px) { .mc-body { padding: 72px 120px 80px; } }
     .mc-paso {
       max-width: 680px; width: 100%;
       margin: 0 auto;
@@ -3379,66 +3381,81 @@
     /* ========================================================================
        INGREDIENTES — pill clara al lado del nombre (layout horizontal)
        ======================================================================== */
+    /* Layout en 3 columnas con subgrid: la columna de cantidad se ajusta
+       a la pill MÁS ancha de toda la lista, así todas tienen el mismo
+       tamaño y se alinean perfectamente.
+       Las 3 columnas: checkbox (18) · pill cantidad (max-content) · nombre (1fr).
+       Todo centrado verticalmente para que checkbox, pill y texto compartan
+       línea base limpia. */
+    .detalle .bloque .lista-ing {
+      display: grid;
+      grid-template-columns: 18px max-content 1fr;
+      column-gap: 18px;
+    }
     .detalle .bloque .lista-ing li {
-      display: flex;
+      display: grid;
+      grid-template-columns: subgrid;
+      grid-column: 1 / -1;
+      column-gap: 18px;
+      row-gap: 3px;
       align-items: center;
-      gap: var(--gap-3);
-      padding: 10px 12px;
+      padding: 10px 14px;
       background: transparent;
       border-radius: var(--r-md);
       transition: background .12s;
     }
-    .detalle .bloque .lista-ing li:hover {
-      background: var(--bg-soft);
-    }
+    .detalle .bloque .lista-ing li:hover { background: var(--bg-soft); }
     .detalle .bloque .lista-ing input[type="checkbox"] {
       width: 18px; height: 18px;
-      margin-top: 0;
-      accent-color: var(--accent);
+      margin: 0;
+      accent-color: var(--chip-fg, var(--accent));
       flex-shrink: 0;
       border-radius: 4px;
+      align-self: center;
+      justify-self: center;
     }
-    /* Layout horizontal: nombre + pill + nota/opcional en una sola fila */
-    .detalle .bloque .lista-ing .ing-texto {
+    .detalle .bloque .lista-ing .ing-col-cant {
+      align-self: center;
       display: flex;
-      flex-direction: row;
+      justify-content: stretch;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-      flex: 1;
-      min-width: 0;
+    }
+    /* Cuando no hay cantidad, la columna queda vacía pero su ancho se
+       mantiene gracias al subgrid (la columna se dimensiona por la
+       pill MÁS ancha del UL). */
+    .detalle .bloque .lista-ing .ing-col-cant:empty { min-width: 1px; }
+    .detalle .bloque .lista-ing .ing-col-nombre {
+      display: block;
+      line-height: 1.4;
+      align-self: center;
     }
     .detalle .bloque .lista-ing .ing-nombre {
-      font-weight: 700;
+      font-weight: 600;
       font-size: 15px;
       color: var(--text);
       letter-spacing: -0.015em;
-      line-height: 1.3;
     }
-    .detalle .bloque .lista-ing .ing-detalles {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      flex-shrink: 0;
-      margin-left: 0;
-    }
-    /* Pill con la versión clara del color del tipo de receta */
+    /* Pill de cantidad: fondo en versión suave del color del tipo, tipografía
+       tabular (todos los dígitos del mismo ancho), centrada. Rellena toda la
+       columna del subgrid → todas las pills tienen el mismo ancho exacto. */
     .detalle .bloque .ing-pill {
       background: var(--chip-bg, var(--bg-soft));
       color: var(--chip-fg, var(--text));
       border: 1px solid transparent;
-      backdrop-filter: none;
-      -webkit-backdrop-filter: none;
-      padding: 3px 10px;
+      padding: 5px 14px;
       font-family: var(--font-ui);
       font-variant-numeric: tabular-nums;
       font-feature-settings: "tnum" 1;
       font-weight: 600;
-      font-size: 12.5px;
+      font-size: 13px;
       letter-spacing: -0.005em;
       margin: 0;
       white-space: nowrap;
       border-radius: var(--r-pill);
+      line-height: 1.3;
+      width: 100%;
+      text-align: center;
+      display: inline-block;
     }
     /* "opcional" como pill clara sutil */
     .detalle .bloque .lista-ing .ing-opcional {
@@ -3452,16 +3469,22 @@
       margin: 0;
       border-radius: var(--r-pill);
     }
-    /* Nota inline en cursiva sutil */
+    /* Nota inline en cursiva sutil — bajo el nombre, alineada a su columna */
     .detalle .bloque .lista-ing .ing-nota {
       color: var(--text-muted);
       font-size: 12.5px;
       font-style: italic;
       margin: 0;
       font-weight: 400;
-      display: inline-block;
-      width: 100%;
+      display: block;
       margin-top: 2px;
+      line-height: 1.3;
+    }
+    .detalle .bloque .lista-ing .ing-opcional,
+    .detalle .bloque .lista-ing .ing-aviso {
+      display: inline-block;
+      margin-left: 6px;
+      vertical-align: middle;
     }
     /* Tachado limpio */
     .detalle .bloque .lista-ing li.tachado {
@@ -3507,8 +3530,13 @@
       justify-content: center;
       align-items: center;
       min-height: 100%;
-      padding: var(--gap-6) var(--gap-4);
+      /* Padding lateral progresivo según anchura. Importante: NO usar gap-4
+         (16 px) que ahogaba el título en ventanas estrechas. */
+      padding: 32px 28px 40px;
     }
+    @media (min-width: 600px) { .mc-body { padding: 44px 48px 56px; } }
+    @media (min-width: 900px) { .mc-body { padding: 64px 80px 72px; } }
+    @media (min-width: 1280px) { .mc-body { padding: 72px 120px 80px; } }
     .mc-paso {
       width: 100%;
       max-width: 720px;
@@ -3644,13 +3672,16 @@
       text-align: center;
       padding: var(--gap-5) 0;
     }
+    /* Chip de tipo en modo cocina: hereda el estilo "dot + texto" del
+       sistema global. Sin fondo, dot en el color del tipo, texto en
+       gris muted (igual lenguaje que la cabecera del detalle). */
     .mc-portada .chip-tipo {
-      display: inline-block;
-      background: rgba(0,0,0,0.28) !important;
-      color: #ffffff !important;
+      background: transparent !important;
+      padding: 0 !important;
+      color: var(--text-muted) !important;
       margin-bottom: var(--gap-5);
-      padding: 6px 14px;
-      font-size: 12px;
+      font-size: 11.5px;
+      letter-spacing: 0.14em;
     }
     .mc-portada-titulo {
       font-family: var(--font-ui);
@@ -4152,6 +4183,115 @@
       pointer-events: none;
     }
     html:not([data-perfil="invitado"]) .badge-solo-lectura { display: none; }
+
+    /* ========================================================================
+       BOTÓN TIMER DE PASO — versión compacta (pill en detalle) y XL (centrada
+       en modo cocina). Inspirado en el modo cocina de Claude.
+       ======================================================================== */
+    /* Compacto: pill inline junto a la temperatura, en el detalle.
+       Misma cromática que la pill de cantidad de ingrediente: fondo suave
+       del color del tipo, texto en color oscuro del mismo. Al hover se
+       invierte: fondo oscuro, texto suave. */
+    .paso-timer-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 14px 5px 10px;
+      border-radius: 999px;
+      background: var(--chip-bg, var(--bg-soft));
+      color: var(--chip-fg, var(--text));
+      font-family: var(--font-ui);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: -0.005em;
+      cursor: pointer;
+      transition: background .15s, transform .08s, color .15s;
+      font-variant-numeric: tabular-nums;
+      border: 1px solid transparent;
+    }
+    .paso-timer-btn:hover {
+      background: var(--chip-fg, var(--text));
+      color: var(--chip-bg, var(--bg));
+    }
+    .paso-timer-btn:active { transform: scale(0.96); }
+    .paso-timer-btn .paso-timer-icono {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: var(--chip-fg, var(--text));
+      color: var(--chip-bg, var(--bg));
+      font-size: 9px;
+      flex-shrink: 0;
+      transition: background .15s, color .15s;
+    }
+    .paso-timer-btn:hover .paso-timer-icono {
+      background: var(--chip-bg, var(--bg));
+      color: var(--chip-fg, var(--text));
+    }
+    /* Activo (timer corriendo): mismo color base, halo pulsante */
+    .paso-timer-btn.activo {
+      animation: timer-pulse 2.4s ease-in-out infinite;
+    }
+    @keyframes timer-pulse {
+      0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--chip-fg, var(--accent)) 30%, transparent); }
+      50%       { box-shadow: 0 0 0 5px color-mix(in srgb, var(--chip-fg, var(--accent)) 0%, transparent); }
+    }
+
+    /* Versión XL para modo cocina — tiempo gigante centrado + botón circular */
+    .mc-paso-timer-zona {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 22px;
+      margin-top: 36px;
+      margin-bottom: 12px;
+    }
+    .paso-timer-btn.mc-xl {
+      flex-direction: column;
+      gap: 22px;
+      padding: 0;
+      background: transparent !important;
+      box-shadow: none !important;
+      animation: none;
+    }
+    .paso-timer-btn.mc-xl:hover,
+    .paso-timer-btn.mc-xl:active {
+      background: transparent !important;
+      color: var(--text) !important;
+      transform: none;
+    }
+    .paso-timer-btn.mc-xl .paso-timer-valor {
+      font-family: var(--font-titulo);
+      font-size: 64px;
+      font-weight: 700;
+      letter-spacing: -0.035em;
+      line-height: 1;
+      color: var(--text);
+      order: 1;
+    }
+    @media (min-width: 720px) {
+      .paso-timer-btn.mc-xl .paso-timer-valor { font-size: 92px; }
+    }
+    .paso-timer-btn.mc-xl .paso-timer-icono {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: var(--btn-bg, #111);
+      color: var(--btn-fg, #fff);
+      font-size: 22px;
+      order: 2;
+    }
+    .paso-timer-btn.mc-xl:hover .paso-timer-icono {
+      background: var(--btn-bg-h, #000);
+      color: var(--btn-fg, #fff);
+      transform: scale(1.05);
+    }
+    .paso-timer-btn.mc-xl.activo .paso-timer-icono {
+      background: var(--btn-bg, #111);
+      color: var(--btn-fg, #fff);
+    }
+    /* Cuando el timer está activo en modo cocina, el icono "■" es lo que
+       se renderiza (parar). El "▶" sólo aparece en pausa. */
+    .paso-timer-btn.mc-xl.activo .paso-timer-icono::before { content: ""; }
 
     /* Botón ✕ para limpiar barra de búsqueda — overlay sobre el input */
     .busc-wrap { position: relative; }
@@ -4871,7 +5011,26 @@
       { clave: "almejas", nombre: "Almejas", categoriaCompra: "carniceria", densidad: null, gramosPorUnidad: 10, alias: ["almeja"] },
       { clave: "sepia", nombre: "Sepia", categoriaCompra: "carniceria", densidad: null, gramosPorUnidad: 300, alias: ["sepia limpia"] },
       { clave: "kombu", nombre: "Alga kombu", categoriaCompra: "despensa_secos", densidad: null, gramosPorUnidad: null, alias: ["kombu seco"] },
-      { clave: "semola", nombre: "Sémola de trigo duro", categoriaCompra: "despensa_secos", densidad: 0.7, gramosPorUnidad: null, alias: ["semola fina", "sémola fina", "semola trigo duro"] }
+      { clave: "semola", nombre: "Sémola de trigo duro", categoriaCompra: "despensa_secos", densidad: 0.7, gramosPorUnidad: null, alias: ["semola fina", "sémola fina", "semola trigo duro"] },
+      { clave: "gallina", nombre: "Gallina criolla", categoriaCompra: "carniceria", densidad: null, gramosPorUnidad: 1800, alias: ["gallina"] },
+      { clave: "yuca", nombre: "Yuca", categoriaCompra: "verduras_fruta", densidad: null, gramosPorUnidad: null, alias: ["mandioca", "casava"] },
+      { clave: "papa-criolla", nombre: "Papa criolla", categoriaCompra: "verduras_fruta", densidad: null, gramosPorUnidad: 30, alias: ["criolla", "papa amarilla", "papa amarilla criolla"] },
+      { clave: "arracacha", nombre: "Arracacha", categoriaCompra: "verduras_fruta", densidad: null, gramosPorUnidad: null, alias: ["apio criollo"] },
+      { clave: "mazorca", nombre: "Mazorca tierna", categoriaCompra: "verduras_fruta", densidad: null, gramosPorUnidad: 300, alias: ["maíz tierno", "elote", "choclo"] },
+      { clave: "cebolla-larga", nombre: "Cebolla larga", categoriaCompra: "verduras_fruta", densidad: null, gramosPorUnidad: 50, alias: ["cebolla junca", "cebolla de rama", "cebollín colombiano"] },
+      { clave: "achiote", nombre: "Achiote (color)", categoriaCompra: "especias_condimentos", densidad: null, gramosPorUnidad: null, alias: ["color", "annatto", "color en polvo"] },
+      { clave: "cilantro", nombre: "Cilantro", categoriaCompra: "verduras_fruta", densidad: null, gramosPorUnidad: null, alias: ["cilantro fresco", "culantro"] },
+      { clave: "cilantro-cimarron", nombre: "Cilantro cimarrón", categoriaCompra: "verduras_fruta", densidad: null, gramosPorUnidad: null, alias: ["culantro", "cilantro de monte"] },
+      { clave: "aji-casero", nombre: "Ají casero", categoriaCompra: "especias_condimentos", densidad: 1.05, gramosPorUnidad: null, alias: ["ají colombiano", "salsa de ají"] },
+      { clave: "frijol-rojo", nombre: "Fríjol rojo", categoriaCompra: "despensa_secos", densidad: 0.8, gramosPorUnidad: null, alias: ["cargamanto", "bola roja", "fríjol cargamanto", "frijoles rojos"] },
+      { clave: "tocino", nombre: "Tocino (panceta con piel)", categoriaCompra: "carniceria", densidad: null, gramosPorUnidad: null, alias: ["panceta", "panceta cerdo", "tocineta"] },
+      { clave: "pezuna-cerdo", nombre: "Pezuña de cerdo", categoriaCompra: "carniceria", densidad: null, gramosPorUnidad: null, alias: ["garra cerdo", "pata cerdo", "manita cerdo"] },
+      { clave: "arepa", nombre: "Arepa", categoriaCompra: "panaderia", densidad: null, gramosPorUnidad: 80, alias: ["arepa antioqueña", "arepa blanca"] },
+      { clave: "guascas", nombre: "Guascas", categoriaCompra: "especias_condimentos", densidad: null, gramosPorUnidad: null, alias: ["guascas secas", "guascas frescas", "galinsoga"] },
+      { clave: "fideos-arroz", nombre: "Fideos de arroz", categoriaCompra: "despensa_secos", densidad: null, gramosPorUnidad: null, alias: ["rice noodles", "vermicelli arroz", "fideo plano arroz"] },
+      { clave: "habichuelas", nombre: "Habichuelas", categoriaCompra: "verduras_fruta", densidad: null, gramosPorUnidad: null, alias: ["judía verde", "vaina", "judias verdes"] },
+      { clave: "maicena", nombre: "Maicena", categoriaCompra: "despensa_secos", densidad: 0.6, gramosPorUnidad: null, alias: ["fécula de maíz", "almidón de maíz"] },
+      { clave: "aceite-sesamo", nombre: "Aceite de sésamo", categoriaCompra: "despensa_secos", densidad: 0.92, gramosPorUnidad: null, alias: ["aceite ajonjolí", "aceite de ajonjolí", "sesame oil"] }
         ];
 
     const RECETAS_FIJAS = [
@@ -9968,6 +10127,254 @@
         notas: "La sémola sobre el papel es mejor que la harina: da más crujiente, no se quema y evita que la masa se pegue. Cuando la masa resista al estirar, no fuerces — 5 minutos de reposo tapada y cede sola; forzarla la rompe o la encoge. El choque térmico entre la masa y la bandeja muy caliente es el factor más determinante para una base crujiente en horno doméstico — no te saltes el precalentado de la bandeja. El doble horneado compensa las limitaciones de cualquier horno doméstico: la primera cocción sella la base antes de que los toppings aporten humedad. Si el fondo se oscurece demasiado rápido en la primera cocción, sube una ranura — cada horno calienta distinto por abajo.",
         creado:     "2026-06-04T10:00:00Z",
         modificado: "2026-06-04T10:00:00Z"
+      },
+      {
+        id: "sancocho-gallina-vallecaucano",
+        nombre: "Sancocho de gallina vallecaucano",
+        tipo: "sopas_cremas",
+        cocina: null,
+        pais: "Colombia",
+        etiquetas: ["internacional"],
+        tags: ["sancocho", "gallina", "valluno", "colombiana", "domingo", "olla"],
+        dieta: [],
+        racionesBase: 6,
+        tiempoPrep: 25, tiempoCoccion: 150,
+        dificultad: "media",
+        fuente: null, imagen: null,
+        ingredientes: [
+          { ref: "gallina",            nombre: "Gallina criolla en presas",     cantidad: 1800, cantidadMax: null, unidad: "g",        grupo: "proteína y caldo", opcional: false, nota: null },
+          { ref: "agua",               nombre: "Agua",                          cantidad: 5,    cantidadMax: null, unidad: "l",        grupo: "proteína y caldo", opcional: false, nota: null },
+          { ref: "platano",            nombre: "Plátanos verdes",               cantidad: 2,    cantidadMax: null, unidad: "ud",       grupo: "verduras y tubérculos", opcional: false, nota: "Para rasgar con las manos en la olla" },
+          { ref: "yuca",               nombre: "Yuca",                          cantidad: 700,  cantidadMax: null, unidad: "g",        grupo: "verduras y tubérculos", opcional: false, nota: "En trozos gruesos" },
+          { ref: "patata",             nombre: "Papas pastusas",                cantidad: 500,  cantidadMax: null, unidad: "g",        grupo: "verduras y tubérculos", opcional: false, nota: "Peladas. Pastusas o tipo Monalisa" },
+          { ref: "mazorca",            nombre: "Mazorcas tiernas",              cantidad: 3,    cantidadMax: null, unidad: "ud",       grupo: "verduras y tubérculos", opcional: false, nota: "En trozos de 3-4 cm" },
+          { ref: "arracacha",          nombre: "Arracacha",                     cantidad: 300,  cantidadMax: null, unidad: "g",        grupo: "verduras y tubérculos", opcional: true,  nota: "En trozos" },
+          { ref: "cebolla-larga",      nombre: "Cebolla larga",                 cantidad: 4,    cantidadMax: null, unidad: "ud",       grupo: "aliños y condimentos", opcional: false, nota: "Tallos completos" },
+          { ref: "cebolla",            nombre: "Cebolla cabezona blanca",       cantidad: 1,    cantidadMax: null, unidad: "ud",       grupo: "aliños y condimentos", opcional: false, nota: null },
+          { ref: "tomate",             nombre: "Tomates maduros",               cantidad: 2,    cantidadMax: null, unidad: "ud",       grupo: "aliños y condimentos", opcional: false, nota: null },
+          { ref: "ajo",                nombre: "Dientes de ajo",                cantidad: 5,    cantidadMax: null, unidad: "diente",   grupo: "aliños y condimentos", opcional: false, nota: null },
+          { ref: "cilantro",           nombre: "Cilantro",                      cantidad: 1,    cantidadMax: null, unidad: "ud",       grupo: "aliños y condimentos", opcional: false, nota: "Manojo entero" },
+          { ref: "cilantro-cimarron",  nombre: "Cilantro cimarrón / culantro",  cantidad: 4,    cantidadMax: null, unidad: "hoja",     grupo: "aliños y condimentos", opcional: true,  nota: null },
+          { ref: "achiote",            nombre: "Color / achiote en polvo",      cantidad: 1,    cantidadMax: null, unidad: "cdta",     grupo: "aliños y condimentos", opcional: false, nota: null },
+          { ref: "comino",             nombre: "Comino molido",                 cantidad: 0.5,  cantidadMax: null, unidad: "cdta",     grupo: "aliños y condimentos", opcional: true,  nota: "Muchas cocineras vallunas lo omiten" },
+          { ref: "sal",                nombre: "Sal",                           cantidad: 2,    cantidadMax: null, unidad: "cdta",     grupo: "aliños y condimentos", opcional: false, nota: "1 cdta al hervir + 1 cdta al final" },
+          { ref: "pimienta-negra",     nombre: "Pimienta negra molida",         cantidad: 0.5,  cantidadMax: null, unidad: "cdta",     grupo: "aliños y condimentos", opcional: false, nota: null },
+          { ref: "aceite-neutro",      nombre: "Aceite",                        cantidad: 2,    cantidadMax: null, unidad: "cda",      grupo: "aliños y condimentos", opcional: false, nota: null },
+          { ref: "tomate",             nombre: "Tomates para el hogao",         cantidad: 2,    cantidadMax: null, unidad: "ud",       grupo: "para el hogao", opcional: false, nota: null },
+          { ref: "cebolla-larga",      nombre: "Cebolla larga para el hogao",   cantidad: 2,    cantidadMax: null, unidad: "ud",       grupo: "para el hogao", opcional: false, nota: null },
+          { ref: "arroz",              nombre: "Arroz blanco",                  cantidad: null, cantidadMax: null, unidad: "al_gusto", grupo: "acompañamientos", opcional: false, nota: "Cocido aparte" },
+          { ref: "aguacate",           nombre: "Aguacate",                      cantidad: null, cantidadMax: null, unidad: "al_gusto", grupo: "acompañamientos", opcional: false, nota: null },
+          { ref: "aji-casero",         nombre: "Ají casero",                    cantidad: null, cantidadMax: null, unidad: "al_gusto", grupo: "acompañamientos", opcional: false, nota: null },
+          { ref: "limon",              nombre: "Limón",                         cantidad: null, cantidadMax: null, unidad: "al_gusto", grupo: "acompañamientos", opcional: false, nota: null }
+        ],
+        pasos: [
+          { n: 1,  titulo: "Preparar el aliño base",       texto: "Machaca los 5 dientes de ajo con una pizca de sal hasta formar pasta. Pica finamente los 4 tallos de cebolla larga y la cebolla cabezona, y trocea los 2 tomates. Reserva todo junto. Clave: aliño fresco y picado (NO licuado); la cebolla larga da el sabor «verde» del sancocho valluno.", tiempo: 360,  temperatura: null, usa: ["ajo", "sal", "cebolla-larga", "cebolla", "tomate"] },
+          { n: 2,  titulo: "Sofreír la gallina (sudado)", texto: "Calienta 2 cda de aceite en una olla grande de fondo grueso (o de barro). Sella la gallina (1,8 kg) a fuego medio-alto 5-8 min hasta dorar. Añade el aliño del paso 1, 1 cdta de color y ½ cdta de comino. Sofríe 5 min más. Truco: sellar la presa (reacción de Maillard) da un caldo mucho más profundo que echarla cruda al agua.", tiempo: 780,  temperatura: null, usa: ["aceite-neutro", "gallina", "achiote", "comino"] },
+          { n: 3,  titulo: "Cocer la gallina",            texto: "Agrega 5 L de agua y 1 cdta de sal. Lleva a ebullición fuerte y baja a fuego lento. Los primeros 10-15 min retira con cuchara la espuma que sube (caldo limpio y claro). Tapa a medias y cuece 1½-2 h hasta que la gallina esté muy tierna. La gallina criolla EXIGE cocción larga; con pollo industrial bastarían 35-40 min, pero el sabor no es igual.", tiempo: 6300, temperatura: null, usa: ["agua", "sal"] },
+          { n: 4,  titulo: "Pelar y cortar",              texto: "Mientras hierve la gallina: pela y trocea la yuca (700 g) en bastones gruesos, las papas (500 g) y, si la usas, la arracacha (300 g). Corta las 3 mazorcas. Pela los 2 plátanos verdes pero NO los cortes con cuchillo. Mantén yuca y papa en un bol con agua para que no se oxiden.", tiempo: 600,  temperatura: null, usa: ["yuca", "patata", "arracacha", "mazorca", "platano"] },
+          { n: 5,  titulo: "Hacer el hogao",              texto: "En una sartén con un chorrito de aceite, sofríe 2 tallos de cebolla larga picada y 2 tomates picados a fuego medio 10-12 min, hasta que el tomate se deshaga. El hogao se sirve aparte (no va dentro de la olla).", tiempo: 660,  temperatura: null, usa: ["cebolla-larga", "tomate", "aceite-neutro"] },
+          { n: 6,  titulo: "Añadir plátano y mazorca",    texto: "Con la gallina ya tierna, rasga los 2 plátanos verdes con las manos directo a la olla (NO con cuchillo) y añade las mazorcas. Cuece 25-30 min. Secreto: el almidón del plátano rasgado espesa el caldo y le da cuerpo.", tiempo: 1650, temperatura: null, usa: ["platano", "mazorca"] },
+          { n: 7,  titulo: "Añadir la yuca",              texto: "Incorpora la yuca. Cuece 18-20 min. Respeta el orden: si la yuca se cuece de más, se deshace y enturbia el caldo.", tiempo: 1140, temperatura: null, usa: ["yuca"] },
+          { n: 8,  titulo: "Añadir papa y arracacha",     texto: "Agrega las papas y la arracacha. Cuece 15-18 min hasta que todo esté tierno pero entero. Que algo de papa se deshaga ayuda a espesar; los trozos firmes dan textura.", tiempo: 990,  temperatura: null, usa: ["patata", "arracacha"] },
+          { n: 9,  titulo: "Rectificar y perfumar",       texto: "Prueba y ajusta con la 2.ª cdta de sal (poco a poco, el caldo ya viene salado) y ½ cdta de pimienta. Apaga el fuego y echa el cilantro y el cilantro cimarrón picados. Tapa y deja reposar 5 min. Error común: hervir el cilantro pierde su aroma; va al final.", tiempo: 300,  temperatura: null, usa: ["sal", "pimienta-negra", "cilantro", "cilantro-cimarron"] },
+          { n: 10, titulo: "Servir",                      texto: "Sirve caldo con un trozo de cada verdura y una presa de gallina en plato hondo. Acompaña con arroz blanco, aguacate, hogao, ají y limón. Tradición: muchas familias sirven primero el caldo y luego las presas y verduras «al seco» en plato aparte.", tiempo: 300,  temperatura: null, usa: ["arroz", "aguacate", "aji-casero", "limon"] }
+        ],
+        notas: "Sal en dos tiempos: 1 cdta al hervir la gallina (sazona la carne desde dentro) + 1 cdta al final (el caldo reduce y concentra). Orden de cocción: plátano+mazorca → yuca → papa+arracacha (por densidad y tiempo, para que nada se deshaga). Escalado: para 10-12 personas duplica todo y usa olla de 12-15 L. Con antelación: sabe mejor al día siguiente, pero añade el cilantro fresco solo al recalentar. Comino: estándar en el sancocho paisa; muchas cocineras vallunas lo omiten (por eso es opcional).",
+        creado:     "2026-06-04T10:00:00Z",
+        modificado: "2026-06-04T10:00:00Z"
+      },
+      {
+        id: "hogao-colombiano",
+        nombre: "Hogao colombiano tradicional",
+        tipo: "salsas_fondos",
+        cocina: null,
+        pais: "Colombia",
+        etiquetas: ["internacional"],
+        tags: ["hogao", "sofrito", "salsa", "colombiana", "paisa"],
+        dieta: ["vegano", "vegetariano"],
+        racionesBase: 6,
+        tiempoPrep: 15, tiempoCoccion: 35,
+        dificultad: "facil",
+        fuente: null, imagen: null,
+        ingredientes: [
+          { ref: "tomate",          nombre: "Tomate maduro rojo (chonto)",      cantidad: 550, cantidadMax: null, unidad: "g",        grupo: null, opcional: false, nota: "Pelado" },
+          { ref: "cebolla-larga",   nombre: "Cebolla larga (junca/de rama)",    cantidad: 200, cantidadMax: null, unidad: "g",        grupo: null, opcional: false, nota: "Parte blanca y verde" },
+          { ref: "cebolla",         nombre: "Cebolla cabezona blanca",          cantidad: 80,  cantidadMax: null, unidad: "g",        grupo: null, opcional: true,  nota: null },
+          { ref: "ajo",             nombre: "Dientes de ajo",                   cantidad: 3,   cantidadMax: null, unidad: "diente",   grupo: null, opcional: false, nota: "Finamente picados" },
+          { ref: "aceite-neutro",   nombre: "Aceite vegetal",                   cantidad: 3,   cantidadMax: null, unidad: "cda",      grupo: null, opcional: false, nota: "O manteca, para sabor más tradicional" },
+          { ref: "comino",          nombre: "Comino molido",                    cantidad: 0.25,cantidadMax: null, unidad: "cdta",     grupo: null, opcional: false, nota: null },
+          { ref: "achiote",         nombre: "Color / achiote en polvo",         cantidad: 0.5, cantidadMax: null, unidad: "cdta",     grupo: null, opcional: true,  nota: "Para el tono naranja" },
+          { ref: "sal",             nombre: "Sal",                              cantidad: 1,   cantidadMax: null, unidad: "cdta",     grupo: null, opcional: false, nota: null },
+          { ref: "pimienta-negra",  nombre: "Pimienta negra",                   cantidad: 0.25,cantidadMax: null, unidad: "cdta",     grupo: null, opcional: false, nota: null },
+          { ref: "azucar",          nombre: "Azúcar",                           cantidad: null,cantidadMax: null, unidad: "pizca",    grupo: null, opcional: true,  nota: "Truco de chef para domar la acidez" },
+          { ref: "cilantro",        nombre: "Cilantro fresco picado",           cantidad: 2,   cantidadMax: null, unidad: "cda",      grupo: null, opcional: true,  nota: "Al final" }
+        ],
+        pasos: [
+          { n: 1, titulo: "Mise en place",            texto: "Pon una olla con agua a hervir (para pelar los tomates). Mientras calienta, pica muy fino los 200 g de cebolla larga y los 80 g de cebolla cabezona, separando un poco de la parte verde para el final. Pica los 3 dientes de ajo.", tiempo: 300, temperatura: null, usa: ["cebolla-larga", "cebolla", "ajo"] },
+          { n: 2, titulo: "Pelar los tomates",        texto: "Haz una X en la base de cada tomate. Sumérgelos en el agua hirviendo 30-45 s, pásalos a agua fría y retira la piel. Pica los 550 g de tomate en cubos pequeños o rállalos. Esto da una salsa más fina y sin pellejos.", tiempo: 300, temperatura: null, usa: ["tomate"] },
+          { n: 3, titulo: "Sofreír la cebolla",       texto: "En sartén amplia, calienta las 3 cucharadas de aceite a fuego medio-bajo. Añade la cebolla larga y la cabezona y sofríe lento 6-8 min, removiendo, hasta que estén transparentes y dulces (SIN dorar). En el último minuto añade el ajo para que no se queme.", tiempo: 420, temperatura: null, usa: ["aceite-neutro", "cebolla-larga", "cebolla", "ajo"] },
+          { n: 4, titulo: "Despertar las especias",   texto: "Agrega ¼ cdta de comino y, si lo usas, ½ cdta de color/achiote. Remueve 30 s en el aceite para que suelten color y aroma antes de mojar con el tomate.", tiempo: 30,  temperatura: null, usa: ["comino", "achiote"] },
+          { n: 5, titulo: "Añadir el tomate",         texto: "Incorpora los 550 g de tomate, 1 cdta de sal, ¼ cdta de pimienta y, si quieres, la pizca de azúcar. La sal saca el agua del tomate y ayuda a que se deshaga. Mezcla bien.", tiempo: 60,  temperatura: null, usa: ["tomate", "sal", "pimienta-negra", "azucar"] },
+          { n: 6, titulo: "Confitar a fuego lento",   texto: "Baja el fuego y cocina destapado 20-30 min, removiendo y machacando el tomate cada tanto, hasta que la salsa esté melosa, brillante y el aceite empiece a separarse en los bordes (señal de que «soltó»). Si se seca mucho, añade un chorrito de agua.", tiempo: 1500, temperatura: null, usa: [] },
+          { n: 7, titulo: "Terminar y reposar",       texto: "Apaga el fuego, incorpora las 2 cucharadas de cilantro y la parte verde reservada de la cebolla. Tapa y deja reposar 5 min. Rectifica de sal.", tiempo: 300, temperatura: null, usa: ["cilantro", "cebolla-larga"] }
+        ],
+        notas: "Fuego lento, NO fritura: se confita, no se fríe. Si chisporrotea fuerte, baja. La cebolla larga (junca) es innegociable: es lo que define el hogao paisa. Tomate bien maduro: el verde da salsa ácida y aguada. La sal entra con el tomate (extrae agua y lo deshace). Punto final: cuando el aceite se separa y brilla en los bordes. Errores frecuentes: usar solo cebolla cabezona (pierde identidad), fuego alto (sabe a frito quemado), exceso de comino (amarga), no reducir lo suficiente (queda aguado). Se conserva 4-5 días en nevera y se congela bien. Recalienta con un chorrito de agua o aceite. Sabe mejor de un día para otro. Usos: frijoles paisas, bandeja paisa, arepa con quesito, huevos pericos, papa salada, arroz, pescado frito, sopas y guisos como base.",
+        creado:     "2026-06-04T10:00:00Z",
+        modificado: "2026-06-04T10:00:00Z"
+      },
+      {
+        id: "bandeja-paisa",
+        nombre: "Bandeja paisa tradicional",
+        tipo: "carnes",
+        cocina: null,
+        pais: "Colombia",
+        etiquetas: ["internacional"],
+        tags: ["bandeja paisa", "antioquia", "frijoles", "chicharron", "domingo", "colombiana", "cerdo"],
+        dieta: [],
+        racionesBase: 4,
+        tiempoPrep: 45, tiempoCoccion: 90,
+        dificultad: "media",
+        fuente: null, imagen: null,
+        ingredientes: [
+          { ref: "frijol-rojo",     nombre: "Fríjol cargamanto o bola roja",    cantidad: 500, cantidadMax: null, unidad: "g",        grupo: "fríjoles",   opcional: false, nota: "Seco. Remojar la noche anterior" },
+          { ref: "platano",         nombre: "Plátano verde",                    cantidad: 1,   cantidadMax: null, unidad: "ud",       grupo: "fríjoles",   opcional: false, nota: "Da cuerpo y dulzor sutil" },
+          { ref: "pezuna-cerdo",    nombre: "Pezuña o garra de cerdo",          cantidad: 1,   cantidadMax: null, unidad: "ud",       grupo: "fríjoles",   opcional: false, nota: "O 150 g de tocino" },
+          { ref: "zanahoria",       nombre: "Zanahoria",                        cantidad: 1,   cantidadMax: null, unidad: "ud",       grupo: "fríjoles",   opcional: false, nota: "Entera" },
+          { ref: "agua",            nombre: "Agua",                             cantidad: 2.5, cantidadMax: null, unidad: "l",        grupo: "fríjoles",   opcional: false, nota: null },
+          { ref: "sal",             nombre: "Sal para los fríjoles",            cantidad: 1,   cantidadMax: null, unidad: "cdta",     grupo: "fríjoles",   opcional: false, nota: "Al final" },
+          { ref: "cebolla-larga",   nombre: "Cebolla larga",                    cantidad: 4,   cantidadMax: null, unidad: "ud",       grupo: "hogao",      opcional: false, nota: null },
+          { ref: "tomate",          nombre: "Tomates maduros",                  cantidad: 3,   cantidadMax: null, unidad: "ud",       grupo: "hogao",      opcional: false, nota: null },
+          { ref: "ajo",             nombre: "Dientes de ajo",                   cantidad: 2,   cantidadMax: null, unidad: "diente",   grupo: "hogao",      opcional: false, nota: null },
+          { ref: "comino",          nombre: "Comino molido",                    cantidad: 0.5, cantidadMax: null, unidad: "cdta",     grupo: "hogao",      opcional: false, nota: null },
+          { ref: "achiote",         nombre: "Color o achiote",                  cantidad: 0.5, cantidadMax: null, unidad: "cdta",     grupo: "hogao",      opcional: true,  nota: null },
+          { ref: "aceite-neutro",   nombre: "Aceite para el hogao",             cantidad: 2,   cantidadMax: null, unidad: "cda",      grupo: "hogao",      opcional: false, nota: null },
+          { ref: "arroz",           nombre: "Arroz blanco",                     cantidad: 2,   cantidadMax: null, unidad: "taza",     grupo: "arroz",      opcional: false, nota: null },
+          { ref: "agua",            nombre: "Agua para el arroz",               cantidad: 800, cantidadMax: null, unidad: "ml",       grupo: "arroz",      opcional: false, nota: null },
+          { ref: "aceite-neutro",   nombre: "Aceite para el arroz",             cantidad: 1,   cantidadMax: null, unidad: "cda",      grupo: "arroz",      opcional: false, nota: null },
+          { ref: "sal",             nombre: "Sal para el arroz",                cantidad: 1,   cantidadMax: null, unidad: "cdta",     grupo: "arroz",      opcional: false, nota: null },
+          { ref: "tocino",          nombre: "Tocino / panceta de cerdo con piel", cantidad: 800, cantidadMax: null, unidad: "g",      grupo: "chicharrón", opcional: false, nota: null },
+          { ref: "sal",             nombre: "Sal para el chicharrón",           cantidad: 1,   cantidadMax: null, unidad: "cdta",     grupo: "chicharrón", opcional: false, nota: null },
+          { ref: "agua",            nombre: "Agua para el chicharrón",          cantidad: 250, cantidadMax: null, unidad: "ml",       grupo: "chicharrón", opcional: false, nota: null },
+          { ref: "ternera",         nombre: "Carne molida de res",              cantidad: 400, cantidadMax: null, unidad: "g",        grupo: "carne",      opcional: false, nota: "Con 2-3 cdas de hogao + pizca de comino + sal" },
+          { ref: "chorizo",         nombre: "Chorizos antioqueños",             cantidad: 4,   cantidadMax: null, unidad: "ud",       grupo: "proteínas y acompañamientos", opcional: false, nota: null },
+          { ref: "morcilla",        nombre: "Morcilla / rellena",               cantidad: 400, cantidadMax: null, unidad: "g",        grupo: "proteínas y acompañamientos", opcional: true,  nota: null },
+          { ref: "platano",         nombre: "Plátanos maduros",                 cantidad: 2,   cantidadMax: null, unidad: "ud",       grupo: "proteínas y acompañamientos", opcional: false, nota: "Cáscara casi negra para que caramelicen" },
+          { ref: "huevo",           nombre: "Huevos",                           cantidad: 4,   cantidadMax: null, unidad: "ud",       grupo: "proteínas y acompañamientos", opcional: false, nota: null },
+          { ref: "aguacate",        nombre: "Aguacates",                        cantidad: 2,   cantidadMax: null, unidad: "ud",       grupo: "proteínas y acompañamientos", opcional: false, nota: "Medio por persona" },
+          { ref: "aceite-neutro",   nombre: "Aceite para freír",                cantidad: 500, cantidadMax: null, unidad: "ml",       grupo: "proteínas y acompañamientos", opcional: false, nota: null },
+          { ref: "arepa",           nombre: "Arepas antioqueñas",               cantidad: 4,   cantidadMax: null, unidad: "ud",       grupo: "proteínas y acompañamientos", opcional: false, nota: null }
+        ],
+        pasos: [
+          { n: 1,  titulo: "Remojar los fríjoles",                   texto: "La noche anterior: cubre los 500 g de fríjol con abundante agua fría (al menos el triple de su volumen). Deja en remojo 8-12 h: acorta la cocción y los hace más digestivos. Bota el agua de remojo y enjuaga.", tiempo: null, temperatura: null, usa: ["frijol-rojo"] },
+          { n: 2,  titulo: "Cocinar los fríjoles",                   texto: "Pon los fríjoles escurridos en olla a presión con los 2,5 L de agua, el plátano verde en trozos (da cuerpo y dulzor sutil), la pezuña y la zanahoria entera. NO agregues sal todavía. Tapa y cocina 40-45 min desde que pita. En olla normal: 2-3 h, añadiendo agua caliente si baja el nivel. Deben quedar muy blandos.", tiempo: 2550, temperatura: null, usa: ["frijol-rojo", "agua", "platano", "pezuna-cerdo", "zanahoria"] },
+          { n: 3,  titulo: "Preparar el hogao",                      texto: "Mientras cuecen los fríjoles: pica finísimo la cebolla larga y los tomates; machaca el ajo. Sofríe todo en 2 cdas de aceite a FUEGO BAJO (sin dorar) con ½ cdta de comino y el color. Cocina 15-20 min removiendo hasta que el tomate se deshaga en salsa espesa. El hogao es el alma del plato: reserva la mitad para coronar.", tiempo: 1050, temperatura: null, usa: ["cebolla-larga", "tomate", "ajo", "aceite-neutro", "comino", "achiote"] },
+          { n: 4,  titulo: "Cocinar el arroz",                       texto: "Sofríe las 2 tazas de arroz en 1 cda de aceite 1-2 min. Añade 1 cdta de sal y los 800 ml de agua (debe quedar ~1,5 cm por encima del arroz). Hierve destapado a fuego medio hasta que se seque la superficie y aparezcan «ojitos». Baja al mínimo, tapa y cocina 15 min sin destapar. Suelta con tenedor.", tiempo: 1200, temperatura: null, usa: ["arroz", "aceite-neutro", "sal", "agua"] },
+          { n: 5,  titulo: "Terminar y espesar los fríjoles",        texto: "Ya blandos, retira la pezuña (desmenuza su carne y devuélvela si quieres). Agrega la mitad del hogao y 1 cdta de sal. Para espesar «a lo paisa», machaca un cucharón de fríjoles contra la olla o añade un poco de plátano verde rallado. Cocina destapado 10-15 min hasta consistencia cremosa, no aguada.", tiempo: 780,  temperatura: null, usa: ["pezuna-cerdo", "sal", "platano"] },
+          { n: 6,  titulo: "Pre-cocer y freír el chicharrón",        texto: "Corta los 800 g de tocino en tiras dejando la piel; hazle cortes transversales sin llegar a la piel y frota con 1 cdta de sal. Colócalas en sartén FRÍA con 250 ml de agua. A fuego medio: primero hierve el agua, luego se evapora y el tocino suelta su propia grasa. Cuando truene y la piel se infle, sube el fuego y fríe en esa grasa hasta dorar y quedar crocante. Escurre.", tiempo: 1500, temperatura: null, usa: ["tocino", "sal", "agua"] },
+          { n: 7,  titulo: "Carne molida paisa",                     texto: "En 1 cda de la grasa del chicharrón (o aceite), sofríe los 400 g de carne desbaratándola con cuchara. Añade 2-3 cdas de hogao, pizca de comino y sal. Cocina hasta dorar y secar el líquido. La versión más antigua usa «carne en polvo»: posta seca al sol y machacada.", tiempo: 600,  temperatura: null, usa: ["ternera", "comino", "sal"] },
+          { n: 8,  titulo: "Chorizo y morcilla",                     texto: "Pincha los chorizos y ásalos en plancha o sartén a fuego medio hasta dorar por todos lados. Dora la morcilla en rodajas 2-3 min por lado, sin que se reviente.", tiempo: 540,  temperatura: null, usa: ["chorizo", "morcilla"] },
+          { n: 9,  titulo: "Tajadas de maduro",                      texto: "Pela los plátanos maduros y córtalos en tajadas diagonales de ~1 cm. Fríe en aceite caliente hasta dorar (2-3 min por lado): dulces y caramelizadas. Escurre en papel.", tiempo: 300,  temperatura: null, usa: ["platano", "aceite-neutro"] },
+          { n: 10, titulo: "Asar las arepas",                        texto: "Asa las arepas en budare o sartén seca a fuego medio, volteando, hasta que doren y se inflen. La arepa antioqueña es delgada, blanca y sin sal.", tiempo: 540,  temperatura: null, usa: ["arepa"] },
+          { n: 11, titulo: "Huevos fritos",                          texto: "De últimas, 2-3 min: fríe los huevos en un poco de grasa caliente, «montados» (yema líquida) y con borde crocante. Sala al gusto.", tiempo: 180,  temperatura: null, usa: ["huevo", "sal"] },
+          { n: 12, titulo: "Emplatar",                               texto: "Una bandeja grande por persona. Coloca: el arroz, un cucharón de fríjoles, la carne, una tira de chicharrón, 1 chorizo, una rodaja de morcilla, 2 tajadas de maduro, 1 huevo encima del arroz, medio aguacate y la arepa al lado. Corona los fríjoles con el hogao reservado.", tiempo: 300,  temperatura: null, usa: ["aguacate"] }
+        ],
+        notas: "Núcleo obligatorio: fríjoles con hogao + arroz + carne + chicharrón + huevo + maduro + arepa + aguacate. Chorizo y morcilla casi siempre; a veces patacón o limón para los fríjoles. Secretos clave: NO salar los fríjoles al inicio (la práctica tradicional sala al final). Espesar con el propio fríjol machacado, NUNCA con harina. El chicharrón se fríe en su propia grasa, empezando con agua en sartén fría. El hogao va suave y dulce, jamás tostado. El maduro debe tener cáscara casi negra para que caramelice. Lo frito y el huevo, siempre de últimas.",
+        creado:     "2026-06-04T10:00:00Z",
+        modificado: "2026-06-04T10:00:00Z"
+      },
+      {
+        id: "ajiaco-santafereno",
+        nombre: "Ajiaco santafereño tradicional",
+        tipo: "sopas_cremas",
+        cocina: null,
+        pais: "Colombia",
+        etiquetas: ["internacional"],
+        tags: ["ajiaco", "bogota", "guascas", "papa", "pollo", "domingo", "colombiana"],
+        dieta: [],
+        racionesBase: 6,
+        tiempoPrep: 20, tiempoCoccion: 105,
+        dificultad: "media",
+        fuente: null, imagen: null,
+        ingredientes: [
+          { ref: "pollo",            nombre: "Pechuga de pollo con hueso",         cantidad: 1200, cantidadMax: null, unidad: "g",     grupo: "caldo y sopa", opcional: false, nota: "Más sabor con hueso" },
+          { ref: "agua",             nombre: "Agua",                                cantidad: 3,    cantidadMax: null, unidad: "l",     grupo: "caldo y sopa", opcional: false, nota: null },
+          { ref: "cebolla-larga",    nombre: "Cebolla larga",                       cantidad: 4,    cantidadMax: null, unidad: "ud",    grupo: "caldo y sopa", opcional: false, nota: "Enteros y golpeados con el lomo del cuchillo para que suelten sabor" },
+          { ref: "ajo",              nombre: "Dientes de ajo",                      cantidad: 4,    cantidadMax: null, unidad: "diente",grupo: "caldo y sopa", opcional: false, nota: null },
+          { ref: "cilantro",         nombre: "Cilantro",                            cantidad: 1,    cantidadMax: null, unidad: "ud",    grupo: "caldo y sopa", opcional: false, nota: "Manojo entero, con tallos" },
+          { ref: "patata",           nombre: "Papa pastusa",                        cantidad: 1000, cantidadMax: null, unidad: "g",     grupo: "caldo y sopa", opcional: false, nota: "Pelada y en trozos grandes" },
+          { ref: "patata",           nombre: "Papa sabanera (o roja)",              cantidad: 750,  cantidadMax: null, unidad: "g",     grupo: "caldo y sopa", opcional: false, nota: "Pelada y en trozos" },
+          { ref: "papa-criolla",     nombre: "Papa criolla (amarilla)",             cantidad: 1000, cantidadMax: null, unidad: "g",     grupo: "caldo y sopa", opcional: false, nota: "Raspada — el espesante" },
+          { ref: "mazorca",          nombre: "Mazorcas tiernas",                    cantidad: 3,    cantidadMax: null, unidad: "ud",    grupo: "caldo y sopa", opcional: false, nota: "En rodajas de 3-4 cm" },
+          { ref: "guascas",          nombre: "Guascas secas",                       cantidad: 3,    cantidadMax: null, unidad: "cda",   grupo: "caldo y sopa", opcional: false, nota: "O un buen manojo de guascas frescas" },
+          { ref: "sal",              nombre: "Sal",                                 cantidad: 1.5,  cantidadMax: null, unidad: "cda",   grupo: "caldo y sopa", opcional: false, nota: "Ajustar al final" },
+          { ref: "pimienta-negra",   nombre: "Pimienta negra recién molida",        cantidad: 0.5,  cantidadMax: null, unidad: "cdta",  grupo: "caldo y sopa", opcional: false, nota: null },
+          { ref: "nata",             nombre: "Crema de leche",                      cantidad: 250,  cantidadMax: null, unidad: "ml",    grupo: "para la mesa", opcional: false, nota: null },
+          { ref: "alcaparras",       nombre: "Alcaparras escurridas",               cantidad: 5,    cantidadMax: null, unidad: "cda",   grupo: "para la mesa", opcional: false, nota: null },
+          { ref: "aguacate",         nombre: "Aguacates maduros",                   cantidad: 3,    cantidadMax: null, unidad: "ud",    grupo: "para la mesa", opcional: false, nota: "En tajadas" },
+          { ref: "arroz",            nombre: "Arroz blanco crudo",                  cantidad: 2,    cantidadMax: null, unidad: "taza",  grupo: "para la mesa", opcional: false, nota: "Cocido aparte" }
+        ],
+        pasos: [
+          { n: 1, titulo: "Hacer el caldo base",                  texto: "En una olla grande pon 1,2 kg de pollo, 3 L de agua, los 4 tallos de cebolla larga (enteros y golpeados con el lomo del cuchillo para que suelten sabor), 4 dientes de ajo, la mitad del cilantro y 1,5 cda de sal. Lleva a ebullición, retira la espuma, baja a fuego lento y cocina tapado 35 min hasta que el pollo esté muy tierno.", tiempo: 2100, temperatura: null, usa: ["pollo", "agua", "cebolla-larga", "ajo", "cilantro", "sal"] },
+          { n: 2, titulo: "Alistar papas y mazorca",              texto: "Mientras hierve el caldo: pela y corta en trozos grandes 1 kg de pastusa y 0,75 kg de sabanera. Corta 3 mazorcas en rodajas de 3-4 cm. Raspa o pela 1 kg de criolla y resérvala aparte. Truco de abuela: corta las papas justo ahora y no las dejes mucho rato en agua, para no perder el almidón que dará cuerpo al ajiaco.", tiempo: 900,  temperatura: null, usa: ["patata", "mazorca", "papa-criolla"] },
+          { n: 3, titulo: "Retirar y desmenuzar el pollo",        texto: "Saca el pollo, deja que entibie y desmenúzalo en hebras; reserva. Cuela el caldo para retirar cebolla, ajo y cilantro, y devuelve el caldo limpio a la olla.", tiempo: 600,  temperatura: null, usa: ["pollo"] },
+          { n: 4, titulo: "Cocinar mazorca y papas firmes",       texto: "Añade al caldo las 3 mazorcas, 1 kg de pastusa y 0,75 kg de sabanera. Cocina a fuego medio 20 min, sin hervir fuerte (borbotón suave), para que las papas se ablanden sin desbaratarse.", tiempo: 1200, temperatura: null, usa: ["mazorca", "patata"] },
+          { n: 5, titulo: "Añadir la papa criolla (espesante)",   texto: "Incorpora 1 kg de criolla y cocina 25-30 min revolviendo con cuchara de palo. La criolla debe deshacerse casi por completo y espesar el caldo de forma natural, dándole color dorado. Nunca uses harina.", tiempo: 1650, temperatura: null, usa: ["papa-criolla"] },
+          { n: 6, titulo: "Incorporar las guascas",               texto: "Agrega 3 cdas de guascas secas (frótalas entre las manos al echarlas) y cocina solo 10 min más. Punto crítico: no las cocines de más, porque en exceso amargan.", tiempo: 600,  temperatura: null, usa: ["guascas"] },
+          { n: 7, titulo: "Terminar y reposar",                   texto: "Devuelve el pollo desmenuzado a la olla, ajusta sal y ½ cdta de pimienta, y calienta 2-3 min. Apaga y deja reposar 5 min. Sabe aún mejor al día siguiente.", tiempo: 300,  temperatura: null, usa: ["pollo", "sal", "pimienta-negra"] },
+          { n: 8, titulo: "Servir y montar la mesa",              texto: "Sirve bien caliente. Cada comensal añade a su plato crema de leche, alcaparras y tajadas de aguacate. Acompaña con arroz blanco aparte. El plato se completa en la mesa: así es la tradición santafereña.", tiempo: 300,  temperatura: null, usa: ["nata", "alcaparras", "aguacate", "arroz"] }
+        ],
+        notas: "Los 3 pilares: tres papas (pastusa + sabanera dan cuerpo, criolla se deshace y espesa), guascas (la hierba que da el sabor inconfundible, se añade al final), la mesa (crema de leche, alcaparras, aguacate, arroz blanco aparte). Claves: criolla irreemplazable; si no hay sabanera, sube la pastusa o usa papa roja. Pollo con hueso > pechuga sola: el hueso da un caldo más sabroso. Para más cuerpo, machaca papa criolla cocida contra la pared de la olla; para aligerar, añade un chorro de caldo reservado. Crema de leche tradicionalmente va en la mesa, no en la olla. Hervor: siempre a borbotón suave, nunca fuerte. Hacerlo con 1 día de antelación intensifica el sabor.",
+        creado:     "2026-06-04T10:00:00Z",
+        modificado: "2026-06-04T10:00:00Z"
+      },
+      {
+        id: "fideos-arroz-pollo-verduras",
+        nombre: "Fideos de arroz salteados con pollo y verduras",
+        tipo: "pasta",
+        cocina: null,
+        pais: "Colombia",
+        etiquetas: ["internacional"],
+        tags: ["fideos arroz", "chino-criollo", "pollo", "salteado", "wok", "colombiana"],
+        dieta: [],
+        racionesBase: 4,
+        tiempoPrep: 25, tiempoCoccion: 20,
+        dificultad: "media",
+        fuente: null, imagen: null,
+        ingredientes: [
+          { ref: "pollo",          nombre: "Pechuga de pollo",                cantidad: 500, cantidadMax: null, unidad: "g",        grupo: null, opcional: false, nota: "En tacos de ~2 cm" },
+          { ref: "fideos-arroz",   nombre: "Fideos de arroz",                 cantidad: 250, cantidadMax: null, unidad: "g",        grupo: null, opcional: false, nota: null },
+          { ref: "salsa-soja",     nombre: "Salsa de soya",                   cantidad: 5,   cantidadMax: null, unidad: "cda",      grupo: null, opcional: false, nota: "2 para marinar + 3 para la salsa" },
+          { ref: "maicena",        nombre: "Maicena (fécula de maíz)",        cantidad: 1,   cantidadMax: null, unidad: "cda",      grupo: null, opcional: false, nota: null },
+          { ref: "comino",         nombre: "Comino molido",                   cantidad: 1,   cantidadMax: null, unidad: "cdta",     grupo: null, opcional: false, nota: null },
+          { ref: "ajo",            nombre: "Dientes de ajo",                  cantidad: 4,   cantidadMax: null, unidad: "diente",   grupo: null, opcional: false, nota: "2 para marinar + 2 para saltear" },
+          { ref: "cebolla",        nombre: "Cebolla cabezona blanca mediana", cantidad: 1,   cantidadMax: null, unidad: "ud",       grupo: null, opcional: false, nota: null },
+          { ref: "cebolla-larga",  nombre: "Cebolla larga",                   cantidad: 3,   cantidadMax: null, unidad: "ud",       grupo: null, opcional: false, nota: "Separar blanco y verde" },
+          { ref: "pimiento-rojo",  nombre: "Pimentón rojo mediano",           cantidad: 1,   cantidadMax: null, unidad: "ud",       grupo: null, opcional: false, nota: "En tiras" },
+          { ref: "zanahoria",      nombre: "Zanahoria grande",                cantidad: 1,   cantidadMax: null, unidad: "ud",       grupo: null, opcional: false, nota: "En juliana fina" },
+          { ref: "habichuelas",    nombre: "Habichuelas",                     cantidad: 150, cantidadMax: null, unidad: "g",        grupo: null, opcional: false, nota: "En trozos de 3 cm" },
+          { ref: "tomate",         nombre: "Tomate maduro",                   cantidad: 1,   cantidadMax: null, unidad: "ud",       grupo: null, opcional: false, nota: "Rallado, desechar piel" },
+          { ref: "achiote",        nombre: "Color (achiote) en polvo",        cantidad: 1,   cantidadMax: null, unidad: "cdta",     grupo: null, opcional: false, nota: null },
+          { ref: "caldo-pollo",    nombre: "Caldo de pollo",                  cantidad: 120, cantidadMax: null, unidad: "ml",       grupo: null, opcional: false, nota: null },
+          { ref: "aceite-neutro",  nombre: "Aceite vegetal",                  cantidad: 3,   cantidadMax: null, unidad: "cda",      grupo: null, opcional: false, nota: null },
+          { ref: "cilantro",       nombre: "Cilantro fresco picado",          cantidad: 4,   cantidadMax: null, unidad: "cda",      grupo: null, opcional: false, nota: "Al final" },
+          { ref: "limon",          nombre: "Limón",                           cantidad: 1,   cantidadMax: null, unidad: "ud",       grupo: null, opcional: false, nota: "½ para la salsa + ½ en gajos al lado" },
+          { ref: "azucar",         nombre: "Azúcar o panela raspada",         cantidad: 1,   cantidadMax: null, unidad: "cdta",     grupo: null, opcional: false, nota: null },
+          { ref: "sal",            nombre: "Sal",                             cantidad: 1,   cantidadMax: null, unidad: "cdta",     grupo: null, opcional: false, nota: "Al gusto" },
+          { ref: "pimienta-negra", nombre: "Pimienta negra molida",           cantidad: 0.5, cantidadMax: null, unidad: "cdta",     grupo: null, opcional: false, nota: null },
+          { ref: "aceite-sesamo",  nombre: "Aceite de ajonjolí",              cantidad: 1,   cantidadMax: null, unidad: "cdta",     grupo: null, opcional: true,  nota: null }
+        ],
+        pasos: [
+          { n: 1, titulo: "Marinar y afelpar el pollo (velveting)", texto: "Corta los 500 g de pechuga en tacos de ~2 cm parejos. Mézclalos con 2 cda de salsa de soya, 1 cdta de comino, 2 dientes de ajo triturados, 1 cda de maicena, ½ cdta de pimienta y un chorrito de aceite. Amasa 30 s y deja reposar 20 min. La maicena + soya sella el jugo (velveting cantonés): pollo jugoso aunque se saltee a fuego alto. Aprovecha el reposo para hacer el paso 2.", tiempo: 1200, temperatura: null, usa: ["pollo", "salsa-soja", "comino", "ajo", "maicena", "pimienta-negra", "aceite-neutro"] },
+          { n: 2, titulo: "Mise en place",                          texto: "Mientras reposa el pollo, deja TODO listo (el salteado es rapidísimo): cebolla cabezona en pluma, pimentón en tiras, zanahoria en juliana fina, habichuelas en trozos de 3 cm, cebolla larga en aros (separar blanco y verde), 2 dientes de ajo restantes picados, tomate rallado (desechar la piel). SALSA en un vaso aparte: 3 cda salsa de soya + 120 ml caldo de pollo + 1 cdta color (achiote) + 1 cdta azúcar/panela + 1 cdta aceite de ajonjolí (opcional).", tiempo: 600,  temperatura: null, usa: ["cebolla", "pimiento-rojo", "zanahoria", "habichuelas", "cebolla-larga", "ajo", "tomate", "salsa-soja", "caldo-pollo", "achiote", "azucar", "aceite-sesamo"] },
+          { n: 3, titulo: "Hidratar los fideos al dente",           texto: "Justo antes de cocinar, remoja los 250 g de fideos en agua MUY caliente (no hirviendo) hasta que estén flexibles pero firmes. Escurre, enjuaga con agua fría para cortar la cocción y mézclalos con unas gotas de aceite. CLAVE: déjalos al dente, terminan de cocerse en el salteado. Vermicelli fino ~5 min, fideo plano ~8-10 min; guíate por la textura.", tiempo: 480,  temperatura: null, usa: ["fideos-arroz", "aceite-neutro"] },
+          { n: 4, titulo: "Sellar el pollo",                        texto: "Calienta 2 cda de aceite en wok/sartén grande hasta que humee ligeramente. Saltea el pollo en una sola capa (sin amontonar, en 2 tandas si hace falta) 3-4 min hasta dorar por fuera y apenas cocido por dentro. Retira a un plato. No lo cocines de más aquí: vuelve al final.", tiempo: 240,  temperatura: null, usa: ["aceite-neutro", "pollo"] },
+          { n: 5, titulo: "Saltear las verduras",                   texto: "En la misma sartén añade 1 cda de aceite + los 2 dientes de ajo picados + cebolla cabezona + parte BLANCA de la cebolla larga; 30 s. Agrega zanahoria y habichuelas (lo más duro) y saltea 3 min a fuego alto. Suma pimentón y tomate rallado; 2 min más. Deben quedar crisp-tender (firmes, color vivo), no blandas.", tiempo: 330,  temperatura: null, usa: ["aceite-neutro", "ajo", "cebolla", "cebolla-larga", "zanahoria", "habichuelas", "pimiento-rojo", "tomate"] },
+          { n: 6, titulo: "Integrar todo",                          texto: "Regresa el pollo, añade los fideos escurridos y vierte la salsa. Saltea a fuego alto 2-3 min levantando y mezclando para que la salsa cubra todo y los fideos tomen el color/achiote. Si se ve seco, un chorrito más de caldo; si falta sal, ajusta con unas gotas de soya (mejor que con sal). Prueba.", tiempo: 180,  temperatura: null, usa: ["pollo", "fideos-arroz", "caldo-pollo", "salsa-soja"] },
+          { n: 7, titulo: "Finalizar y servir",                     texto: "Apaga el fuego. Fuera del calor añade el cilantro picado + parte VERDE de la cebolla larga y el jugo de ½ limón. Mezcla y sirve de inmediato, con el otro ½ limón en gajos al lado. Cilantro y limón al final = frescura.", tiempo: 60,   temperatura: null, usa: ["cilantro", "cebolla-larga", "limon"] }
+        ],
+        notas: "Nota de autenticidad: este plato NO es una receta tradicional de abuela colombiana; los fideos de arroz son del sudeste asiático. Lo auténtico aquí está en la cocina chino-criolla real de Colombia: sazón base colombiana (comino, color/achiote, cebolla larga, cilantro, limón) + técnica de chef asiático (velveting y fuego alto). Errores frecuentes: sobre-remojar los fideos (quedan pastosos), fuego bajo (verduras sueltan agua y se hierven; debe ser FUEGO ALTO + movimiento), amontonar el pollo (se cuece al vapor y queda gris, no dorado), saltarse el velveting (pollo seco), cilantro y limón al inicio (pierden frescura, siempre al final). Sustituciones: sin habichuela → brócoli, repollo o arveja china. Más colombiano: un toque de hogao en el paso 5. Más asiático: 1 cdta de jengibre rallado con el ajo. Conservación: hasta 3 días en nevera. Recalienta en sartén con unas gotas de agua, NO en microondas (los fideos se resecan).",
+        creado:     "2026-06-04T10:00:00Z",
+        modificado: "2026-06-04T10:00:00Z"
       }
     ];
     /* Sets de búsqueda rápidos para detectar fijas. */
@@ -12482,19 +12889,18 @@
         const opc = ing.opcional ? `<span class="ing-opcional">opcional</span>` : "";
         const nota = ing.nota ? `<span class="ing-nota">${esc(ing.nota)}</span>` : "";
         const tachado = sesion.ticsIng.has(idx) ? " tachado" : "";
-        const hayDetalles = pillHTML || avisoHTML || opc;
-        const detallesHTML = hayDetalles
-          ? `<span class="ing-detalles">${pillHTML}${avisoHTML}${opc}</span>` : "";
 
+        // Layout en 2 columnas: cantidad+unidad a la izquierda, nombre a la derecha.
+        // Si no hay cantidad ni unidad, la columna izquierda queda vacía pero
+        // mantiene su ancho para que los nombres se alineen entre todas las filas.
         return `
           <li class="${tachado.trim()}" data-tic-ing="${idx}">
             <input type="checkbox" ${sesion.ticsIng.has(idx) ? "checked" : ""}
                    aria-label="Tachar ${esc(ing.nombre)}">
-            <span class="ing-texto">
-              <span class="ing-fila-principal">
-                <span class="ing-nombre">${esc(ing.nombre)}</span>
-                ${detallesHTML}
-              </span>
+            <span class="ing-col-cant">${pillHTML || ""}</span>
+            <span class="ing-col-nombre">
+              <span class="ing-nombre">${esc(ing.nombre)}</span>
+              ${avisoHTML}${opc}
               ${nota}
             </span>
           </li>`;
@@ -12521,10 +12927,10 @@
       const r = recetaPorId(sesion.recetaAbierta);
       if (!r) return "";
       const lis = r.pasos.map((p, idx) => {
+        // Botón temporizador (si el paso lo requiere) + meta de temperatura
+        const timerBtn = pillTimerPasoHTML(p, r.id, "detalle");
         const meta = [];
-        // Solo mostramos el ⏱ si realmente corresponde a un proceso de cocción/reposo.
-        if (necesitaTemporizador(p)) meta.push(`<span>⏱ <b>${formateaSeg(p.tiempo)}</b></span>`);
-        if (p.temperatura != null)   meta.push(`<span>🌡 <b>${esc(p.temperatura)}°C</b></span>`);
+        if (p.temperatura != null) meta.push(`<span>🌡 <b>${esc(p.temperatura)}°C</b></span>`);
         const tachado = sesion.ticsPaso.has(idx) ? " class=\"tachado\"" : "";
         return `
           <li${tachado} data-tic-paso="${idx}">
@@ -12534,7 +12940,7 @@
             <div class="paso-texto">
               ${p.titulo ? `<div class="paso-titulo">${esc(p.titulo)}</div>` : ""}
               <div class="paso-cuerpo">${destacarAccion(p.texto)}</div>
-              ${meta.length ? `<div class="paso-meta">${meta.join("")}</div>` : ""}
+              ${(meta.length || timerBtn) ? `<div class="paso-meta">${meta.join("")}${timerBtn}</div>` : ""}
             </div>
           </li>`;
       }).join("");
@@ -12628,7 +13034,7 @@
               <h2>Pasos</h2>
               <button type="button" class="accion" data-accion="restaurar-paso">Restaurar pasos</button>
             </div>
-            ${renderPasosZona()}
+            <div id="zona-pasos">${renderPasosZona()}</div>
             ${r.notas ? `<div class="receta-notas">${esc(r.notas)}</div>` : ""}
           </section>
 
@@ -12704,6 +13110,14 @@
       if (num) num.textContent = String(sesion.raciones);
       const zona = document.getElementById("zona-ingredientes");
       if (zona) zona.innerHTML = renderIngredientesZona();
+    }
+
+    /** Re-render in-place de la lista de pasos (sin perder scroll). */
+    function actualizarPasosZona() {
+      const r = recetaPorId(sesion.recetaAbierta);
+      if (!r) return;
+      const zona = document.getElementById("zona-pasos");
+      if (zona) zona.innerHTML = renderPasosZona();
     }
 
     /** Re-render in-place de la zona de "tu cocina" (valoracion/fav/estado/cocinado). */
@@ -13212,20 +13626,15 @@
         const p = r.pasos[pagina];
         if (!p) { cerrarCocina(); return; }
         const meta = [];
-        const conTemp = necesitaTemporizador(p);
         if (p.temperatura != null) meta.push(`<span class="pill">Horno <b>${esc(p.temperatura)}°C</b></span>`);
-        if (conTemp)               meta.push(`<span class="pill">Tiempo <b>${formateaSeg(p.tiempo)}</b></span>`);
-        const tempBtn = conTemp
-          ? `<button type="button" class="mc-btn-temp" data-accion="iniciar-timer-paso">
-               ⏱ Iniciar temporizador (${formateaSeg(p.tiempo)})
-             </button>` : "";
+        const timerBtn = pillTimerPasoHTML(p, r.id, "cocina");
         cuerpoHTML = `
           <div class="mc-paso">
             <div class="mc-paso-num">Paso ${p.n} de ${total}</div>
             ${p.titulo ? `<h2 class="mc-paso-titulo">${esc(p.titulo)}</h2>` : ""}
             <div class="mc-paso-texto">${destacarAccion(p.texto)}</div>
             ${meta.length ? `<div class="mc-paso-meta">${meta.join("")}</div>` : ""}
-            ${tempBtn}
+            ${timerBtn ? `<div class="mc-paso-timer-zona">${timerBtn}</div>` : ""}
           </div>`;
       }
 
@@ -13280,8 +13689,15 @@
           avisarVencido(t);
         }
       }
-      if (estructural) { guardarTimers(); renderTimers(); }
-      else { actualizarTextosTimers(); }
+      if (estructural) {
+        guardarTimers();
+        renderTimers();
+        // Actualizar también las pills de timer en pasos (cambio play↔stop al vencer)
+        if (sesion.modoCocina.activo) renderModoCocina();
+        else if (sesion.recetaAbierta) actualizarPasosZona();
+      } else {
+        actualizarTextosTimers();
+      }
     }
 
     function avisarVencido(t) {
@@ -13349,9 +13765,55 @@
       if (pag < 0) return;  // no hay timer en portada/ingredientes
       const p = r.pasos[pag];
       if (!p || p.tiempo == null) return;
-      // paso.tiempo en SEGUNDOS (T2) -> * 1000.
       const etiq = p.titulo || `Paso ${p.n} · ${r.nombre}`;
       crearTimer(etiq, p.tiempo * 1000, r.id, p.n);
+    }
+
+    /** Devuelve el timer activo (no vencido) asociado a un paso de receta,
+     *  o null. Los timers de detalle y modo cocina son los mismos: ambos
+     *  consultan este helper. */
+    function timerActivoPaso(idReceta, pasoN) {
+      return sesion.timers.find(t =>
+        t.recetaId === idReceta && t.pasoN === pasoN && !t.vencido) || null;
+    }
+
+    /** Inicia un timer para un paso concreto desde el detalle.
+     *  Si ya hay uno activo para ese paso, no hace nada. */
+    function iniciarTimerPaso(idReceta, pasoN) {
+      const r = recetaPorId(idReceta);
+      if (!r) return;
+      const p = r.pasos.find(x => x.n === pasoN);
+      if (!p || p.tiempo == null) return;
+      if (timerActivoPaso(idReceta, pasoN)) return;  // ya activo
+      const etiq = p.titulo || `Paso ${p.n} · ${r.nombre}`;
+      crearTimer(etiq, p.tiempo * 1000, idReceta, pasoN);
+    }
+
+    /** Genera el HTML de la "pill" del temporizador de un paso.
+     *  Modo "detalle" (compacto inline) o "cocina" (grande centrado). */
+    function pillTimerPasoHTML(p, idReceta, modo) {
+      if (!necesitaTemporizador(p)) return "";
+      const t = timerActivoPaso(idReceta, p.n);
+      const tamano = modo === "cocina" ? " mc-xl" : "";
+      if (!t) {
+        return `<button type="button" class="paso-timer-btn${tamano}"
+                  data-accion="iniciar-paso-timer" data-receta="${esc(idReceta)}"
+                  data-paso="${p.n}" data-tiempo="${p.tiempo}">
+                  <span class="paso-timer-icono">▶</span>
+                  <span class="paso-timer-valor"
+                        data-timer-paso="${esc(idReceta)}|${p.n}">${formateaSeg(p.tiempo)}</span>
+                </button>`;
+      }
+      // Timer activo: tiempo restante actualizado por el ticker
+      const restMs = t.pausado ? (t.restanteMs || 0) : Math.max(0, (t.finMs || 0) - Date.now());
+      const restSeg = Math.ceil(restMs / 1000);
+      const icono = t.pausado ? "▶" : "■";
+      return `<button type="button" class="paso-timer-btn activo${tamano}"
+                data-accion="parar-paso-timer" data-timer-id="${esc(t.id)}">
+                <span class="paso-timer-icono">${icono}</span>
+                <span class="paso-timer-valor activo"
+                      data-timer-paso="${esc(idReceta)}|${p.n}">${formateaSeg(restSeg)}</span>
+              </button>`;
     }
 
     /** Render estructural completo del panel de temporizadores. */
@@ -13400,22 +13862,34 @@
 
     /** Actualizacion ligera del numero y del anillo — cada 250 ms (T1). */
     function actualizarTextosTimers() {
+      // Panel flotante
       const panel = document.getElementById("panel-timers");
-      if (!panel) return;
-      panel.querySelectorAll(".timer").forEach(el => {
-        const t = sesion.timers.find(x => x.id === el.dataset.timerId);
-        if (!t) return;
+      if (panel) {
+        panel.querySelectorAll(".timer").forEach(el => {
+          const t = sesion.timers.find(x => x.id === el.dataset.timerId);
+          if (!t) return;
+          const ms = t.pausado ? (t.restanteMs || 0)
+                   : Math.max(0, (t.finMs || 0) - Date.now());
+          const span = el.querySelector(".timer-restante");
+          if (span) span.textContent = formateaSeg(Math.ceil(ms / 1000));
+          const anillo = el.querySelector(".fg-circ");
+          if (anillo) {
+            const dur = t.duracionMs || 1;
+            const progreso = Math.max(0, Math.min(1, ms / dur));
+            const dashoff = t.vencido ? 0 : (1 - progreso) * 100;
+            anillo.style.strokeDashoffset = String(dashoff);
+          }
+        });
+      }
+      // Pills de timer en pasos (detalle y modo cocina)
+      document.querySelectorAll("[data-timer-paso]").forEach(el => {
+        const [idReceta, pasoNStr] = (el.dataset.timerPaso || "").split("|");
+        const pasoN = Number(pasoNStr);
+        const t = timerActivoPaso(idReceta, pasoN);
+        if (!t) return;  // no activo: el botón muestra el tiempo total estático
         const ms = t.pausado ? (t.restanteMs || 0)
                  : Math.max(0, (t.finMs || 0) - Date.now());
-        const span = el.querySelector(".timer-restante");
-        if (span) span.textContent = formateaSeg(Math.ceil(ms / 1000));
-        const anillo = el.querySelector(".fg-circ");
-        if (anillo) {
-          const dur = t.duracionMs || 1;
-          const progreso = Math.max(0, Math.min(1, ms / dur));
-          const dashoff = t.vencido ? 0 : (1 - progreso) * 100;
-          anillo.style.strokeDashoffset = String(dashoff);
-        }
+        el.textContent = formateaSeg(Math.ceil(ms / 1000));
       });
     }
 
@@ -15055,10 +15529,28 @@
           return;
         }
 
+        // Iniciar/parar timer desde botón pill de paso (en el detalle)
+        const btnIniPaso = ev.target.closest("[data-accion='iniciar-paso-timer']");
+        if (btnIniPaso) {
+          ev.stopPropagation();
+          iniciarTimerPaso(btnIniPaso.dataset.receta, Number(btnIniPaso.dataset.paso));
+          actualizarPasosZona();
+          return;
+        }
+        const btnParaPaso = ev.target.closest("[data-accion='parar-paso-timer']");
+        if (btnParaPaso) {
+          ev.stopPropagation();
+          eliminarTimer(btnParaPaso.dataset.timerId);
+          actualizarPasosZona();
+          return;
+        }
+
         // Tic paso.
         const liPaso = ev.target.closest("li[data-tic-paso]");
         if (liPaso) {
           if (ev.target.tagName === "INPUT") return;
+          // Ignorar clicks dentro de cualquier botón del paso
+          if (ev.target.closest("button")) return;
           const idx = Number(liPaso.dataset.ticPaso);
           toggleTicPaso(idx, liPaso);
           return;
@@ -16079,6 +16571,23 @@
         if (ev.target.closest("[data-accion='paso-anterior']"))       { pasoAnterior();         return; }
         if (ev.target.closest("[data-accion='paso-siguiente']"))      { pasoSiguiente();        return; }
         if (ev.target.closest("[data-accion='iniciar-timer-paso']"))  { iniciarTimerDesdePaso();return; }
+        // Iniciar timer desde botón pill de paso (detalle o modo cocina)
+        const btnIniPaso = ev.target.closest("[data-accion='iniciar-paso-timer']");
+        if (btnIniPaso) {
+          iniciarTimerPaso(btnIniPaso.dataset.receta, Number(btnIniPaso.dataset.paso));
+          // Re-renderizar la zona afectada para mostrar el timer en marcha
+          if (sesion.modoCocina.activo) renderModoCocina();
+          else if (sesion.recetaAbierta) actualizarPasosZona();
+          return;
+        }
+        // Parar (eliminar) timer desde botón pill de paso
+        const btnParaPaso = ev.target.closest("[data-accion='parar-paso-timer']");
+        if (btnParaPaso) {
+          eliminarTimer(btnParaPaso.dataset.timerId);
+          if (sesion.modoCocina.activo) renderModoCocina();
+          else if (sesion.recetaAbierta) actualizarPasosZona();
+          return;
+        }
 
         // Tic en ingrediente desde la página de Ingredientes del modo cocina.
         const liIng = ev.target.closest("li[data-tic-ing-cocina]");
