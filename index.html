@@ -421,6 +421,22 @@
       transition: background .12s, box-shadow .12s;
     }
     .detalle-volver:hover { background: var(--bg-elev); box-shadow: var(--sh-1); }
+    .detalle-acciones-top {
+      display: flex; align-items: center; gap: var(--gap-2);
+      flex-wrap: wrap;
+    }
+    .detalle-editar {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px;
+      border-radius: var(--r-pill);
+      background: var(--bg-soft);
+      color: var(--accent);
+      font-size: 14px; font-weight: 600;
+      cursor: pointer;
+      transition: background .12s, box-shadow .12s;
+      margin-left: auto;
+    }
+    .detalle-editar:hover { background: var(--accent-bg); box-shadow: var(--sh-1); }
 
     .detalle-cabecera {
       background: var(--bg-elev);
@@ -1320,11 +1336,15 @@
       border-radius: var(--r-pill);
       background: var(--bg-elev);
       color: var(--accent);
-      font-size: 24px;
       box-shadow: var(--sh-3);
       display: inline-flex; align-items: center; justify-content: center;
       border: 1px solid var(--line);
       transition: transform .12s, box-shadow .12s;
+      padding: 0;
+    }
+    .fab-timer svg {
+      width: 24px; height: 24px;
+      display: block;
     }
     .fab-timer:hover { transform: translateY(-1px); box-shadow: var(--sh-3); }
     body.modo-cocina-activo .fab-timer { display: none; }
@@ -2591,44 +2611,49 @@
     }
 
     /* ========================================================================
-       FULL-COLOR — cabecera de receta y modo cocina con fondo del tipo + letras
-       blancas. Tipografía grande y aireada en cocina.
+       CABECERA DE RECETA — sin banner color, título grande coloreado.
+       Modo cocina sigue full-color (más abajo).
        ======================================================================== */
     .detalle-cabecera {
-      background: var(--chip-fg, var(--accent));
-      color: #ffffff;
-      border: 1px solid transparent;
-      box-shadow: var(--sh-2);
+      background: var(--bg-elev);
+      color: var(--text);
+      border: 1px solid var(--line-soft);
+      border-left: 6px solid var(--chip-fg, var(--accent));
+      box-shadow: var(--sh-1);
       position: relative;
       overflow: hidden;
     }
-    .detalle-cabecera::before {
-      content: "";
-      position: absolute; inset: 0;
-      background:
-        radial-gradient(at top right, rgba(255,255,255,0.18), transparent 55%),
-        radial-gradient(at bottom left, rgba(0,0,0,0.10), transparent 50%);
-      pointer-events: none;
-    }
-    .detalle-cabecera > * { position: relative; z-index: 1; }
+    .detalle-cabecera::before { display: none; }
     :root[data-tema="oscuro"] .detalle-cabecera {
-      background: var(--chip-bg, var(--accent));
-      color: var(--chip-fg, #fff);
+      background: var(--bg-elev);
+      color: var(--text);
+      border-left-color: var(--chip-fg, var(--accent));
     }
-    .detalle-cabecera h1,
-    .detalle-cabecera .detalle-tiempos,
-    .detalle-cabecera .detalle-tiempos b { color: inherit; }
-    .detalle-cabecera .detalle-tiempos { opacity: 0.95; }
+    .detalle-cabecera h1 {
+      color: var(--chip-fg, var(--accent));
+      font-size: 38px;
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      line-height: 1.05;
+    }
+    @media (min-width: 720px) {
+      .detalle-cabecera h1 { font-size: 52px; }
+    }
+    .detalle-cabecera .detalle-tiempos { color: var(--text-muted); opacity: 1; }
+    .detalle-cabecera .detalle-tiempos b { color: var(--text); }
     .detalle-cabecera .chip-tipo {
-      background: rgba(255,255,255,0.22);
-      color: inherit;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      background: var(--chip-bg, var(--bg-soft));
+      color: var(--chip-fg, var(--text-muted));
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
     }
-    .detalle-cabecera .pill,
+    .detalle-cabecera .pill {
+      background: var(--chip-bg, var(--bg-soft));
+      color: var(--chip-fg, var(--text-muted));
+    }
     .detalle-cabecera .pill-dieta {
-      background: rgba(255,255,255,0.18);
-      color: inherit;
+      background: var(--chip-bg, var(--bg-soft));
+      color: var(--chip-fg, var(--text-muted));
     }
 
     /* ---- Modo cocina: overlay full-color del tipo + texto blanco -------- */
@@ -3235,25 +3260,109 @@
     .detalle .lista-paso .paso-titulo {
       display: block;
       font-size: 15px;
-      font-weight: 600;
-      letter-spacing: -0.015em;
+      font-weight: 800;
+      letter-spacing: -0.02em;
       color: var(--text);
       margin-bottom: 4px;
     }
     .detalle .lista-paso .paso-meta { margin-top: 10px; }
 
-    /* Pills DENTRO de los bloques de Ingredientes/Pasos del detalle:
-       color del banner (chip-fg en claro / chip-bg en oscuro) + texto blanco. */
+    /* ========================================================================
+       INGREDIENTES — pill clara al lado del nombre (layout horizontal)
+       ======================================================================== */
+    .detalle .bloque .lista-ing li {
+      display: flex;
+      align-items: center;
+      gap: var(--gap-3);
+      padding: 10px 12px;
+      background: transparent;
+      border-radius: var(--r-md);
+      transition: background .12s;
+    }
+    .detalle .bloque .lista-ing li:hover {
+      background: var(--bg-soft);
+    }
+    .detalle .bloque .lista-ing input[type="checkbox"] {
+      width: 18px; height: 18px;
+      margin-top: 0;
+      accent-color: var(--accent);
+      flex-shrink: 0;
+      border-radius: 4px;
+    }
+    /* Layout horizontal: nombre + pill + nota/opcional en una sola fila */
+    .detalle .bloque .lista-ing .ing-texto {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      flex: 1;
+      min-width: 0;
+    }
+    .detalle .bloque .lista-ing .ing-nombre {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--text);
+      letter-spacing: -0.015em;
+      line-height: 1.3;
+    }
+    .detalle .bloque .lista-ing .ing-detalles {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+      margin-left: 0;
+    }
+    /* Pill con la versión clara del color del tipo de receta */
     .detalle .bloque .ing-pill {
-      background: var(--chip-fg, var(--accent));
-      color: #ffffff;
+      background: var(--chip-bg, var(--bg-soft));
+      color: var(--chip-fg, var(--text));
       border: 1px solid transparent;
       backdrop-filter: none;
       -webkit-backdrop-filter: none;
+      padding: 3px 10px;
+      font-family: var(--font-ui);
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum" 1;
+      font-weight: 600;
+      font-size: 12.5px;
+      letter-spacing: -0.005em;
+      margin: 0;
+      white-space: nowrap;
+      border-radius: var(--r-pill);
     }
-    :root[data-tema="oscuro"] .detalle .bloque .ing-pill {
-      background: var(--chip-bg, var(--accent));
-      color: var(--chip-fg, #ffffff);
+    /* "opcional" como pill clara sutil */
+    .detalle .bloque .lista-ing .ing-opcional {
+      background: var(--bg-soft);
+      color: var(--text-muted);
+      padding: 2px 9px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin: 0;
+      border-radius: var(--r-pill);
+    }
+    /* Nota inline en cursiva sutil */
+    .detalle .bloque .lista-ing .ing-nota {
+      color: var(--text-muted);
+      font-size: 12.5px;
+      font-style: italic;
+      margin: 0;
+      font-weight: 400;
+      display: inline-block;
+      width: 100%;
+      margin-top: 2px;
+    }
+    /* Tachado limpio */
+    .detalle .bloque .lista-ing li.tachado {
+      opacity: 0.45;
+    }
+    .detalle .bloque .lista-ing li.tachado .ing-nombre,
+    .detalle .bloque .lista-ing li.tachado .ing-pill,
+    .detalle .bloque .lista-ing li.tachado .ing-nota {
+      text-decoration: line-through;
+      text-decoration-thickness: 1px;
     }
     /* Meta de pasos (⏱ tiempo, 🌡 horno): pills del color del banner. */
     .detalle .lista-paso .paso-meta {
@@ -3562,16 +3671,18 @@
     .detalle-cabecera .ing-aviso,
     .detalle-cabecera .ing-opcional,
     .detalle-cabecera .ing-nota { color: inherit; }
-    /* Mini-cards de tiempos dentro del banner: glass blanco translúcido */
+    /* Mini-cards de tiempos: misma familia de color que el tipo (claro) */
     .detalle-cabecera .detalle-tiempos > span {
-      background: rgba(255,255,255,0.14);
-      color: rgba(255,255,255,0.78);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255,255,255,0.10);
+      background: var(--chip-bg, var(--bg-soft));
+      color: var(--chip-fg, var(--text-muted));
+      border: none;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      opacity: 0.85;
     }
     .detalle-cabecera .detalle-tiempos > span b {
-      color: #ffffff;
+      color: var(--chip-fg, var(--text));
+      opacity: 1;
     }
     /* Estado de "ingredientes del paso" en cocina (tarjeta translúcida) */
     .mc-paso-ings,
@@ -3830,7 +3941,15 @@
   <div id="panel-timers" class="panel-timers" hidden aria-live="polite"></div>
 
   <!-- FAB para crear temporizador manual. -->
-  <button id="fab-timer" type="button" class="fab-timer" aria-label="Nuevo temporizador">⏱+</button>
+  <button id="fab-timer" type="button" class="fab-timer" aria-label="Nuevo temporizador" title="Nuevo temporizador">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="13" r="8"/>
+      <polyline points="12 9 12 13 15 15"/>
+      <line x1="9" y1="2" x2="15" y2="2"/>
+      <line x1="12" y1="2" x2="12" y2="5"/>
+      <line x1="19" y1="6" x2="20.5" y2="4.5"/>
+    </svg>
+  </button>
 
   <!-- Modal nuevo temporizador. -->
   <div id="modal-nuevo-timer" class="modal-overlay" hidden aria-modal="true" role="dialog"></div>
@@ -4251,9 +4370,14 @@
     };
     /* Cocinas habituales sugeridas (texto libre, autocomplete via datalist). */
     const COCINAS_SUGERIDAS = [
-      "Española","Italiana","Francesa","Mexicana","Japonesa","China","Asiática",
-      "Árabe","India","Mediterránea","Colombiana","Peruana","Argentina","Estadounidense",
-      "Vegetariana","Internacional","Casera"
+      "Mediterránea","Asiática","Europea","Latinoamericana","Oriental",
+      "Vegetariana","Internacional","Casera","Fusión","Tradicional"
+    ];
+    /* Países sugeridos para el campo "pais" (texto libre). */
+    const PAISES_SUGERIDOS = [
+      "España","Italia","Francia","México","Japón","China","Tailandia",
+      "Marruecos","India","Líbano","Colombia","Perú","Argentina","Estados Unidos",
+      "Grecia","Portugal","Turquía","Vietnam","Corea","Brasil","Chile"
     ];
     const ETIQUETA_CATEGORIA_COMPRA = {
       verduras_fruta: "Verduras y fruta",
@@ -4402,6 +4526,7 @@
       bibliotecaSoloFav: false,     // efimero
       bibliotecaTipos: new Set(),   // filtro por tipo (multi, efimero)
       bibliotecaCocinas: new Set(), // filtro por cocina (multi, efimero)
+      bibliotecaPaises: new Set(),  // filtro por país (multi, efimero)
       bibliotecaEtiquetas: new Set(),// filtro por etiqueta (multi: vegetariano,internacional,familiar,dieta)
       bibliotecaLimite: 30,         // lazy loading: cuantas tarjetas mostrar
       /* Accesibilidad — nivel 0..3 (persistido). */
@@ -5115,6 +5240,45 @@
         html: txt ? `<span class="ing-pill">${esc(txt)}</span>` : "",
         aviso: f1.aviso
       };
+    }
+
+    /* Palabras que indican cocción / reposo / horneado / fermentación reales.
+       Solo pasos con alguna de estas (Y con `tiempo` >= 30 s) muestran el
+       temporizador. Tareas mecánicas como tamizar/batir/mezclar/secar/picar
+       no necesitan cuenta atrás. */
+    const PALABRAS_TEMPORIZADOR = [
+      "horn","cocer","cocci","cocida","cuece","cuec",
+      "hervir","hierv","hervid","hierve",
+      "freir","freír","frie","frito","frita","fríe",
+      "pochar","poche","pochad","poch",
+      "sofre","sofrí","sofri",
+      "ferment",
+      "enfri",
+      "repos",
+      "refriger","nevera",
+      "descans",
+      "asar","asado","asada","ase ",
+      "gratina","gratin",
+      "estirar","estir",
+      "amas",
+      "dorar","dorad","dora ","dore",
+      "rehog",
+      "saltea","saltée","saltée",
+      "esperar","esper",
+      "marin",
+      "infusio",
+      "tost","tueste",
+      "blanqu",
+      "templar","temple",
+      "macer",
+      "dejar","deja "
+    ];
+
+    /** Decide si un paso necesita botón de temporizador. */
+    function necesitaTemporizador(p) {
+      if (!p || p.tiempo == null || p.tiempo < 30) return false;
+      const txt = ((p.texto || "") + " " + (p.titulo || "")).toLowerCase();
+      return PALABRAS_TEMPORIZADOR.some(w => txt.includes(w));
     }
 
     /**
@@ -5919,6 +6083,9 @@
         id: r.id,
         nombre: r.nombre,
         tipo: r.tipo,
+        cocina: r.cocina || null,
+        pais: r.pais || null,
+        etiquetas: Array.isArray(r.etiquetas) ? r.etiquetas : [],
         tags: Array.isArray(r.tags) ? r.tags : [],
         dieta: Array.isArray(r.dieta) ? r.dieta : [],
         raciones_base: r.racionesBase,
@@ -5939,6 +6106,9 @@
         id: r.id,
         nombre: r.nombre,
         tipo: r.tipo,
+        cocina: r.cocina || null,
+        pais: r.pais || null,
+        etiquetas: Array.isArray(r.etiquetas) ? r.etiquetas : [],
         tags: Array.isArray(r.tags) ? r.tags : [],
         dieta: Array.isArray(r.dieta) ? r.dieta : [],
         racionesBase: r.raciones_base,
@@ -6207,6 +6377,7 @@
           normaliza(r.nombre).includes(txt) ||
           (r.tags || []).some(t => normaliza(t).includes(txt)) ||
           (r.cocina && normaliza(r.cocina).includes(txt)) ||
+          (r.pais   && normaliza(r.pais).includes(txt)) ||
           r.ingredientes.some(i => normaliza(i.nombre).includes(txt))
         );
       }
@@ -6215,6 +6386,9 @@
       }
       if (sesion.bibliotecaCocinas.size > 0) {
         lista = lista.filter(r => r.cocina && sesion.bibliotecaCocinas.has(r.cocina));
+      }
+      if (sesion.bibliotecaPaises.size > 0) {
+        lista = lista.filter(r => r.pais && sesion.bibliotecaPaises.has(r.pais));
       }
       if (sesion.bibliotecaEtiquetas.size > 0) {
         lista = lista.filter(r => {
@@ -6343,6 +6517,7 @@
       const filtroActivo = sesion.bibliotecaTexto || soloFav
         || sesion.bibliotecaTipos.size > 0
         || sesion.bibliotecaCocinas.size > 0
+        || sesion.bibliotecaPaises.size > 0
         || sesion.bibliotecaEtiquetas.size > 0;
       const vacioMsg = filtroActivo
         ? "Sin resultados con esos filtros."
@@ -6358,12 +6533,20 @@
                 aria-pressed="${sesion.bibliotecaTipos.has(t)}">${esc(ETIQUETA_TIPO[t])}</button>`
       ).join("");
 
-      // Chips de cocina (origen) — solo los que aparecen.
+      // Chips de cocina (estilo) — solo los que aparecen.
       const cocinasPresentes = [...new Set(estado.recetas.map(r => r.cocina).filter(Boolean))]
         .sort((a,b) => normaliza(a).localeCompare(normaliza(b)));
       const cocinasChipsHTML = cocinasPresentes.map(c => `
         <button type="button" class="biblio-tag-chip" data-accion="biblio-cocina" data-valor="${esc(c)}"
                 aria-pressed="${sesion.bibliotecaCocinas.has(c)}">${esc(c)}</button>`
+      ).join("");
+
+      // Chips de país de origen — solo los que aparecen.
+      const paisesPresentes = [...new Set(estado.recetas.map(r => r.pais).filter(Boolean))]
+        .sort((a,b) => normaliza(a).localeCompare(normaliza(b)));
+      const paisesChipsHTML = paisesPresentes.map(p => `
+        <button type="button" class="biblio-tag-chip" data-accion="biblio-pais" data-valor="${esc(p)}"
+                aria-pressed="${sesion.bibliotecaPaises.has(p)}">${esc(p)}</button>`
       ).join("");
 
       // Chips de etiquetas rápidas (booleanos).
@@ -6409,6 +6592,11 @@
             <span class="biblio-tags-et">Cocina</span>
             <div class="biblio-tags">${cocinasChipsHTML}</div>
           </div>` : ""}
+        ${paisesPresentes.length ? `
+          <div class="biblio-tags-row">
+            <span class="biblio-tags-et">País</span>
+            <div class="biblio-tags">${paisesChipsHTML}</div>
+          </div>` : ""}
         <div class="biblio-tags-row">
           <span class="biblio-tags-et">Etiquetas</span>
           <div class="biblio-tags">${etiquetasChipsHTML}</div>
@@ -6448,6 +6636,7 @@
       const filtroActivo = sesion.bibliotecaTexto || sesion.bibliotecaSoloFav
         || sesion.bibliotecaTipos.size > 0
         || sesion.bibliotecaCocinas.size > 0
+        || sesion.bibliotecaPaises.size > 0
         || sesion.bibliotecaEtiquetas.size > 0;
       const vacioMsg = filtroActivo
         ? "Sin resultados con esos filtros."
@@ -6523,8 +6712,9 @@
       if (!r) return "";
       const lis = r.pasos.map((p, idx) => {
         const meta = [];
-        if (p.tiempo != null)      meta.push(`<span>⏱ <b>${formateaSeg(p.tiempo)}</b></span>`);
-        if (p.temperatura != null) meta.push(`<span>🌡 <b>${esc(p.temperatura)}°C</b></span>`);
+        // Solo mostramos el ⏱ si realmente corresponde a un proceso de cocción/reposo.
+        if (necesitaTemporizador(p)) meta.push(`<span>⏱ <b>${formateaSeg(p.tiempo)}</b></span>`);
+        if (p.temperatura != null)   meta.push(`<span>🌡 <b>${esc(p.temperatura)}°C</b></span>`);
         const tachado = sesion.ticsPaso.has(idx) ? " class=\"tachado\"" : "";
         return `
           <li${tachado} data-tic-paso="${idx}">
@@ -6572,7 +6762,11 @@
       cont.innerHTML = `
         <div class="detalle"
              style="--chip-bg: var(--tipo-${r.tipo}-bg); --chip-fg: var(--tipo-${r.tipo}-fg);">
-          <button type="button" class="detalle-volver" data-accion="volver">← Biblioteca</button>
+          <div class="detalle-acciones-top">
+            <button type="button" class="detalle-volver" data-accion="volver">← Biblioteca</button>
+            <button type="button" class="detalle-editar" data-accion="editar-receta-actual"
+                    aria-label="Editar receta">✏️ Editar receta</button>
+          </div>
 
           <header class="detalle-cabecera">
             ${chipTipoHTML(r.tipo)}
@@ -7243,9 +7437,10 @@
           </li>`;
         }).join("");
         const meta = [];
+        const conTemp = necesitaTemporizador(p);
         if (p.temperatura != null) meta.push(`<span class="pill">Horno <b>${esc(p.temperatura)}°C</b></span>`);
-        if (p.tiempo != null)      meta.push(`<span class="pill">Tiempo <b>${formateaSeg(p.tiempo)}</b></span>`);
-        const tempBtn = p.tiempo != null
+        if (conTemp)               meta.push(`<span class="pill">Tiempo <b>${formateaSeg(p.tiempo)}</b></span>`);
+        const tempBtn = conTemp
           ? `<button type="button" class="mc-btn-temp" data-accion="iniciar-timer-paso">
                ⏱ Iniciar temporizador (${formateaSeg(p.tiempo)})
              </button>` : "";
@@ -8094,7 +8289,8 @@
     function recetaVacia() {
       return {
         id: "", nombre: "", tipo: "huevos",
-        cocina: null,            // origen geográfico/cultural (texto libre)
+        cocina: null,            // estilo de cocina (mediterránea, asiática…)
+        pais: null,              // país de origen (España, México, Italia…)
         etiquetas: [],           // ["familiar","internacional","dieta"]
         tags: [], dieta: [],
         racionesBase: 4, tiempoPrep: 0, tiempoCoccion: 0,
@@ -8324,6 +8520,8 @@
       ).join("");
       const cocinasOptionsHTML = COCINAS_SUGERIDAS
         .map(c => `<option value="${esc(c)}"></option>`).join("");
+      const paisesOptionsHTML = PAISES_SUGERIDOS
+        .map(p => `<option value="${esc(p)}"></option>`).join("");
 
       return `
         <form class="editor" id="editor-receta" autocomplete="off">
@@ -8365,9 +8563,14 @@
                 <input type="number" min="0" data-cmp="r-cocc" value="${r.tiempoCoccion || 0}">
               </div>
               <div class="campo">
-                <label>Cocina / origen (texto libre)</label>
-                <input type="text" data-cmp="r-cocina" list="lista-cocinas" value="${esc(r.cocina || "")}" placeholder="Ej. Española, Italiana, Árabe…">
+                <label>Estilo de cocina (opcional)</label>
+                <input type="text" data-cmp="r-cocina" list="lista-cocinas" value="${esc(r.cocina || "")}" placeholder="Ej. Mediterránea, Asiática, Casera…">
                 <datalist id="lista-cocinas">${cocinasOptionsHTML}</datalist>
+              </div>
+              <div class="campo">
+                <label>País de origen (opcional)</label>
+                <input type="text" data-cmp="r-pais" list="lista-paises" value="${esc(r.pais || "")}" placeholder="Ej. España, México, Italia…">
+                <datalist id="lista-paises">${paisesOptionsHTML}</datalist>
               </div>
               <div class="campo">
                 <label>Fuente (opcional)</label>
@@ -8507,7 +8710,8 @@
       "id": "mi-receta-ejemplo",
       "nombre": "Mi receta de ejemplo",
       "tipo": "huevos",
-      "cocina": "Española",
+      "cocina": "Mediterránea",
+      "pais": "España",
       "etiquetas": ["familiar"],
       "tags": ["clasico", "tapas"],
       "dieta": ["vegetariano"],
@@ -8644,7 +8848,8 @@
                 <b>tipo</b>: <code>${esc(Object.keys(ETIQUETA_TIPO).join(", "))}</code><br>
                 <b>dieta</b>: <code>${esc(Object.keys(ETIQUETA_DIETA).join(", "))}</code><br>
                 <b>etiquetas</b>: <code>${esc(ETIQUETAS_RECETA.join(", "))}</code> (opcional)<br>
-                <b>cocina</b>: texto libre (Española, Italiana, Árabe, Colombiana…) o <code>null</code><br>
+                <b>cocina</b>: estilo de cocina (Mediterránea, Asiática, Casera…) o <code>null</code><br>
+                <b>pais</b>: país de origen (España, México, Italia…) o <code>null</code><br>
                 <b>dificultad</b>: <code>facil, media, dificil</code><br>
                 <b>unidad</b>: <code>${esc(Object.keys(ETIQUETA_UNIDAD).join(", "))}</code> o <code>null</code><br>
                 <br>
@@ -8654,7 +8859,7 @@
                 · <code>cantidad: null</code> = "al gusto", no escala con raciones.<br>
                 · <code>pasos[].n</code> debe ir desde 1 sin saltos.<br>
                 · <code>creado</code> y <code>modificado</code> en ISO 8601 UTC.<br>
-                · <code>cocina</code> y <code>etiquetas</code> son opcionales — si no los pones, la receta funciona igual.
+                · <code>cocina</code>, <code>pais</code> y <code>etiquetas</code> son opcionales — si no los pones, la receta funciona igual.
               </div>
             </div>
           </details>
@@ -9092,6 +9297,16 @@
           return;
         }
 
+        // Editar la receta abierta (salta a Datos → Recetas → editor con la receta).
+        if (ev.target.closest("[data-accion='editar-receta-actual']")) {
+          if (!sesion.recetaAbierta) return;
+          const idActual = sesion.recetaAbierta;
+          fijarVista("datos");
+          sesion.datosTab = "recetas";
+          abrirEditorReceta(idActual);
+          return;
+        }
+
         // Tab del detalle: Ingredientes / Pasos.
         const tabBtn = ev.target.closest("[data-accion='detalle-tab']");
         if (tabBtn) {
@@ -9134,6 +9349,16 @@
           if (sesion.bibliotecaCocinas.has(c)) sesion.bibliotecaCocinas.delete(c);
           else sesion.bibliotecaCocinas.add(c);
           fCoc.setAttribute("aria-pressed", String(sesion.bibliotecaCocinas.has(c)));
+          resetLimiteBiblioteca();
+          actualizarResultadosBiblioteca();
+          return;
+        }
+        const fPais = ev.target.closest("[data-accion='biblio-pais']");
+        if (fPais) {
+          const p = fPais.dataset.valor;
+          if (sesion.bibliotecaPaises.has(p)) sesion.bibliotecaPaises.delete(p);
+          else sesion.bibliotecaPaises.add(p);
+          fPais.setAttribute("aria-pressed", String(sesion.bibliotecaPaises.has(p)));
           resetLimiteBiblioteca();
           actualizarResultadosBiblioteca();
           return;
@@ -9842,6 +10067,7 @@
           if (cmp === "r-id")        { r.id = t.value.trim(); return; }
           if (cmp === "r-nombre")    { r.nombre = t.value; return; }
           if (cmp === "r-cocina")    { r.cocina = t.value.trim() || null; return; }
+          if (cmp === "r-pais")      { r.pais = t.value.trim() || null; return; }
           if (cmp === "r-fuente")    { r.fuente = t.value.trim() || null; return; }
           if (cmp === "r-notas")     { r.notas = t.value.trim() || null; return; }
           if (cmp === "r-raciones")  { r.racionesBase = Math.max(1, Number(t.value) || 1); return; }

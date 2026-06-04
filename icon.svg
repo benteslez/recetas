@@ -1,10 +1,56 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#2563eb"/>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1d4ed8"/>
       <stop offset="100%" stop-color="#06b6d4"/>
     </linearGradient>
+    <radialGradient id="yema" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#fef3c7"/>
+      <stop offset="45%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </radialGradient>
+    <linearGradient id="mango" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
   </defs>
-  <rect width="512" height="512" rx="112" fill="url(#g)"/>
-  <text x="50%" y="58%" font-size="320" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Manrope, sans-serif" font-weight="800" text-anchor="middle" dominant-baseline="middle" fill="white" letter-spacing="-12">R</text>
+
+  <!-- Fondo redondeado -->
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+
+  <!-- Mango de la sartén -->
+  <rect x="340" y="248" width="170" height="36" rx="18" fill="url(#mango)"/>
+  <rect x="340" y="248" width="170" height="6" rx="3" fill="#475569" opacity="0.5"/>
+
+  <!-- Sartén exterior (borde) -->
+  <ellipse cx="220" cy="276" rx="180" ry="172" fill="#0f172a"/>
+
+  <!-- Interior de la sartén -->
+  <ellipse cx="220" cy="270" rx="155" ry="148" fill="#1e293b"/>
+  <ellipse cx="220" cy="265" rx="140" ry="132" fill="#334155"/>
+
+  <!-- Clara del huevo (forma irregular orgánica) -->
+  <path d="M 110 260
+           Q 90 195 155 175
+           Q 195 145 245 165
+           Q 305 155 335 215
+           Q 365 270 345 320
+           Q 320 365 260 365
+           Q 200 380 145 350
+           Q 100 320 110 260 Z"
+        fill="#fffaef"/>
+
+  <!-- Sombra suave debajo del huevo -->
+  <ellipse cx="225" cy="375" rx="90" ry="10" fill="#000000" opacity="0.18"/>
+
+  <!-- Yema -->
+  <circle cx="225" cy="255" r="55" fill="url(#yema)"/>
+
+  <!-- Highlight de la yema -->
+  <ellipse cx="208" cy="235" rx="18" ry="13" fill="#fffbeb" opacity="0.65"/>
+
+  <!-- Vapor/calor saliendo -->
+  <path d="M 160 90 Q 155 70 165 55 Q 175 40 165 25" stroke="#ffffff" stroke-width="6" stroke-linecap="round" fill="none" opacity="0.55"/>
+  <path d="M 220 80 Q 215 60 225 45 Q 235 30 225 15" stroke="#ffffff" stroke-width="6" stroke-linecap="round" fill="none" opacity="0.65"/>
+  <path d="M 285 90 Q 280 70 290 55 Q 300 40 290 25" stroke="#ffffff" stroke-width="6" stroke-linecap="round" fill="none" opacity="0.55"/>
 </svg>
