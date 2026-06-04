@@ -1174,12 +1174,12 @@
     }
     @media (min-width: 720px) { .mc-paso-titulo { font-size: 44px; } }
     .mc-paso-texto {
-      font-size: 19px;
-      line-height: 1.6;
+      font-size: 22px;
+      line-height: 1.55;
       margin-bottom: 24px;
-      font-weight: 400;
+      font-weight: 500;
     }
-    @media (min-width: 720px) { .mc-paso-texto { font-size: 22px; line-height: 1.55; } }
+    @media (min-width: 720px) { .mc-paso-texto { font-size: 25px; line-height: 1.5; } }
     .mc-paso-meta {
       display: flex; gap: var(--gap-2); flex-wrap: wrap;
       margin-bottom: var(--gap-4);
@@ -2382,10 +2382,10 @@
     html.a11y-fuente-grande .lista-ing li,
     html.a11y-fuente-grande .lista-paso li { font-size: 16px; padding: 10px 12px; }
     html.a11y-fuente-grande .lista-compra li { font-size: 16px; padding: 10px 12px; }
-    html.a11y-fuente-grande .mc-paso-texto { font-size: 22px; }
-    @media (min-width: 720px) { html.a11y-fuente-grande .mc-paso-texto { font-size: 24px; } }
-    html.a11y-fuente-grande .mc-paso-titulo { font-size: 34px; }
-    @media (min-width: 720px) { html.a11y-fuente-grande .mc-paso-titulo { font-size: 40px; } }
+    html.a11y-fuente-grande .mc-paso-texto { font-size: 24px; }
+    @media (min-width: 720px) { html.a11y-fuente-grande .mc-paso-texto { font-size: 29px; } }
+    html.a11y-fuente-grande .mc-paso-titulo { font-size: 36px; }
+    @media (min-width: 720px) { html.a11y-fuente-grande .mc-paso-titulo { font-size: 54px; } }
     html.a11y-fuente-grande .mc-paso-ings ul { font-size: 18px; }
     html.a11y-fuente-grande .timer-restante { font-size: 26px; }
     html.a11y-fuente-grande .mc-btn-nav  { font-size: 18px; padding: 18px 22px; min-height: 60px; }
@@ -2787,17 +2787,24 @@
       );
     }
 
-    /* Texto del paso: gris ligero, generoso y legible */
+    /* Texto del paso — peso 500 (medium) para legibilidad a distancia,
+       sin llegar a la negrita 700 (que sigue marcando los énfasis del verbo
+       de acción). Tamaño un punto más grande que antes. */
     .mc-paso-texto {
       font-family: var(--font-ui);
-      font-weight: 400;
-      font-size: 20px;
-      line-height: 1.6;
-      letter-spacing: -0.003em;
+      font-weight: 500;
+      font-size: 22px;
+      line-height: 1.55;
+      letter-spacing: -0.005em;
       color: var(--text) !important;
       opacity: 1;
     }
-    @media (min-width: 720px) { .mc-paso-texto { font-size: 24px; line-height: 1.55; } }
+    @media (min-width: 720px) { .mc-paso-texto { font-size: 26px; line-height: 1.5; } }
+    /* Negritas dentro del texto del paso: claras por contraste de peso (500→750) */
+    .mc-paso-texto strong, .mc-paso-texto b {
+      font-weight: 750;
+      letter-spacing: -0.012em;
+    }
 
     /* Pills meta (Horno, Tiempo) — Apple capsule discreta */
     .mc-paso-meta .pill {
@@ -3174,11 +3181,11 @@
     @media (min-width: 720px) { html.a11y-fuente-3 .vista-titulo { font-size: 48px; } }
     html.a11y-fuente-3 .tarjeta-nombre { font-size: 24px; }
     html.a11y-fuente-3 .lista-ing li, html.a11y-fuente-3 .lista-paso li { font-size: 18px; padding: 10px 12px; }
-    html.a11y-fuente-3 .mc-paso-texto { font-size: 24px; }
-    html.a11y-fuente-3 .mc-paso-titulo { font-size: 40px; }
+    html.a11y-fuente-3 .mc-paso-texto { font-size: 26px; }
+    html.a11y-fuente-3 .mc-paso-titulo { font-size: 42px; }
     @media (min-width: 720px) {
-      html.a11y-fuente-3 .mc-paso-texto { font-size: 30px; }
-      html.a11y-fuente-3 .mc-paso-titulo { font-size: 64px; }
+      html.a11y-fuente-3 .mc-paso-texto { font-size: 32px; }
+      html.a11y-fuente-3 .mc-paso-titulo { font-size: 68px; }
     }
 
     /* ========================================================================
@@ -5021,7 +5028,7 @@
         id: "batido-de-papaya-con-yogur-natural",
         nombre: "Batido de papaya con yogur natural",
         tipo: "bebidas",
-        cocina: "Batido",
+        cocina: null,
         pais: null,
         etiquetas: ["dieta"],
         tags: ["batidos", "frutas"],
@@ -6419,7 +6426,7 @@
         nombre: "Galletas de mantequilla",
         tipo: "reposteria",
         cocina: null,
-        pais: "Danesa",
+        pais: "Dinamarca",
         etiquetas: [],
         tags: ["galletas"],
         dieta: [],
@@ -6458,7 +6465,7 @@
         nombre: "Guacamole",
         tipo: "salsas_fondos",
         cocina: null,
-        pais: "Mexico",
+        pais: "México",
         etiquetas: ["internacional"],
         tags: ["aguacate"],
         dieta: ["vegetariano"],
@@ -7350,7 +7357,7 @@
         nombre: "Nachos con birria",
         tipo: "aperitivos_tapas",
         cocina: null,
-        pais: "Mexico",
+        pais: "México",
         etiquetas: ["internacional"],
         tags: ["carne", "queso"],
         dieta: [],
@@ -7818,7 +7825,7 @@
         id: "patatas-fritas-ulracrujientes",
         nombre: "Patatas Fritas Ulracrujientes",
         tipo: "acompanamientos",
-        cocina: "España",
+        cocina: null,
         pais: "EEUU",
         etiquetas: [],
         tags: ["patatas"],
@@ -8661,7 +8668,7 @@
         id: "salmon-glaseado-con-aji-de-tamarindo",
         nombre: "Salmón glaseado con ají de tamarindo",
         tipo: "arroces",
-        cocina: "Fusión",
+        cocina: null,
         pais: null,
         etiquetas: [],
         tags: ["ají", "arroz", "champiñones", "salmón", "tamarindo"],
@@ -8891,7 +8898,7 @@
         nombre: "Solyanka",
         tipo: "sopas_cremas",
         cocina: null,
-        pais: "Rusa",
+        pais: "Rusia",
         etiquetas: ["internacional"],
         tags: ["cerdo", "sopa"],
         dieta: [],
@@ -9021,7 +9028,7 @@
         nombre: "Tacos Cochinita Pibil",
         tipo: "carnes",
         cocina: null,
-        pais: "Mexico",
+        pais: "México",
         etiquetas: ["internacional"],
         tags: ["cerdo", "tacos"],
         dieta: [],
@@ -9082,7 +9089,7 @@
         nombre: "Tacos al pastor",
         tipo: "carnes",
         cocina: null,
-        pais: "Mexico",
+        pais: "México",
         etiquetas: ["internacional"],
         tags: ["cerdo", "tacos"],
         dieta: [],
@@ -9964,8 +9971,8 @@
         id: "pizza-rectangular-crujiente",
         nombre: "Pizza rectangular crujiente (mismo día)",
         tipo: "pizzas",
-        cocina: "Italia",
-        pais: null,
+        cocina: null,
+        pais: "Italia",
         etiquetas: [],
         tags: ["pizza", "horno", "bandeja", "crujiente", "casero"],
         dieta: ["vegetariano"],
@@ -10088,11 +10095,6 @@
       familiar:      "Familiar",
       dieta:         "Dieta"
     };
-    /* Cocinas habituales sugeridas (texto libre, autocomplete via datalist). */
-    const COCINAS_SUGERIDAS = [
-      "Mediterránea","Asiática","Europea","Latinoamericana","Oriental",
-      "Vegetariana","Internacional","Casera","Fusión","Tradicional"
-    ];
     /* Países sugeridos para el campo "pais" (texto libre). */
     const PAISES_SUGERIDOS = [
       "España","Italia","Francia","México","Japón","China","Tailandia",
@@ -10245,7 +10247,6 @@
       bibliotecaTexto: "",          // efimero, no persiste
       bibliotecaSoloFav: false,     // efimero
       bibliotecaTipos: new Set(),   // filtro por tipo (multi, efimero)
-      bibliotecaCocinas: new Set(), // filtro por cocina (multi, efimero)
       bibliotecaPaises: new Set(),  // filtro por país (multi, efimero)
       bibliotecaEtiquetas: new Set(),// filtro por etiqueta (multi: vegetariano,internacional,familiar,dieta)
       bibliotecaLimite: 30,         // lazy loading: cuantas tarjetas mostrar
@@ -12235,16 +12236,12 @@
         lista = lista.filter(r =>
           normaliza(r.nombre).includes(txt) ||
           (r.tags || []).some(t => normaliza(t).includes(txt)) ||
-          (r.cocina && normaliza(r.cocina).includes(txt)) ||
           (r.pais   && normaliza(r.pais).includes(txt)) ||
           r.ingredientes.some(i => normaliza(i.nombre).includes(txt))
         );
       }
       if (sesion.bibliotecaTipos.size > 0) {
         lista = lista.filter(r => sesion.bibliotecaTipos.has(r.tipo));
-      }
-      if (sesion.bibliotecaCocinas.size > 0) {
-        lista = lista.filter(r => r.cocina && sesion.bibliotecaCocinas.has(r.cocina));
       }
       if (sesion.bibliotecaPaises.size > 0) {
         lista = lista.filter(r => r.pais && sesion.bibliotecaPaises.has(r.pais));
@@ -12379,7 +12376,6 @@
 
       const filtroActivo = sesion.bibliotecaTexto || soloFav
         || sesion.bibliotecaTipos.size > 0
-        || sesion.bibliotecaCocinas.size > 0
         || sesion.bibliotecaPaises.size > 0
         || sesion.bibliotecaEtiquetas.size > 0;
       const vacioMsg = filtroActivo
@@ -12394,14 +12390,6 @@
         <button type="button" class="biblio-tipo-chip" data-accion="biblio-tipo" data-valor="${esc(t)}"
                 style="--tipo-chip-bg: var(--tipo-${t}-bg); --tipo-chip-fg: var(--tipo-${t}-fg);"
                 aria-pressed="${sesion.bibliotecaTipos.has(t)}">${esc(ETIQUETA_TIPO[t])}</button>`
-      ).join("");
-
-      // Chips de cocina (estilo) — solo los que aparecen.
-      const cocinasPresentes = [...new Set(_todasResueltas.map(r => r.cocina).filter(Boolean))]
-        .sort((a,b) => normaliza(a).localeCompare(normaliza(b)));
-      const cocinasChipsHTML = cocinasPresentes.map(c => `
-        <button type="button" class="biblio-tag-chip" data-accion="biblio-cocina" data-valor="${esc(c)}"
-                aria-pressed="${sesion.bibliotecaCocinas.has(c)}">${esc(c)}</button>`
       ).join("");
 
       // Chips de país de origen — solo los que aparecen.
@@ -12450,11 +12438,6 @@
         </div>
 
         <div class="biblio-tipos">${tiposChipsHTML}</div>
-        ${cocinasPresentes.length ? `
-          <div class="biblio-tags-row">
-            <span class="biblio-tags-et">Cocina</span>
-            <div class="biblio-tags">${cocinasChipsHTML}</div>
-          </div>` : ""}
         ${paisesPresentes.length ? `
           <div class="biblio-tags-row">
             <span class="biblio-tags-et">País</span>
@@ -12498,7 +12481,6 @@
       const modo = sesion.bibliotecaModo;
       const filtroActivo = sesion.bibliotecaTexto || sesion.bibliotecaSoloFav
         || sesion.bibliotecaTipos.size > 0
-        || sesion.bibliotecaCocinas.size > 0
         || sesion.bibliotecaPaises.size > 0
         || sesion.bibliotecaEtiquetas.size > 0;
       const vacioMsg = filtroActivo
@@ -14393,8 +14375,6 @@
                   style="margin-right:4px;">${esc(ETIQUETA_ETIQUETA[e])}
          </label>`
       ).join("");
-      const cocinasOptionsHTML = COCINAS_SUGERIDAS
-        .map(c => `<option value="${esc(c)}"></option>`).join("");
       const paisesOptionsHTML = PAISES_SUGERIDOS
         .map(p => `<option value="${esc(p)}"></option>`).join("");
 
@@ -14436,11 +14416,6 @@
               <div class="campo">
                 <label>Tiempo cocción (min)</label>
                 <input type="number" min="0" data-cmp="r-cocc" value="${r.tiempoCoccion || 0}">
-              </div>
-              <div class="campo">
-                <label>Estilo de cocina (opcional)</label>
-                <input type="text" data-cmp="r-cocina" list="lista-cocinas" value="${esc(r.cocina || "")}" placeholder="Ej. Mediterránea, Asiática, Casera…">
-                <datalist id="lista-cocinas">${cocinasOptionsHTML}</datalist>
               </div>
               <div class="campo">
                 <label>País de origen (opcional)</label>
@@ -15231,16 +15206,6 @@
           actualizarResultadosBiblioteca();
           return;
         }
-        const fCoc = ev.target.closest("[data-accion='biblio-cocina']");
-        if (fCoc) {
-          const c = fCoc.dataset.valor;
-          if (sesion.bibliotecaCocinas.has(c)) sesion.bibliotecaCocinas.delete(c);
-          else sesion.bibliotecaCocinas.add(c);
-          fCoc.setAttribute("aria-pressed", String(sesion.bibliotecaCocinas.has(c)));
-          resetLimiteBiblioteca();
-          actualizarResultadosBiblioteca();
-          return;
-        }
         const fPais = ev.target.closest("[data-accion='biblio-pais']");
         if (fPais) {
           const p = fPais.dataset.valor;
@@ -15972,7 +15937,6 @@
         if (r && sesion.editor.modo === "receta") {
           if (cmp === "r-id")        { r.id = t.value.trim(); return; }
           if (cmp === "r-nombre")    { r.nombre = t.value; return; }
-          if (cmp === "r-cocina")    { r.cocina = t.value.trim() || null; return; }
           if (cmp === "r-pais")      { r.pais = t.value.trim() || null; return; }
           if (cmp === "r-fuente")    { r.fuente = t.value.trim() || null; return; }
           if (cmp === "r-notas")     { r.notas = t.value.trim() || null; return; }
