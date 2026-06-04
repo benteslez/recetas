@@ -121,6 +121,7 @@
       --tipo-aperitivos_tapas-bg:     #d9e3e1; --tipo-aperitivos_tapas-fg:     #326661;  /* teal apagado */
       --tipo-bebidas-bg:              #d9e1e6; --tipo-bebidas-fg:              #306579;  /* petróleo */
       --tipo-conservas-bg:            #e0e5d2; --tipo-conservas-fg:            #516b29;  /* oliva profundo */
+      --tipo-empanadas-bg:            #ecdcd1; --tipo-empanadas-fg:            #a25229;  /* cobre horneado */
     }
     /* Modo oscuro: -bg saturado oscuro, -fg pastel claro */
     :root[data-tema="oscuro"] {
@@ -140,6 +141,7 @@
       --tipo-aperitivos_tapas-bg:     #042f2e; --tipo-aperitivos_tapas-fg:     #5eead4;
       --tipo-bebidas-bg:              #083344; --tipo-bebidas-fg:              #67e8f9;
       --tipo-conservas-bg:            #1a2e05; --tipo-conservas-fg:            #bef264;
+      --tipo-empanadas-bg:            #3a1a09; --tipo-empanadas-fg:            #f5cca7;
     }
 
     /* ---- Reset minimo ---------------------------------------------------- */
@@ -4142,6 +4144,32 @@
     }
     html:not([data-perfil="invitado"]) .badge-solo-lectura { display: none; }
 
+    /* Pista para el usuario en el editor cuando edita una receta fija */
+    .editor-pista-fija {
+      display: inline-flex;
+      align-items: center;
+      font-size: 12.5px;
+      color: var(--text-muted);
+      font-weight: 400;
+      letter-spacing: -0.005em;
+      padding: 6px 12px;
+      background: var(--bg-soft);
+      border-radius: 8px;
+      margin: 0 4px;
+    }
+    .editor-pista-fija b { color: var(--text); font-weight: 600; }
+
+    /* Badge "Receta fija" en la cabecera del detalle — discreto */
+    .detalle-eyebrow-fija {
+      display: inline-block;
+      margin-left: 10px;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      color: var(--text-muted);
+      opacity: 0.7;
+    }
+
     /* ========================================================================
        TARJETAS — estilo editorial premium.
        Paleta neutra (off-white + grises cálidos + tinta). El color del tipo
@@ -4663,221 +4691,263 @@
        Comparten ref de cebolla, aceite-oliva y sal para probar SUMA por ref.   [T3]
        ======================================================================== */
 
-    const ING_SEED = [
-      { clave: "cebolla",          nombre: "Cebolla",            categoriaCompra: "verduras_fruta",      densidad: null, gramosPorUnidad: 150, alias: ["cebollas"] },
-      { clave: "aceite-oliva",     nombre: "Aceite de oliva",    categoriaCompra: "despensa_secos",      densidad: 0.92, gramosPorUnidad: null, alias: ["aove", "aceite"] },
-      { clave: "sal",              nombre: "Sal",                categoriaCompra: "especias_condimentos",densidad: 1.20, gramosPorUnidad: null, alias: [] },
-      { clave: "harina",           nombre: "Harina de trigo",    categoriaCompra: "despensa_secos",      densidad: 0.55, gramosPorUnidad: null, alias: ["harina"] },
-      { clave: "harina-fuerza",    nombre: "Harina de fuerza",   categoriaCompra: "despensa_secos",      densidad: 0.55, gramosPorUnidad: null, alias: [] },
-      { clave: "huevo",            nombre: "Huevo",              categoriaCompra: "lacteos_huevos",      densidad: null, gramosPorUnidad: 60,  alias: ["huevos"] },
-      { clave: "azucar",           nombre: "Azúcar",             categoriaCompra: "despensa_secos",      densidad: 0.85, gramosPorUnidad: null, alias: [] },
-      { clave: "yogur-natural",    nombre: "Yogur natural",      categoriaCompra: "lacteos_huevos",      densidad: 1.03, gramosPorUnidad: 125, alias: ["yogur"] },
-      { clave: "limon",            nombre: "Limón",              categoriaCompra: "verduras_fruta",      densidad: null, gramosPorUnidad: 90,  alias: ["limones"] },
-      { clave: "levadura-quimica", nombre: "Levadura química",   categoriaCompra: "despensa_secos",      densidad: null, gramosPorUnidad: null, alias: ["impulsor"] },
-      { clave: "levadura-fresca",  nombre: "Levadura fresca",    categoriaCompra: "lacteos_huevos",      densidad: null, gramosPorUnidad: null, alias: [] },
-      { clave: "aceite-girasol",   nombre: "Aceite de girasol",  categoriaCompra: "despensa_secos",      densidad: 0.92, gramosPorUnidad: null, alias: [] },
-      { clave: "tomate",           nombre: "Tomate",             categoriaCompra: "verduras_fruta",      densidad: null, gramosPorUnidad: 180, alias: ["tomates"] },
-      { clave: "tomate-triturado", nombre: "Tomate triturado",   categoriaCompra: "conservas",           densidad: 1.04, gramosPorUnidad: null, alias: [] },
-      { clave: "mozzarella",       nombre: "Mozzarella",         categoriaCompra: "lacteos_huevos",      densidad: null, gramosPorUnidad: 125, alias: [] },
-      { clave: "albahaca",         nombre: "Albahaca fresca",    categoriaCompra: "verduras_fruta",      densidad: null, gramosPorUnidad: null, alias: [] },
-      { clave: "agua",             nombre: "Agua",               categoriaCompra: "otros",               densidad: 1.00, gramosPorUnidad: null, alias: [] },
-      { clave: "arroz",            nombre: "Arroz bomba",        categoriaCompra: "despensa_secos",      densidad: 0.85, gramosPorUnidad: null, alias: ["arroz"] },
-      { clave: "pollo",            nombre: "Muslos de pollo",    categoriaCompra: "carniceria",          densidad: null, gramosPorUnidad: null, alias: ["pollo"] },
-      { clave: "pimiento-rojo",    nombre: "Pimiento rojo",      categoriaCompra: "verduras_fruta",      densidad: null, gramosPorUnidad: 200, alias: [] },
-      { clave: "pimiento-verde",   nombre: "Pimiento verde",     categoriaCompra: "verduras_fruta",      densidad: null, gramosPorUnidad: 180, alias: [] },
-      { clave: "ajo",              nombre: "Ajo",                categoriaCompra: "verduras_fruta",      densidad: null, gramosPorUnidad: 5,   alias: ["dientes de ajo"] },
-      { clave: "caldo-pollo",      nombre: "Caldo de pollo",     categoriaCompra: "conservas",           densidad: 1.00, gramosPorUnidad: null, alias: [] },
-      { clave: "azafran",          nombre: "Azafrán",            categoriaCompra: "especias_condimentos",densidad: null, gramosPorUnidad: null, alias: [] },
-      { clave: "guisantes",        nombre: "Guisantes",          categoriaCompra: "congelados",          densidad: null, gramosPorUnidad: null, alias: [] },
-      { clave: "patata",           nombre: "Patata",             categoriaCompra: "verduras_fruta",      densidad: null, gramosPorUnidad: 200, alias: ["patatas"] },
-      { clave: "pepino",           nombre: "Pepino",             categoriaCompra: "verduras_fruta",      densidad: null, gramosPorUnidad: 300, alias: [] },
-      { clave: "vinagre",          nombre: "Vinagre de Jerez",   categoriaCompra: "despensa_secos",      densidad: 1.01, gramosPorUnidad: null, alias: ["vinagre"] },
-      { clave: "pan",              nombre: "Pan",                categoriaCompra: "panaderia",           densidad: null, gramosPorUnidad: null, alias: [] }
+    /* ========================================================================
+       CATÁLOGO E ÍNDICE FIJOS — viven en el HTML, no se sincronizan ni
+       se borran. Si el usuario edita una fija, el cambio se guarda como
+       OVERRIDE en `estado.recetas` (mismo id) y sí se sincroniza vía
+       Supabase como una receta normal. La fija original sigue ahí: si
+       el usuario "restaura", el override se borra y vuelve a verse la
+       del HTML.
+       ======================================================================== */
+    const ING_FIJOS = [
+      { clave: "cebolla",          nombre: "Cebolla",            categoriaCompra: "verduras_fruta",       densidad: null, gramosPorUnidad: 150, alias: ["cebollas"] },
+      { clave: "aceite-oliva",     nombre: "Aceite de oliva",    categoriaCompra: "despensa_secos",       densidad: 0.92, gramosPorUnidad: null, alias: ["aove", "aceite"] },
+      { clave: "sal",              nombre: "Sal",                categoriaCompra: "especias_condimentos", densidad: 1.20, gramosPorUnidad: null, alias: [] },
+      { clave: "harina",           nombre: "Harina de trigo",    categoriaCompra: "despensa_secos",       densidad: 0.55, gramosPorUnidad: null, alias: ["harina"] },
+      { clave: "harina-fuerza",    nombre: "Harina de fuerza",   categoriaCompra: "despensa_secos",       densidad: 0.55, gramosPorUnidad: null, alias: [] },
+      { clave: "huevo",            nombre: "Huevo",              categoriaCompra: "lacteos_huevos",       densidad: null, gramosPorUnidad: 60,  alias: ["huevos"] },
+      { clave: "azucar",           nombre: "Azúcar",             categoriaCompra: "despensa_secos",       densidad: 0.85, gramosPorUnidad: null, alias: [] },
+      { clave: "yogur-natural",    nombre: "Yogur natural",      categoriaCompra: "lacteos_huevos",       densidad: 1.03, gramosPorUnidad: 125, alias: ["yogur"] },
+      { clave: "limon",            nombre: "Limón",              categoriaCompra: "verduras_fruta",       densidad: null, gramosPorUnidad: 90,  alias: ["limones"] },
+      { clave: "levadura-quimica", nombre: "Levadura química",   categoriaCompra: "despensa_secos",       densidad: null, gramosPorUnidad: null, alias: ["impulsor"] },
+      { clave: "levadura-fresca",  nombre: "Levadura fresca",    categoriaCompra: "lacteos_huevos",       densidad: null, gramosPorUnidad: null, alias: [] },
+      { clave: "aceite-girasol",   nombre: "Aceite de girasol",  categoriaCompra: "despensa_secos",       densidad: 0.92, gramosPorUnidad: null, alias: [] },
+      { clave: "tomate",           nombre: "Tomate",             categoriaCompra: "verduras_fruta",       densidad: null, gramosPorUnidad: 180, alias: ["tomates"] },
+      { clave: "tomate-triturado", nombre: "Tomate triturado",   categoriaCompra: "conservas",            densidad: 1.04, gramosPorUnidad: null, alias: [] },
+      { clave: "mozzarella",       nombre: "Mozzarella",         categoriaCompra: "lacteos_huevos",       densidad: null, gramosPorUnidad: 125, alias: [] },
+      { clave: "albahaca",         nombre: "Albahaca fresca",    categoriaCompra: "verduras_fruta",       densidad: null, gramosPorUnidad: null, alias: [] },
+      { clave: "agua",             nombre: "Agua",               categoriaCompra: "otros",                densidad: 1.00, gramosPorUnidad: null, alias: [] },
+      { clave: "arroz",            nombre: "Arroz bomba",        categoriaCompra: "despensa_secos",       densidad: 0.85, gramosPorUnidad: null, alias: ["arroz"] },
+      { clave: "pollo",            nombre: "Muslos de pollo",    categoriaCompra: "carniceria",           densidad: null, gramosPorUnidad: null, alias: ["pollo"] },
+      { clave: "pimiento-rojo",    nombre: "Pimiento rojo",      categoriaCompra: "verduras_fruta",       densidad: null, gramosPorUnidad: 200, alias: [] },
+      { clave: "pimiento-verde",   nombre: "Pimiento verde",     categoriaCompra: "verduras_fruta",       densidad: null, gramosPorUnidad: 180, alias: [] },
+      { clave: "ajo",              nombre: "Ajo",                categoriaCompra: "verduras_fruta",       densidad: null, gramosPorUnidad: 5,   alias: ["dientes de ajo"] },
+      { clave: "caldo-pollo",      nombre: "Caldo de pollo",     categoriaCompra: "conservas",            densidad: 1.00, gramosPorUnidad: null, alias: [] },
+      { clave: "azafran",          nombre: "Azafrán",            categoriaCompra: "especias_condimentos", densidad: null, gramosPorUnidad: null, alias: [] },
+      { clave: "guisantes",        nombre: "Guisantes",          categoriaCompra: "congelados",           densidad: null, gramosPorUnidad: null, alias: [] },
+      { clave: "patata",           nombre: "Patata",             categoriaCompra: "verduras_fruta",       densidad: null, gramosPorUnidad: 200, alias: ["patatas"] },
+      { clave: "pepino",           nombre: "Pepino",             categoriaCompra: "verduras_fruta",       densidad: null, gramosPorUnidad: 300, alias: [] },
+      { clave: "vinagre",          nombre: "Vinagre de Jerez",   categoriaCompra: "despensa_secos",       densidad: 1.01, gramosPorUnidad: null, alias: ["vinagre"] },
+      { clave: "pan",              nombre: "Pan",                categoriaCompra: "panaderia",            densidad: null, gramosPorUnidad: null, alias: [] },
+      { clave: "platano",          nombre: "Plátano",            categoriaCompra: "verduras_fruta",       densidad: null, gramosPorUnidad: 120, alias: ["platanos", "banana"] },
+      { clave: "panela",           nombre: "Panela",             categoriaCompra: "despensa_secos",       densidad: 0.85, gramosPorUnidad: null, alias: ["panela rallada"] },
+      { clave: "vainilla",         nombre: "Extracto de vainilla", categoriaCompra: "despensa_secos",     densidad: 1.00, gramosPorUnidad: null, alias: ["vainilla extracto"] },
+      { clave: "bicarbonato",      nombre: "Bicarbonato sódico", categoriaCompra: "despensa_secos",       densidad: null, gramosPorUnidad: null, alias: ["bicarbonato sodico"] },
+      { clave: "canela",           nombre: "Canela molida",      categoriaCompra: "especias_condimentos", densidad: null, gramosPorUnidad: null, alias: [] },
+      { clave: "nueces",           nombre: "Nueces",             categoriaCompra: "despensa_secos",       densidad: null, gramosPorUnidad: null, alias: ["nueces picadas"] },
+      { clave: "mantequilla",      nombre: "Mantequilla",        categoriaCompra: "lacteos_huevos",       densidad: 0.91, gramosPorUnidad: null, alias: ["mantequilla derretida"] },
+      { clave: "arandanos",        nombre: "Arándanos",          categoriaCompra: "verduras_fruta",       densidad: null, gramosPorUnidad: null, alias: ["blueberries"] },
+      { clave: "frutos-secos",     nombre: "Frutos secos",       categoriaCompra: "despensa_secos",       densidad: null, gramosPorUnidad: null, alias: ["nueces almendras"] },
+      { clave: "aguacate",         nombre: "Aguacate",           categoriaCompra: "verduras_fruta",       densidad: null, gramosPorUnidad: 200, alias: ["aguacates", "palta"] },
+      { clave: "aceite-neutro",    nombre: "Aceite neutro",      categoriaCompra: "despensa_secos",       densidad: 0.92, gramosPorUnidad: null, alias: ["girasol", "canola", "neutro"] },
+      { clave: "lima",             nombre: "Lima",               categoriaCompra: "verduras_fruta",       densidad: null, gramosPorUnidad: 60,  alias: ["limas"] },
+      { clave: "sriracha",         nombre: "Salsa sriracha",     categoriaCompra: "especias_condimentos", densidad: 1.10, gramosPorUnidad: null, alias: ["sriracha", "salsa picante"] },
+      { clave: "coco-rallado",     nombre: "Coco rallado",       categoriaCompra: "despensa_secos",       densidad: 0.40, gramosPorUnidad: null, alias: ["coco rallado azucarado", "coco"] },
+      { clave: "salsa-soja",       nombre: "Salsa de soja",      categoriaCompra: "especias_condimentos", densidad: 1.15, gramosPorUnidad: null, alias: ["soja", "soya", "soja ligera"] },
+      { clave: "cebollin",         nombre: "Cebollín",           categoriaCompra: "verduras_fruta",       densidad: null, gramosPorUnidad: null, alias: ["cebolleta", "cilantro", "cebollin cilantro"] },
+      { clave: "berenjena",        nombre: "Berenjena",          categoriaCompra: "verduras_fruta",       densidad: null, gramosPorUnidad: 500, alias: ["berenjenas"] },
+      { clave: "champinones",      nombre: "Champiñones",        categoriaCompra: "verduras_fruta",       densidad: null, gramosPorUnidad: null, alias: ["champiñones", "setas"] },
+      { clave: "atun",             nombre: "Atún en conserva",   categoriaCompra: "conservas",            densidad: null, gramosPorUnidad: 80,  alias: ["atún", "atún en lata", "atun en aceite"] },
+      { clave: "leche",            nombre: "Leche",              categoriaCompra: "lacteos_huevos",       densidad: 1.03, gramosPorUnidad: null, alias: ["leche entera", "leche desnatada", "leche semidesnatada"] },
+      { clave: "queso-rallado",    nombre: "Queso rallado",      categoriaCompra: "lacteos_huevos",       densidad: 0.45, gramosPorUnidad: null, alias: ["queso", "mozzarella rallada", "manchego rallado"] },
+      { clave: "perejil",          nombre: "Perejil",            categoriaCompra: "verduras_fruta",       densidad: null, gramosPorUnidad: null, alias: ["perejil fresco", "perejil picado"] },
+      { clave: "pimienta-negra",   nombre: "Pimienta negra",     categoriaCompra: "especias_condimentos", densidad: null, gramosPorUnidad: null, alias: ["pimienta", "pimienta molida"] },
+      { clave: "nuez-moscada",     nombre: "Nuez moscada",       categoriaCompra: "especias_condimentos", densidad: null, gramosPorUnidad: null, alias: ["moscada", "nuez moscada molida"] },
+      { clave: "hojaldre",         nombre: "Masa de hojaldre",   categoriaCompra: "congelados",           densidad: null, gramosPorUnidad: 230, alias: ["láminas hojaldre", "hojaldre"] },
+      { clave: "parmesano",        nombre: "Queso parmesano",    categoriaCompra: "lacteos_huevos",       densidad: 0.50, gramosPorUnidad: null, alias: ["parmesano rallado", "parmigiano"] },
+      { clave: "tomate-pelado",    nombre: "Tomate pelado",      categoriaCompra: "conservas",            densidad: null, gramosPorUnidad: 70,  alias: ["san marzano", "tomate entero pelado", "tomates pelados"] },
+      { clave: "curcuma",          nombre: "Cúrcuma",            categoriaCompra: "especias_condimentos", densidad: null, gramosPorUnidad: null, alias: ["curcuma molida"] },
+      { clave: "comino",           nombre: "Comino",             categoriaCompra: "especias_condimentos", densidad: null, gramosPorUnidad: null, alias: ["comino molido"] },
+      { clave: "oregano",          nombre: "Orégano",            categoriaCompra: "especias_condimentos", densidad: null, gramosPorUnidad: null, alias: ["oregano seco"] },
+      { clave: "pimenton-picante", nombre: "Pimentón picante",   categoriaCompra: "especias_condimentos", densidad: null, gramosPorUnidad: null, alias: ["pimenton", "pimentón"] }
     ];
 
-    const REC_SEED = [
-      /* ---- 1. Bizcocho de yogur ------------------------------------------ */
+    const RECETAS_FIJAS = [
       {
-        id: "bizcocho-yogur",
-        nombre: "Bizcocho de yogur",
+        id: "bizcocho-arandanos",
+        nombre: "Bizcocho de arándanos",
         tipo: "reposteria",
-        tags: ["clasico", "merienda"],
+        cocina: null, pais: null, etiquetas: [],
+        tags: ["clasico", "desayuno", "frutas"],
         dieta: ["vegetariano"],
         racionesBase: 8,
-        tiempoPrep: 15,   // MINUTOS  [T2]
-        tiempoCoccion: 35, // MINUTOS  [T2]
-        dificultad: "facil",
-        fuente: null,
-        imagen: null,
+        tiempoPrep: 15, tiempoCoccion: 50,
+        dificultad: "media",
+        fuente: null, imagen: null,
         ingredientes: [
-          { ref: "yogur-natural",    nombre: "Yogur natural",       cantidad: 1, cantidadMax: null, unidad: "ud",  grupo: null, opcional: false, nota: "Sirve de vaso medidor" },
-          { ref: "azucar",           nombre: "Azúcar",              cantidad: 2, cantidadMax: null, unidad: "taza",grupo: null, opcional: false, nota: null },
-          { ref: "harina",           nombre: "Harina",              cantidad: 3, cantidadMax: null, unidad: "taza",grupo: null, opcional: false, nota: null },
-          { ref: "aceite-girasol",   nombre: "Aceite de girasol",   cantidad: 1, cantidadMax: null, unidad: "taza",grupo: null, opcional: false, nota: null },
-          { ref: "huevo",            nombre: "Huevos",              cantidad: 3, cantidadMax: null, unidad: "ud",  grupo: null, opcional: false, nota: null },
-          { ref: "levadura-quimica", nombre: "Levadura química",    cantidad: 1, cantidadMax: null, unidad: "cda", grupo: null, opcional: false, nota: null },
-          { ref: "limon",            nombre: "Ralladura de limón",  cantidad: 1, cantidadMax: null, unidad: "ud",  grupo: null, opcional: true,  nota: "Solo la piel" }
+          { ref: "arandanos",        nombre: "Arándanos frescos o congelados",       cantidad: 200,  cantidadMax: null, unidad: "g",  grupo: null, opcional: false, nota: "Si son congelados, no descongelar" },
+          { ref: "huevo",            nombre: "Huevos grandes",                       cantidad: 3,    cantidadMax: null, unidad: "ud", grupo: null, opcional: false, nota: "A temperatura ambiente" },
+          { ref: "panela",           nombre: "Panela o azúcar",                      cantidad: 120,  cantidadMax: null, unidad: "g",  grupo: null, opcional: false, nota: null },
+          { ref: "aceite-girasol",   nombre: "Aceite de girasol",                    cantidad: 100,  cantidadMax: null, unidad: "ml", grupo: null, opcional: false, nota: null },
+          { ref: "yogur-natural",    nombre: "Yogur natural",                        cantidad: 120,  cantidadMax: null, unidad: "ml", grupo: null, opcional: false, nota: null },
+          { ref: "vainilla",         nombre: "Extracto de vainilla",                 cantidad: 5,    cantidadMax: null, unidad: "ml", grupo: null, opcional: false, nota: null },
+          { ref: "limon",            nombre: "Ralladura de limón",                   cantidad: 1,    cantidadMax: null, unidad: "ud", grupo: null, opcional: false, nota: "Solo la piel" },
+          { ref: "harina",           nombre: "Harina de trigo",                      cantidad: 240,  cantidadMax: null, unidad: "g",  grupo: null, opcional: false, nota: "230 g para masa + 10 g para enharinar arándanos" },
+          { ref: "bicarbonato",      nombre: "Bicarbonato sódico",                   cantidad: 5,    cantidadMax: null, unidad: "g",  grupo: null, opcional: false, nota: null },
+          { ref: "levadura-quimica", nombre: "Levadura química",                     cantidad: 5,    cantidadMax: null, unidad: "g",  grupo: null, opcional: false, nota: null },
+          { ref: "sal",              nombre: "Sal",                                  cantidad: 3,    cantidadMax: null, unidad: "g",  grupo: null, opcional: false, nota: null },
+          { ref: "canela",           nombre: "Canela molida",                        cantidad: 1.25, cantidadMax: null, unidad: "g",  grupo: null, opcional: true,  nota: null },
+          { ref: "mantequilla",      nombre: "Mantequilla derretida + para molde",   cantidad: 30,   cantidadMax: null, unidad: "g",  grupo: null, opcional: false, nota: "30 g para la masa, un poco para el molde" },
+          { ref: "frutos-secos",     nombre: "Nueces o almendras",                   cantidad: 80,   cantidadMax: 100,  unidad: "g",  grupo: null, opcional: true,  nota: "Para textura" }
         ],
         pasos: [
-          { n: 1, titulo: null,        texto: "Precalentar el horno a 180°C con calor arriba y abajo.",                          tiempo: null, temperatura: 180, usa: [] },
-          { n: 2, titulo: null,        texto: "Batir los huevos con el azúcar hasta que blanqueen.",                              tiempo: 180,  temperatura: null, usa: ["huevo","azucar"] },
-          { n: 3, titulo: null,        texto: "Añadir el yogur y el aceite y mezclar bien.",                                      tiempo: null, temperatura: null, usa: ["yogur-natural","aceite-girasol"] },
-          { n: 4, titulo: null,        texto: "Incorporar la harina con la levadura tamizadas y la ralladura de limón.",          tiempo: null, temperatura: null, usa: ["harina","levadura-quimica","limon"] },
-          { n: 5, titulo: "Horneado",  texto: "Verter en molde engrasado y hornear hasta que al pinchar el centro salga limpio.", tiempo: 2100, temperatura: 180, usa: [] }
+          { n: 1,  titulo: "Precalentar",       texto: "Precalienta el horno a 175 °C. Prepara el molde.",                                                                  tiempo: null, temperatura: 175,  usa: ["mantequilla"] },
+          { n: 2,  titulo: "Preparar arándanos",texto: "Seca bien los arándanos con papel y mézclalos con un poco de harina.",                                              tiempo: 300,  temperatura: null, usa: ["arandanos", "harina"] },
+          { n: 3,  titulo: "Batir huevo-panela",texto: "Bate los huevos con la panela hasta espumoso.",                                                                     tiempo: 600,  temperatura: null, usa: ["huevo", "panela"] },
+          { n: 4,  titulo: "Mezcla húmeda",     texto: "Añade aceite, yogur, mantequilla derretida, vainilla y ralladura de limón. Mezcla hasta homogéneo.",                tiempo: 600,  temperatura: null, usa: ["aceite-girasol", "yogur-natural", "mantequilla", "vainilla", "limon"] },
+          { n: 5,  titulo: "Tamizar secos",     texto: "Tamiza harina, levadura, bicarbonato, sal y canela.",                                                               tiempo: 300,  temperatura: null, usa: ["harina", "levadura-quimica", "bicarbonato", "sal", "canela"] },
+          { n: 6,  titulo: "Integrar",          texto: "Incorpora los secos a los húmedos con espátula. No sobrebatir.",                                                    tiempo: 300,  temperatura: null, usa: [] },
+          { n: 7,  titulo: "Añadir arándanos",  texto: "Añade los arándanos enharinados y mezcla con cuidado.",                                                             tiempo: 120,  temperatura: null, usa: ["arandanos"] },
+          { n: 8,  titulo: "Al molde",          texto: "Vierte primero una capa fina de masa sin arándanos. Añade el resto encima. Decora con frutos secos.",               tiempo: 180,  temperatura: null, usa: ["frutos-secos"] },
+          { n: 9,  titulo: "Hornear",           texto: "Hornea 45–55 min. Pincha con palillo: ligeramente húmedo es perfecto.",                                             tiempo: 3000, temperatura: 175,  usa: [] },
+          { n: 10, titulo: "Reposo",            texto: "Reposa 10–15 min, desmolda y enfría sobre rejilla.",                                                                tiempo: 750,  temperatura: null, usa: [] }
         ],
-        notas: "Dejar enfriar 10 min en el molde antes de desmoldar.",
-        creado:     "2026-05-01T09:00:00Z",
-        modificado: "2026-05-01T09:00:00Z"
+        notas: "El limón potencia el sabor del arándano. No sobremezclar. Para extra jugosidad: sustituye 20 ml de aceite por nata. Mejora al día siguiente.",
+        creado:     "2026-06-04T10:00:00Z",
+        modificado: "2026-06-04T10:00:00Z"
       },
-
-      /* ---- 2. Pizza margarita -------------------------------------------- */
       {
-        id: "pizza-margarita",
-        nombre: "Pizza margarita",
-        tipo: "pizzas",
-        tags: ["italiana", "horno"],
+        id: "bizcocho-platano-nueces",
+        nombre: "Bizcocho de plátano y nueces",
+        tipo: "reposteria",
+        cocina: null, pais: null, etiquetas: [],
+        tags: ["clasico", "desayuno", "saludable"],
+        dieta: ["vegetariano"],
+        racionesBase: 8,
+        tiempoPrep: 15, tiempoCoccion: 45,
+        dificultad: "media",
+        fuente: null, imagen: null,
+        ingredientes: [
+          { ref: "platano",          nombre: "Plátanos muy maduros",                 cantidad: 3,    cantidadMax: null, unidad: "ud", grupo: null, opcional: false, nota: "Cuanto más negros, mejor" },
+          { ref: "huevo",            nombre: "Huevos grandes",                       cantidad: 3,    cantidadMax: null, unidad: "ud", grupo: null, opcional: false, nota: null },
+          { ref: "panela",           nombre: "Panela rallada",                       cantidad: 100,  cantidadMax: null, unidad: "g",  grupo: null, opcional: false, nota: "Suave pero no empalagoso" },
+          { ref: "aceite-girasol",   nombre: "Aceite de girasol",                    cantidad: 100,  cantidadMax: null, unidad: "ml", grupo: null, opcional: false, nota: null },
+          { ref: "yogur-natural",    nombre: "Yogur natural",                        cantidad: 120,  cantidadMax: null, unidad: "ml", grupo: null, opcional: false, nota: "O leche con limón" },
+          { ref: "vainilla",         nombre: "Extracto de vainilla",                 cantidad: 5,    cantidadMax: null, unidad: "ml", grupo: null, opcional: false, nota: null },
+          { ref: "harina",           nombre: "Harina de trigo",                      cantidad: 220,  cantidadMax: null, unidad: "g",  grupo: null, opcional: false, nota: null },
+          { ref: "bicarbonato",      nombre: "Bicarbonato sódico",                   cantidad: 5,    cantidadMax: null, unidad: "g",  grupo: null, opcional: false, nota: null },
+          { ref: "levadura-quimica", nombre: "Levadura química",                     cantidad: 5,    cantidadMax: null, unidad: "g",  grupo: null, opcional: false, nota: null },
+          { ref: "sal",              nombre: "Sal",                                  cantidad: 3,    cantidadMax: null, unidad: "g",  grupo: null, opcional: false, nota: null },
+          { ref: "canela",           nombre: "Canela molida",                        cantidad: 2.5,  cantidadMax: null, unidad: "g",  grupo: null, opcional: true,  nota: "Recomendable" },
+          { ref: "nueces",           nombre: "Nueces picadas",                       cantidad: 100,  cantidadMax: null, unidad: "g",  grupo: null, opcional: false, nota: "Más para decorar" },
+          { ref: "mantequilla",      nombre: "Mantequilla para engrasar",            cantidad: null, cantidadMax: null, unidad: null, grupo: null, opcional: false, nota: "O papel vegetal" }
+        ],
+        pasos: [
+          { n: 1, titulo: "Precalentar",     texto: "Precalienta el horno a 175 °C (calor arriba y abajo). Engrasa el molde.",                                              tiempo: null, temperatura: 175,  usa: ["mantequilla"] },
+          { n: 2, titulo: "Puré de plátano", texto: "En un bol, machaca los plátanos hasta puré uniforme.",                                                                 tiempo: 300,  temperatura: null, usa: ["platano"] },
+          { n: 3, titulo: "Mezcla húmeda",   texto: "Añade huevos, aceite, yogur, vainilla y panela. Bate hasta suave y espumoso.",                                         tiempo: 600,  temperatura: null, usa: ["huevo", "aceite-girasol", "yogur-natural", "vainilla", "panela"] },
+          { n: 4, titulo: "Tamizar secos",   texto: "Tamiza harina, levadura, bicarbonato, canela y sal.",                                                                  tiempo: 300,  temperatura: null, usa: ["harina", "levadura-quimica", "bicarbonato", "canela", "sal"] },
+          { n: 5, titulo: "Integrar",        texto: "Incorpora los secos a los húmedos con espátula. No sobrebatir.",                                                       tiempo: 300,  temperatura: null, usa: [] },
+          { n: 6, titulo: "Añadir nueces",   texto: "Añade las nueces y mezcla suavemente.",                                                                                tiempo: 120,  temperatura: null, usa: ["nueces"] },
+          { n: 7, titulo: "Al molde",        texto: "Vierte la mezcla en el molde. Decora con nueces.",                                                                     tiempo: 120,  temperatura: null, usa: ["nueces"] },
+          { n: 8, titulo: "Hornear",         texto: "Hornea 40–50 min, hasta que al pinchar salga limpio.",                                                                 tiempo: 2700, temperatura: 175,  usa: [] },
+          { n: 9, titulo: "Reposo",          texto: "Reposa 10 min en molde, desmolda y enfría sobre rejilla.",                                                             tiempo: 600,  temperatura: null, usa: [] }
+        ],
+        notas: "Para extra saludable: sustituye 50 g de harina por avena molida. Si los plátanos están poco maduros, hornéalos con piel a 180 °C 10–15 min antes.",
+        creado:     "2026-06-04T10:00:00Z",
+        modificado: "2026-06-04T10:00:00Z"
+      },
+      {
+        id: "aguacate-al-horno",
+        nombre: "Aguacate al horno con mayonesa de sriracha",
+        tipo: "verduras_ensaladas",
+        cocina: "Asiática fusionada",
+        pais: "Colombia",
+        etiquetas: ["internacional"],
+        tags: ["entrantes", "cenas", "picar"],
         dieta: ["vegetariano"],
         racionesBase: 2,
-        tiempoPrep: 30,
-        tiempoCoccion: 12,
-        dificultad: "media",
-        fuente: null,
-        imagen: null,
+        tiempoPrep: 15, tiempoCoccion: 10,
+        dificultad: "facil",
+        fuente: null, imagen: null,
         ingredientes: [
-          { ref: "harina-fuerza",    nombre: "Harina de fuerza",   cantidad: 250, cantidadMax: null, unidad: "g",     grupo: "masa",      opcional: false, nota: null },
-          { ref: "agua",             nombre: "Agua tibia",         cantidad: 160, cantidadMax: null, unidad: "ml",    grupo: "masa",      opcional: false, nota: null },
-          { ref: "levadura-fresca",  nombre: "Levadura fresca",    cantidad: 5,   cantidadMax: null, unidad: "g",     grupo: "masa",      opcional: false, nota: null },
-          { ref: "aceite-oliva",     nombre: "Aceite de oliva",    cantidad: 1,   cantidadMax: null, unidad: "cda",   grupo: "masa",      opcional: false, nota: null },
-          { ref: "sal",              nombre: "Sal",                cantidad: 1,   cantidadMax: null, unidad: "cdta",  grupo: "masa",      opcional: false, nota: null },
-          { ref: "tomate-triturado", nombre: "Tomate triturado",   cantidad: 150, cantidadMax: null, unidad: "g",     grupo: "salsa",     opcional: false, nota: null },
-          { ref: "aceite-oliva",     nombre: "Aceite de oliva",    cantidad: 1,   cantidadMax: null, unidad: "cda",   grupo: "salsa",     opcional: false, nota: null },
-          { ref: "sal",              nombre: "Sal",                cantidad: 1,   cantidadMax: null, unidad: "pizca", grupo: "salsa",     opcional: false, nota: null },
-          { ref: "mozzarella",       nombre: "Mozzarella",         cantidad: 1,   cantidadMax: null, unidad: "ud",    grupo: "cobertura", opcional: false, nota: null },
-          { ref: "albahaca",         nombre: "Albahaca fresca",    cantidad: 6,   cantidadMax: null, unidad: "hoja",  grupo: "cobertura", opcional: false, nota: null }
+          { ref: "aguacate",      nombre: "Aguacate grande criollo/tropical", cantidad: 1,    cantidadMax: null, unidad: "ud",       grupo: null, opcional: false, nota: "Verde, piel lisa, no Hass" },
+          { ref: "huevo",         nombre: "Huevo",                             cantidad: 1,    cantidadMax: null, unidad: "ud",       grupo: null, opcional: false, nota: "A temperatura ambiente" },
+          { ref: "aceite-neutro", nombre: "Aceite neutro",                     cantidad: 200,  cantidadMax: null, unidad: "ml",       grupo: null, opcional: false, nota: "Girasol o canola" },
+          { ref: "lima",          nombre: "Lima o limón",                      cantidad: 1,    cantidadMax: null, unidad: "ud",       grupo: null, opcional: false, nota: "Para jugo y ralladura" },
+          { ref: "sal",           nombre: "Sal fina",                          cantidad: null, cantidadMax: null, unidad: "pizca",    grupo: null, opcional: false, nota: "Al gusto" },
+          { ref: "sriracha",      nombre: "Salsa sriracha",                    cantidad: 1,    cantidadMax: 2,    unidad: "cda",      grupo: null, opcional: false, nota: "Para equilibrar con acidez y picor" },
+          { ref: "coco-rallado",  nombre: "Coco rallado azucarado",            cantidad: 3,    cantidadMax: null, unidad: "cda",      grupo: null, opcional: false, nota: "Para caramelizar y crear contraste" },
+          { ref: "lima",          nombre: "Jugo de lima extra",                cantidad: 0.5,  cantidadMax: null, unidad: "cdta",     grupo: null, opcional: false, nota: "Para la mayonesa de sriracha" },
+          { ref: "salsa-soja",    nombre: "Salsa de soja ligera",              cantidad: null, cantidadMax: null, unidad: "al_gusto", grupo: null, opcional: true,  nota: "2-3 gotas, añade profundidad umami" },
+          { ref: "cebollin",      nombre: "Cebollín o cilantro",               cantidad: null, cantidadMax: null, unidad: "al_gusto", grupo: null, opcional: true,  nota: "Picado muy fino" }
         ],
         pasos: [
-          { n: 1, titulo: null,            texto: "Disolver la levadura en el agua tibia.",                                   tiempo: null, temperatura: null, usa: ["levadura-fresca","agua"] },
-          { n: 2, titulo: "Amasado",       texto: "Mezclar harina, sal, agua con levadura y aceite. Amasar hasta bola lisa.", tiempo: 600,  temperatura: null, usa: ["harina-fuerza","sal","aceite-oliva"] },
-          { n: 3, titulo: "Fermentación",  texto: "Reposo tapado en lugar templado hasta que doble el volumen.",              tiempo: 5400, temperatura: null, usa: [] },
-          { n: 4, titulo: null,            texto: "Estirar la masa en forma redonda sobre papel de horno.",                    tiempo: null, temperatura: null, usa: [] },
-          { n: 5, titulo: null,            texto: "Mezclar el tomate con aceite y sal y extender sobre la base.",              tiempo: null, temperatura: null, usa: ["tomate-triturado","aceite-oliva","sal"] },
-          { n: 6, titulo: null,            texto: "Repartir la mozzarella troceada.",                                          tiempo: null, temperatura: null, usa: ["mozzarella"] },
-          { n: 7, titulo: "Horneado",      texto: "Hornear a máxima temperatura hasta que el borde dore.",                     tiempo: 720,  temperatura: 250,  usa: [] },
-          { n: 8, titulo: null,            texto: "Al sacarla, añadir las hojas de albahaca frescas.",                          tiempo: null, temperatura: null, usa: ["albahaca"] }
+          { n: 1, titulo: "Precalentar horno",          texto: "Precalienta el horno a 200 °C (calor arriba y abajo, sin ventilador). Prepara una bandeja con papel de horno. El aguacate grande necesita más calor que el Hass para quedar cremoso.",                                                                                                                                                                       tiempo: null, temperatura: 200,  usa: [] },
+          { n: 2, titulo: "Tostar coco azucarado",     texto: "Coloca el coco en una sartén sin aceite a fuego medio-bajo. Muévelo constantemente con espátula hasta que empiece a dorarse. En cuanto huela a caramelo tostado, retira inmediatamente. El azúcar se carameliza creando un sabor tostado más complejo. Reserva.",                                                                                            tiempo: 300,  temperatura: null, usa: ["coco-rallado"] },
+          { n: 3, titulo: "Preparar mayonesa casera",  texto: "En un vaso alto, coloca el huevo, aceite, 1 cucharada de jugo de lima y una pizca de sal. Introduce la batidora hasta el fondo. Bate sin mover durante 10–15 segundos. Cuando emulsione, sube lentamente la batidora. Debe quedar espesa y cremosa.",                                                                                                          tiempo: 600,  temperatura: null, usa: ["huevo", "aceite-neutro", "lima", "sal"] },
+          { n: 4, titulo: "Preparar mayonesa de sriracha", texto: "En un cuenco aparte, coloca 3–4 cucharadas de la mayonesa recién hecha. Añade la sriracha, media cucharadita extra de jugo de lima y una pizca extra de sal. Opcionalmente añade 2–3 gotas de salsa de soja ligera. Mezcla bien. Esto equilibra el dulzor del coco.",                                                                                       tiempo: 120,  temperatura: null, usa: ["sriracha", "lima", "sal", "salsa-soja"] },
+          { n: 5, titulo: "Preparar aguacate grande",  texto: "Corta el aguacate por la mitad longitudinalmente y retira el hueso. Con una cuchara, retira 1–2 cucharadas de pulpa para ampliar la cavidad. Añade unas gotas de lima y una pizca de sal. El aguacate grande es más firme, esto ayuda a que el calor penetre mejor.",                                                                                          tiempo: 180,  temperatura: null, usa: ["aguacate", "lima", "sal"] },
+          { n: 6, titulo: "Hornear",                   texto: "Coloca las mitades de aguacate en la bandeja con la pulpa hacia arriba. Hornea 8–10 minutos. Objetivo: templar, suavizar la textura y mantener estructura. No más de 10–11 min o se vuelve mantecoso.",                                                                                                                                                       tiempo: 540,  temperatura: 200,  usa: ["aguacate"] },
+          { n: 7, titulo: "Montaje final",             texto: "Rellena cada cavidad de aguacate con la mayonesa de sriracha. Espolvorea el coco tostado caramelizado. Añade cebollín o cilantro picado (opcional). Ajusta con una pizca final de sal. Servir inmediatamente.",                                                                                                                                                tiempo: 120,  temperatura: null, usa: ["sriracha", "coco-rallado", "cebollin", "sal"] }
         ],
-        notas: null,
-        creado:     "2026-05-03T18:00:00Z",
-        modificado: "2026-05-03T18:00:00Z"
+        notas: "Resultado esperado: aguacate cremoso y templado + picante suave + coco tostado crujiente + acidez fresca que equilibra el dulzor. El aguacate grande tropical mantiene mejor la forma y absorbe bien la salsa. Servir inmediatamente para que el coco tostado mantenga su textura crujiente.",
+        creado:     "2026-06-04T10:00:00Z",
+        modificado: "2026-06-04T10:00:00Z"
       },
-
-      /* ---- 3. Arroz con pollo (rangos + opcionales) ---------------------- */
       {
-        id: "arroz-con-pollo",
-        nombre: "Arroz con pollo",
-        tipo: "arroces",
-        tags: ["fondo-armario", "domingo"],
+        id: "berenjenas-rellenas-atun",
+        nombre: "Berenjenas rellenas de atún",
+        tipo: "verduras_ensaladas",
+        cocina: "Casera",
+        pais: "España",
+        etiquetas: ["familiar"],
+        tags: ["casero", "relleno", "gratinado", "tradicional"],
         dieta: [],
         racionesBase: 4,
-        tiempoPrep: 15,
-        tiempoCoccion: 30,
+        tiempoPrep: 20, tiempoCoccion: 45,
         dificultad: "media",
-        fuente: null,
-        imagen: null,
+        fuente: null, imagen: null,
         ingredientes: [
-          { ref: "arroz",          nombre: "Arroz bomba",       cantidad: 320, cantidadMax: null, unidad: "g",      grupo: null, opcional: false, nota: null },
-          { ref: "pollo",          nombre: "Muslos de pollo",   cantidad: 600, cantidadMax: 800,  unidad: "g",      grupo: null, opcional: false, nota: "Troceados" },
-          { ref: "cebolla",        nombre: "Cebolla",           cantidad: 1,   cantidadMax: null, unidad: "ud",     grupo: null, opcional: false, nota: null },
-          { ref: "pimiento-rojo",  nombre: "Pimiento rojo",     cantidad: 1,   cantidadMax: 2,    unidad: "ud",     grupo: null, opcional: false, nota: null },
-          { ref: "pimiento-verde", nombre: "Pimiento verde",    cantidad: 1,   cantidadMax: null, unidad: "ud",     grupo: null, opcional: true,  nota: null },
-          { ref: "ajo",            nombre: "Dientes de ajo",    cantidad: 2,   cantidadMax: 3,    unidad: "diente", grupo: null, opcional: false, nota: null },
-          { ref: "aceite-oliva",   nombre: "Aceite de oliva",   cantidad: 3,   cantidadMax: null, unidad: "cda",    grupo: null, opcional: false, nota: null },
-          { ref: "sal",            nombre: "Sal",               cantidad: 1,   cantidadMax: null, unidad: "cdta",   grupo: null, opcional: false, nota: null },
-          { ref: "caldo-pollo",    nombre: "Caldo de pollo",    cantidad: 800, cantidadMax: null, unidad: "ml",     grupo: null, opcional: false, nota: null },
-          { ref: "azafran",        nombre: "Azafrán",           cantidad: 1,   cantidadMax: null, unidad: "pizca",  grupo: null, opcional: true,  nota: null },
-          { ref: "guisantes",      nombre: "Guisantes",         cantidad: 100, cantidadMax: null, unidad: "g",      grupo: null, opcional: true,  nota: null }
+          { ref: "berenjena",     nombre: "Berenjenas grandes",                  cantidad: 2,    cantidadMax: null, unidad: "ud",       grupo: null, opcional: false, nota: "Aproximadamente 1 kg en total" },
+          { ref: "cebolla",       nombre: "Cebolla grande",                      cantidad: 1,    cantidadMax: null, unidad: "ud",       grupo: null, opcional: false, nota: "Picada fina" },
+          { ref: "ajo",           nombre: "Dientes de ajo",                      cantidad: 2,    cantidadMax: null, unidad: "diente",   grupo: null, opcional: false, nota: "Picados" },
+          { ref: "pimiento-rojo", nombre: "Pimiento rojo pequeño",               cantidad: 1,    cantidadMax: null, unidad: "ud",       grupo: null, opcional: false, nota: "Muy picado" },
+          { ref: "champinones",   nombre: "Champiñones",                         cantidad: 150,  cantidadMax: null, unidad: "g",        grupo: null, opcional: false, nota: "En daditos pequeños" },
+          { ref: "atun",          nombre: "Latas de atún en aceite de oliva",    cantidad: 3,    cantidadMax: 4,    unidad: "ud",       grupo: null, opcional: false, nota: "Bien escurrido, 180-200 g escurrido" },
+          { ref: "leche",         nombre: "Leche entera",                        cantidad: 300,  cantidadMax: null, unidad: "ml",       grupo: null, opcional: false, nota: "Para la bechamel" },
+          { ref: "harina",        nombre: "Harina de trigo",                     cantidad: 25,   cantidadMax: null, unidad: "g",        grupo: null, opcional: false, nota: "Para la bechamel" },
+          { ref: "mantequilla",   nombre: "Mantequilla",                         cantidad: 25,   cantidadMax: null, unidad: "g",        grupo: null, opcional: false, nota: "O 2 cdas de aceite de oliva virgen extra" },
+          { ref: "queso-rallado", nombre: "Queso rallado",                       cantidad: 120,  cantidadMax: null, unidad: "g",        grupo: null, opcional: false, nota: "Mezcla manchego y mozzarella, o el que gratine mejor" },
+          { ref: "perejil",       nombre: "Perejil fresco",                      cantidad: null, cantidadMax: null, unidad: "al_gusto", grupo: null, opcional: false, nota: "Picado, para servir" },
+          { ref: "aceite-oliva",  nombre: "Aceite de oliva virgen extra",        cantidad: null, cantidadMax: null, unidad: "al_gusto", grupo: null, opcional: false, nota: "Para sofreír y rociar" },
+          { ref: "sal",           nombre: "Sal",                                 cantidad: null, cantidadMax: null, unidad: "al_gusto", grupo: null, opcional: false, nota: "Para sazonar" },
+          { ref: "pimienta-negra",nombre: "Pimienta negra molida",               cantidad: null, cantidadMax: null, unidad: "al_gusto", grupo: null, opcional: false, nota: "Para sazonar" },
+          { ref: "nuez-moscada",  nombre: "Nuez moscada",                        cantidad: null, cantidadMax: null, unidad: "pizca",    grupo: null, opcional: false, nota: "Para la bechamel" }
         ],
         pasos: [
-          { n: 1, titulo: null,         texto: "Calentar el aceite y dorar el pollo salpimentado por todos lados. Reservar.", tiempo: 480,  temperatura: null, usa: ["aceite-oliva","pollo","sal"] },
-          { n: 2, titulo: "Sofrito",    texto: "En el mismo aceite, sofreír cebolla, pimientos y ajo picados.",                tiempo: 600,  temperatura: null, usa: ["cebolla","pimiento-rojo","pimiento-verde","ajo"] },
-          { n: 3, titulo: null,         texto: "Añadir el arroz y nacarar 1 min. Incorporar el azafrán.",                       tiempo: 60,   temperatura: null, usa: ["arroz","azafran"] },
-          { n: 4, titulo: null,         texto: "Verter el caldo bien caliente y devolver el pollo a la cazuela.",               tiempo: null, temperatura: null, usa: ["caldo-pollo"] },
-          { n: 5, titulo: "Cocción",    texto: "Cocer a fuego medio sin remover. Añadir los guisantes a la mitad.",             tiempo: 1080, temperatura: null, usa: ["guisantes"] },
-          { n: 6, titulo: "Reposo",     texto: "Apagar y dejar reposar tapado.",                                                 tiempo: 300,  temperatura: null, usa: [] }
+          { n: 1,  titulo: "Preparar berenjenas",       texto: "Lava las berenjenas, pártelas a lo largo por la mitad. Haz cortes en la pulpa en forma de rombos con un cuchillo. Rocíalas con aceite de oliva y un poco de sal.",                                              tiempo: 300,  temperatura: null, usa: ["berenjena", "aceite-oliva", "sal"] },
+          { n: 2,  titulo: "Hornear berenjenas",        texto: "Hornea las berenjenas a 180 °C durante 25–30 minutos hasta que la pulpa esté tierna.",                                                                                                                          tiempo: 1620, temperatura: 180,  usa: ["berenjena"] },
+          { n: 3,  titulo: "Vaciar berenjenas",         texto: "Retira las berenjenas del horno y déjalas enfriar ligeramente. Vacía la pulpa con una cuchara, dejando las pieles como barquitas. Pica la pulpa muy fina y reserva.",                                            tiempo: 300,  temperatura: null, usa: ["berenjena"] },
+          { n: 4,  titulo: "Sofríe cebolla y ajo",      texto: "En una sartén con aceite de oliva, sofríe la cebolla picada y el ajo a fuego medio durante 8–10 minutos hasta que estén pochados y dulces.",                                                                    tiempo: 540,  temperatura: null, usa: ["cebolla", "ajo", "aceite-oliva"] },
+          { n: 5,  titulo: "Añadir pimiento",           texto: "Incorpora el pimiento rojo muy picado y sofríe 5 minutos más.",                                                                                                                                                 tiempo: 300,  temperatura: null, usa: ["pimiento-rojo"] },
+          { n: 6,  titulo: "Cocinar champiñones",       texto: "Añade los champiñones en daditos pequeños y cocina 6–7 minutos hasta que pierdan agua y cojan color.",                                                                                                          tiempo: 390,  temperatura: null, usa: ["champinones"] },
+          { n: 7,  titulo: "Agregar pulpa de berenjena",texto: "Incorpora la pulpa de berenjena picada reservada, mezcla bien y rehoga 5 minutos más. Salpimienta.",                                                                                                            tiempo: 300,  temperatura: null, usa: ["berenjena", "sal", "pimienta-negra"] },
+          { n: 8,  titulo: "Añadir atún",               texto: "Agrega el atún desmigado y bien escurrido, mezcla bien. Retira del fuego.",                                                                                                                                      tiempo: 120,  temperatura: null, usa: ["atun"] },
+          { n: 9,  titulo: "Derretir mantequilla",      texto: "En un cazo, derrite la mantequilla (o calienta el aceite de oliva) a fuego medio.",                                                                                                                              tiempo: 180,  temperatura: null, usa: ["mantequilla", "aceite-oliva"] },
+          { n: 10, titulo: "Tostar harina",             texto: "Añade la harina, remueve constantemente durante 2 minutos para tostarla y eliminar el sabor a crudo.",                                                                                                           tiempo: 120,  temperatura: null, usa: ["harina"] },
+          { n: 11, titulo: "Preparar bechamel",         texto: "Vierte la leche poco a poco, batiendo constantemente con varillas hasta que espese y quede cremosa y sin grumos.",                                                                                              tiempo: 240,  temperatura: null, usa: ["leche"] },
+          { n: 12, titulo: "Sazonar bechamel",          texto: "Añade sal, pimienta negra molida y una pizca de nuez moscada. Mezcla bien.",                                                                                                                                     tiempo: 60,   temperatura: null, usa: ["sal", "pimienta-negra", "nuez-moscada"] },
+          { n: 13, titulo: "Ligar relleno",             texto: "Mezcla el sofrito de verduras, champiñones y atún con 3–4 cucharadas de bechamel para ligar bien el relleno.",                                                                                                   tiempo: 120,  temperatura: null, usa: ["atun"] },
+          { n: 14, titulo: "Rellenar berenjenas",       texto: "Rellena las barquitas de berenjena vaciadas con la mezcla de sofrito y atún.",                                                                                                                                   tiempo: 180,  temperatura: null, usa: ["berenjena"] },
+          { n: 15, titulo: "Cubrir con bechamel",       texto: "Cubre cada berenjena rellena con una fina capa de bechamel por encima.",                                                                                                                                         tiempo: 120,  temperatura: null, usa: ["leche"] },
+          { n: 16, titulo: "Espolvorear queso",         texto: "Espolvorea abundante queso rallado sobre las berenjenas cubiertas.",                                                                                                                                              tiempo: 60,   temperatura: null, usa: ["queso-rallado"] },
+          { n: 17, titulo: "Gratinar",                  texto: "Gratina en el horno a 200 °C con función grill durante 10–12 minutos, hasta que el queso esté dorado y burbujeante.",                                                                                            tiempo: 660,  temperatura: 200,  usa: ["queso-rallado"] },
+          { n: 18, titulo: "Servir",                    texto: "Sirve las berenjenas calientes, espolvoreadas con perejil fresco picado.",                                                                                                                                        tiempo: 60,   temperatura: null, usa: ["perejil"] }
         ],
-        notas: "Si el caldo está frío, el arroz se pasa.",
-        creado:     "2026-05-10T13:30:00Z",
-        modificado: "2026-05-10T13:30:00Z"
-      },
-
-      /* ---- 4. Tortilla de patatas (al_gusto, cantidad:null) -------------- */
-      {
-        id: "tortilla-patatas",
-        nombre: "Tortilla de patatas",
-        tipo: "huevos",
-        tags: ["clasico", "tapas"],
-        dieta: ["vegetariano", "sin_gluten"],
-        racionesBase: 4,
-        tiempoPrep: 20,
-        tiempoCoccion: 15,
-        dificultad: "media",
-        fuente: null,
-        imagen: null,
-        ingredientes: [
-          { ref: "patata",       nombre: "Patatas",            cantidad: 700, cantidadMax: null, unidad: "g",        grupo: null, opcional: false, nota: null },
-          { ref: "cebolla",      nombre: "Cebolla",            cantidad: 1,   cantidadMax: null, unidad: "ud",       grupo: null, opcional: true,  nota: "Debate eterno" },
-          { ref: "huevo",        nombre: "Huevos",             cantidad: 6,   cantidadMax: null, unidad: "ud",       grupo: null, opcional: false, nota: null },
-          { ref: "aceite-oliva", nombre: "Aceite de oliva",    cantidad: 300, cantidadMax: null, unidad: "ml",       grupo: null, opcional: false, nota: "Para freír" },
-          /* T4: cantidad:null con unidad "al_gusto" no se escala ni se suma como cantidad. */
-          { ref: "sal",          nombre: "Sal",                cantidad: null,cantidadMax: null, unidad: "al_gusto", grupo: null, opcional: false, nota: null }
-        ],
-        pasos: [
-          { n: 1, titulo: null,       texto: "Pelar y cortar las patatas en láminas finas. Picar la cebolla.",                 tiempo: null, temperatura: null, usa: ["patata","cebolla"] },
-          { n: 2, titulo: "Pochar",   texto: "Pochar patatas y cebolla en aceite a fuego medio, sin dorar.",                   tiempo: 1500, temperatura: null, usa: ["patata","cebolla","aceite-oliva"] },
-          { n: 3, titulo: null,       texto: "Escurrir el aceite. Batir los huevos con sal y mezclar con la patata.",          tiempo: null, temperatura: null, usa: ["huevo","sal"] },
-          { n: 4, titulo: "Reposo",   texto: "Dejar reposar la mezcla.",                                                       tiempo: 600,  temperatura: null, usa: [] },
-          { n: 5, titulo: "Cuajado",  texto: "Cuajar en sartén con un hilo de aceite, dándole la vuelta cuando esté dorada.",   tiempo: 360,  temperatura: null, usa: [] }
-        ],
-        notas: null,
-        creado:     "2026-05-15T20:00:00Z",
-        modificado: "2026-05-15T20:00:00Z"
-      },
-
-      /* ---- 5. Gazpacho andaluz (vegano + al_gusto + rangos) -------------- */
-      {
-        id: "gazpacho",
-        nombre: "Gazpacho andaluz",
-        tipo: "sopas_cremas",
-        tags: ["verano", "frio"],
-        dieta: ["vegano", "sin_gluten", "sin_lactosa"],
-        racionesBase: 4,
-        tiempoPrep: 15,
-        tiempoCoccion: 0,
-        dificultad: "facil",
-        fuente: null,
-        imagen: null,
-        ingredientes: [
-          { ref: "tomate",         nombre: "Tomates maduros",      cantidad: 1,   cantidadMax: null, unidad: "kg",      grupo: null, opcional: false, nota: null },
-          { ref: "pepino",         nombre: "Pepino",               cantidad: 1,   cantidadMax: null, unidad: "ud",      grupo: null, opcional: false, nota: null },
-          { ref: "pimiento-verde", nombre: "Pimiento verde italiano", cantidad: 1, cantidadMax: null, unidad: "ud",      grupo: null, opcional: false, nota: null },
-          { ref: "cebolla",        nombre: "Cebolla",              cantidad: 0.5, cantidadMax: null, unidad: "ud",      grupo: null, opcional: false, nota: null },
-          { ref: "ajo",            nombre: "Diente de ajo",        cantidad: 1,   cantidadMax: null, unidad: "diente",  grupo: null, opcional: false, nota: null },
-          { ref: "pan",            nombre: "Pan del día anterior", cantidad: 50,  cantidadMax: null, unidad: "g",       grupo: null, opcional: true,  nota: null },
-          { ref: "aceite-oliva",   nombre: "Aceite de oliva",      cantidad: 60,  cantidadMax: null, unidad: "ml",      grupo: null, opcional: false, nota: null },
-          { ref: "vinagre",        nombre: "Vinagre de Jerez",     cantidad: 1,   cantidadMax: 2,    unidad: "cda",     grupo: null, opcional: false, nota: null },
-          { ref: "sal",            nombre: "Sal",                  cantidad: null,cantidadMax: null, unidad: "al_gusto",grupo: null, opcional: false, nota: null },
-          { ref: "agua",           nombre: "Agua muy fría",        cantidad: 100, cantidadMax: 200,  unidad: "ml",      grupo: null, opcional: true,  nota: "Para aligerar" }
-        ],
-        pasos: [
-          { n: 1, titulo: null,     texto: "Trocear todas las verduras. Si se usa pan, remojarlo con un poco de vinagre.", tiempo: null, temperatura: null, usa: ["tomate","pepino","pimiento-verde","cebolla","ajo","pan","vinagre"] },
-          { n: 2, titulo: null,     texto: "Triturar todo con el aceite y la sal hasta una crema muy fina.",                tiempo: 180,  temperatura: null, usa: ["aceite-oliva","sal"] },
-          { n: 3, titulo: null,     texto: "Colar para una textura más sedosa y ajustar agua y vinagre.",                    tiempo: null, temperatura: null, usa: ["agua","vinagre"] },
-          { n: 4, titulo: "Frío",   texto: "Enfriar al menos una hora en la nevera antes de servir.",                        tiempo: 3600, temperatura: null, usa: [] }
-        ],
-        notas: "Servir muy frío. Guarniciones: dados de pepino, pimiento, tomate y huevo duro.",
-        creado:     "2026-05-20T11:00:00Z",
-        modificado: "2026-05-20T11:00:00Z"
+        notas: "Para aún más jugosidad, añade 1 huevo cocido picado al relleno junto con el atún. El sofrito debe cocinarse despacio: la cebolla casi caramelizada y los champiñones bien dorados aportan profundidad. Usa un chorrito del aceite del atún para realzar el sabor del relleno. Un buen truco es poner una capa muy fina de pan rallado sobre el queso para un gratinado más crujiente. Puedes preparar las berenjenas con antelación, dejarlas montadas y solo gratinarlas antes de servir. Acompáñalas con ensalada fresca o pan crujiente.",
+        creado:     "2026-06-04T10:00:00Z",
+        modificado: "2026-06-04T10:00:00Z"
       }
     ];
+    /* Sets de búsqueda rápidos para detectar fijas. */
+    const IDS_FIJAS    = new Set(RECETAS_FIJAS.map(r => r.id));
+    const CLAVES_FIJAS = new Set(ING_FIJOS.map(i => i.clave));
+
+    /* SEEDs antiguos: vaciados. La app arranca con catálogo + recetas
+       que vienen de las constantes fijas, no de un SEED replicado. */
+    const ING_SEED = [];
+    const REC_SEED = [];
 
     /* Estado de usuario inicial para ruben — T5: NUNCA dentro de la receta. */
     const ESTADO_USUARIO_SEED = {
@@ -4926,7 +4996,8 @@
       pescados_mariscos: "Pescados y mariscos", huevos: "Huevos",
       verduras_ensaladas: "Verduras y ensaladas", salsas_fondos: "Salsas y fondos",
       desayunos: "Desayunos", aperitivos_tapas: "Aperitivos y tapas",
-      bebidas: "Bebidas", conservas: "Conservas"
+      bebidas: "Bebidas", conservas: "Conservas",
+      empanadas: "Empanadas"
     };
     const ETIQUETA_DIETA = {
       vegetariano: "Vegetariano", vegano: "Vegano",
@@ -5183,7 +5254,52 @@
         } catch (_) {/* cae al seed */}
       }
       estado = estructuraInicial();
+      // Estructura inicial parte de SEED vacío -> no hay que migrar nada,
+      // pero marcamos la versión de schema para evitar futuras migraciones.
+      localStorage.setItem(KEY_SCHEMA_LOCAL, String(SCHEMA_LOCAL_V));
       guardarEstado();
+    }
+
+    /* Versión local de schema. Bumpear cuando hay una migración destructiva.
+       v2 (jun 2026): introducción de RECETAS_FIJAS + ING_FIJOS en el HTML.
+                      Se vacía estado.recetas y estado.ingredientes locales,
+                      encolando borrados Supabase para que se limpien también
+                      remotamente. El estadoUsuario (favoritos / valoraciones /
+                      cocinada) se mantiene íntegro y aplica a las nuevas
+                      fijas que comparten id (bizcocho-arandanos, bizcocho-
+                      platano-nueces, etc.). Los overrides serán recetas en
+                      estado.recetas con id que coincide con una fija. */
+    const SCHEMA_LOCAL_V = 2;
+    const KEY_SCHEMA_LOCAL = "recetas_app_schema_local_v";
+
+    function migrarAFijas() {
+      const guardada = parseInt(localStorage.getItem(KEY_SCHEMA_LOCAL) || "1", 10);
+      if (guardada >= SCHEMA_LOCAL_V) return;
+      // Borra TODO lo local: recetas e ingredientes. Las RECETAS_FIJAS e
+      // ING_FIJOS vienen del HTML — sin overrides fantasma. Si el usuario
+      // edita una fija después, eso SÍ crea un override en estado.recetas
+      // y se sincroniza. estadoUsuario (favoritos / valoraciones / cocinada)
+      // se mantiene íntegro, así que las dos bizcochos conservan su historial.
+      let cambios = 0;
+      if (Array.isArray(estado.recetas) && estado.recetas.length) {
+        for (const r of estado.recetas) {
+          encolarBorrado("recetas", r.id);
+          cambios++;
+        }
+        estado.recetas = [];
+      }
+      if (Array.isArray(estado.ingredientes) && estado.ingredientes.length) {
+        for (const i of estado.ingredientes) {
+          encolarBorrado("ingredientes", i.clave);
+          cambios++;
+        }
+        estado.ingredientes = [];
+      }
+      guardarEstado();
+      localStorage.setItem(KEY_SCHEMA_LOCAL, String(SCHEMA_LOCAL_V));
+      if (cambios > 0) {
+        console.info(`[Migración v${SCHEMA_LOCAL_V}] Limpieza local: ${cambios} entradas encoladas para borrado remoto.`);
+      }
     }
 
     /**
@@ -5728,9 +5844,53 @@
       programarAutoSync();   // sync diferido si está conectado
     }
 
-    /** Busca una receta por id. */
+    /** Busca una receta por id.
+     *  Prioridad: estado.recetas (override del usuario) → RECETAS_FIJAS (HTML).
+     *  Las fijas devueltas llevan el flag interno `_fija: true` para que la UI
+     *  pueda mostrar el badge "Receta fija" y bloquear su borrado. */
     function recetaPorId(id) {
-      return estado.recetas.find(r => r.id === id) || null;
+      const ov = estado.recetas.find(r => r.id === id);
+      if (ov) return IDS_FIJAS.has(id) ? { ...ov, _fija: true, _override: true } : ov;
+      const fija = RECETAS_FIJAS.find(r => r.id === id);
+      return fija ? { ...fija, _fija: true } : null;
+    }
+
+    /** True si el id corresponde a una receta fija del HTML. */
+    function esRecetaFija(id) { return IDS_FIJAS.has(id); }
+
+    /** True si esa fija tiene override local guardado en estado.recetas. */
+    function tieneOverride(id) {
+      return IDS_FIJAS.has(id) && estado.recetas.some(r => r.id === id);
+    }
+
+    /** Lista resuelta: combinación de RECETAS_FIJAS (con overrides aplicados)
+     *  + recetas del usuario. Para iteraciones / filtros / listados. */
+    function recetasResueltas() {
+      const idsConOverride = new Set(estado.recetas.map(r => r.id));
+      const fijasSinOverride = RECETAS_FIJAS
+        .filter(r => !idsConOverride.has(r.id))
+        .map(r => ({ ...r, _fija: true }));
+      // estado.recetas contiene tanto overrides (ids que están en RECETAS_FIJAS)
+      // como recetas propias del usuario. Marcamos las que son override.
+      const conMarca = estado.recetas.map(r =>
+        IDS_FIJAS.has(r.id) ? { ...r, _fija: true, _override: true } : r
+      );
+      return [...fijasSinOverride, ...conMarca];
+    }
+
+    /** Catálogo de ingredientes resuelto: ING_FIJOS + ingredientes propios. */
+    function ingredientesResueltos() {
+      const clavesPropias = new Set(estado.ingredientes.map(i => i.clave));
+      const fijos = ING_FIJOS.filter(i => !clavesPropias.has(i.clave))
+                             .map(i => ({ ...i, _fijo: true }));
+      return [...fijos, ...estado.ingredientes];
+    }
+
+    /** Busca un ingrediente por clave en estado + fijos. */
+    function ingredientePorClave(clave) {
+      return estado.ingredientes.find(x => x.clave === clave)
+          || ING_FIJOS.find(x => x.clave === clave)
+          || null;
     }
 
     /**
@@ -5931,7 +6091,7 @@
 
     function filtrarRecetasBusqueda(b) {
       const txt = normaliza(b.texto || "").trim();
-      return estado.recetas.filter(r => {
+      return recetasResueltas().filter(r => {
         // texto libre
         if (txt) {
           const enNombre = normaliza(r.nombre).includes(txt);
@@ -6117,7 +6277,7 @@
             if (!ing.opcional) prev.opcional = false;
           } else {
             // Usar el nombre del catalogo si existe (mas estable que el de la receta).
-            const ingDef = estado.ingredientes.find(x => x.clave === ing.ref);
+            const ingDef = ingredientePorClave(ing.ref);
             lineas.set(clave, {
               clave,
               ref: ing.ref,
@@ -6135,7 +6295,7 @@
       // Agrupar por categoriaCompra.
       const grupos = {};
       for (const linea of lineas.values()) {
-        const ingDef = linea.ref ? estado.ingredientes.find(x => x.clave === linea.ref) : null;
+        const ingDef = linea.ref ? ingredientePorClave(linea.ref) : null;
         const cat = (ingDef && ingDef.categoriaCompra) || "otros";
         if (!grupos[cat]) grupos[cat] = [];
         grupos[cat].push(linea);
@@ -6465,7 +6625,7 @@
       const huerf = sesion.refsHuerfanas || [];
       let creados = 0;
       for (const h of huerf) {
-        if (estado.ingredientes.find(x => x.clave === h.clave)) continue;
+        if (ingredientePorClave(h.clave)) continue;
         estado.ingredientes.push({
           clave: h.clave,
           nombre: h.nombre,
@@ -6817,7 +6977,7 @@
         let aplicados = 0;
         for (const rem of (remIng || [])) {
           if (idsIngBorradas.has(rem.clave)) continue; // lo hemos borrado nosotros
-          const local = estado.ingredientes.find(x => x.clave === rem.clave);
+          const local = ingredientePorClave(rem.clave);
           const remL = ingSupaALocal(rem);
           if (!local) { estado.ingredientes.push(remL); aplicados++; }
           else if (!local.modificado || (remL.modificado || "") > local.modificado) {
@@ -7007,7 +7167,7 @@
     /** Aplica búsqueda + filtro de favoritos + tipos + cocinas + etiquetas. */
     function bibliotecaFiltrada() {
       const txt = normaliza(sesion.bibliotecaTexto || "").trim();
-      let lista = estado.recetas;
+      let lista = recetasResueltas();
       if (txt) {
         lista = lista.filter(r =>
           normaliza(r.nombre).includes(txt) ||
@@ -7141,7 +7301,8 @@
     function renderBibliotecaLista() {
       const cont = document.getElementById("biblioteca-contenedor");
       const recetas = bibliotecaFiltrada();
-      const totalSinFiltro = estado.recetas.length;
+      const _todasResueltas = recetasResueltas();
+      const totalSinFiltro = _todasResueltas.length;
       const ord = sesion.ordenBiblioteca;
       const modo = sesion.bibliotecaModo;
       const soloFav = sesion.bibliotecaSoloFav;
@@ -7163,7 +7324,7 @@
         : "No hay recetas todavía.";
 
       // Chips de tipo: solo los tipos que existen en el catálogo actual.
-      const tiposPresentes = [...new Set(estado.recetas.map(r => r.tipo))]
+      const tiposPresentes = [...new Set(_todasResueltas.map(r => r.tipo))]
         .filter(t => ETIQUETA_TIPO[t])
         .sort((a,b) => normaliza(ETIQUETA_TIPO[a]).localeCompare(normaliza(ETIQUETA_TIPO[b])));
       const tiposChipsHTML = tiposPresentes.map(t => `
@@ -7173,7 +7334,7 @@
       ).join("");
 
       // Chips de cocina (estilo) — solo los que aparecen.
-      const cocinasPresentes = [...new Set(estado.recetas.map(r => r.cocina).filter(Boolean))]
+      const cocinasPresentes = [...new Set(_todasResueltas.map(r => r.cocina).filter(Boolean))]
         .sort((a,b) => normaliza(a).localeCompare(normaliza(b)));
       const cocinasChipsHTML = cocinasPresentes.map(c => `
         <button type="button" class="biblio-tag-chip" data-accion="biblio-cocina" data-valor="${esc(c)}"
@@ -7181,7 +7342,7 @@
       ).join("");
 
       // Chips de país de origen — solo los que aparecen.
-      const paisesPresentes = [...new Set(estado.recetas.map(r => r.pais).filter(Boolean))]
+      const paisesPresentes = [...new Set(_todasResueltas.map(r => r.pais).filter(Boolean))]
         .sort((a,b) => normaliza(a).localeCompare(normaliza(b)));
       const paisesChipsHTML = paisesPresentes.map(p => `
         <button type="button" class="biblio-tag-chip" data-accion="biblio-pais" data-valor="${esc(p)}"
@@ -7287,7 +7448,7 @@
       // Refrescar contador
       const p = cont.querySelector(".titulo-grupo p");
       if (p) {
-        p.innerHTML = `${recetas.length}${filtroActivo ? `/${estado.recetas.length}` : ""} recetas · perfil <b>${esc(perfilActivo)}</b>`;
+        p.innerHTML = `${recetas.length}${filtroActivo ? `/${_todasResueltas.length}` : ""} recetas · perfil <b>${esc(perfilActivo)}</b>`;
       }
     }
 
@@ -7421,7 +7582,7 @@
           </div>
 
           <header class="detalle-cabecera">
-            <div class="detalle-eyebrow">${esc(ETIQUETA_TIPO[r.tipo] || r.tipo)}</div>
+            <div class="detalle-eyebrow">${esc(ETIQUETA_TIPO[r.tipo] || r.tipo)}${r._fija ? `<span class="detalle-eyebrow-fija">· RECETA FIJA${r._override ? " (EDITADA)" : ""}</span>` : ""}</div>
             <h1>${esc(r.nombre)}</h1>
             ${metaInlineHTML ? `<p class="detalle-meta-line">${metaInlineHTML}</p>` : ""}
           </header>
@@ -7602,7 +7763,7 @@
     }
 
     function nombreIng(ref) {
-      const i = estado.ingredientes.find(x => x.clave === ref);
+      const i = ingredientePorClave(ref);
       return i ? i.nombre : ref;
     }
 
@@ -7822,7 +7983,7 @@
     }
 
     function listadoInversa() {
-      const conCob = estado.recetas.map(r => ({ r, cob: coberturaReceta(r, sesion.disponibles) }));
+      const conCob = recetasResueltas().map(r => ({ r, cob: coberturaReceta(r, sesion.disponibles) }));
       // Filtro común: 0% se oculta (al menos 1 cubierto, salvo recetas sin obligatorios).
       const sinCero = conCob.filter(x => x.cob.total === 0 || x.cob.cubiertos > 0);
       if (sesion.inversaModo === "casi") {
@@ -7927,7 +8088,7 @@
         let algunoVisible = false;
         cat.querySelectorAll("[data-accion='toggle-disponible']").forEach(btn => {
           const ref = btn.dataset.ref;
-          const ing = estado.ingredientes.find(i => i.clave === ref);
+          const ing = ingredientePorClave(ref);
           if (!ing) { btn.style.display = "none"; return; }
           const visible = !q
             || normaliza(ing.nombre).includes(q)
@@ -8732,7 +8893,7 @@
       ].map(p => `<option value="${p[0]}" ${c.masa.desde === p[0] ? "selected" : ""}>${p[1]}</option>`).join("");
 
       let masaResult = "—", masaAviso = "";
-      const ingSel = c.masa.ref ? estado.ingredientes.find(x => x.clave === c.masa.ref) : null;
+      const ingSel = c.masa.ref ? ingredientePorClave(c.masa.ref) : null;
       if (ingSel && Number.isFinite(c.masa.cantidad)) {
         if (!ingSel.densidad) {
           masaAviso = `Sin densidad para "${ingSel.nombre}". Edita el catálogo en Datos.`;
@@ -8914,7 +9075,11 @@
       if (id) {
         const r = recetaPorId(id);
         if (!r) return;
-        sesion.editor.receta = clonarReceta(r);
+        // Clonamos sin los flags internos (_fija, _override) para no
+        // contaminar el editor con metadata derivada.
+        const limpio = clonarReceta(r);
+        delete limpio._fija; delete limpio._override;
+        sesion.editor.receta = limpio;
       } else {
         sesion.editor.receta = recetaVacia();
       }
@@ -8927,7 +9092,7 @@
     function abrirEditorIngrediente(clave) {
       if (bloquearSiInvitado()) return;
       if (clave) {
-        const ing = estado.ingredientes.find(x => x.clave === clave);
+        const ing = ingredientePorClave(clave);
         if (!ing) return;
         sesion.editor.ingrediente = JSON.parse(JSON.stringify(ing));
       } else {
@@ -8945,6 +9110,29 @@
       renderDatos();
     }
 
+    /** Botón "Restaurar versión original" en el editor de una receta fija
+     *  con override: elimina el override de estado.recetas (y lo propaga
+     *  como borrado a Supabase), de modo que la app vuelve a mostrar la
+     *  receta tal y como viene del HTML. */
+    function restaurarRecetaFijaDesdeEditor() {
+      if (bloquearSiInvitado()) return;
+      const r = sesion.editor.receta;
+      if (!r || !esRecetaFija(r.id)) return;
+      if (!tieneOverride(r.id)) {
+        toast("Esta receta ya está en su versión original");
+        cerrarEditor();
+        return;
+      }
+      if (!confirm(`¿Restaurar "${r.nombre}" a la versión original del HTML? Se descartarán los cambios locales y se sincronizará la restauración.`))
+        return;
+      estado.recetas = estado.recetas.filter(x => x.id !== r.id);
+      guardarEstado();
+      encolarBorrado("recetas", r.id);
+      cerrarEditor();
+      renderTodo();
+      toast("Versión original restaurada");
+    }
+
     function guardarRecetaDesdeEditor() {
       if (bloquearSiInvitado()) return;
       const r = sesion.editor.receta;
@@ -8960,7 +9148,7 @@
       // Pasar nombre del catalogo si ref existe pero nombre vacio.
       r.ingredientes.forEach(ing => {
         if (ing.ref && !ing.nombre) {
-          const i = estado.ingredientes.find(x => x.clave === ing.ref);
+          const i = ingredientePorClave(ing.ref);
           if (i) ing.nombre = i.nombre;
         }
       });
@@ -9007,6 +9195,22 @@
       if (bloquearSiInvitado()) return;
       const r = recetaPorId(id);
       if (!r) return;
+      // Fija SIN override: no se puede borrar (viene del HTML).
+      if (esRecetaFija(id) && !tieneOverride(id)) {
+        toast("Receta fija: no se puede borrar");
+        return;
+      }
+      // Fija CON override: "borrar" significa RESTAURAR la versión original.
+      if (esRecetaFija(id) && tieneOverride(id)) {
+        if (!confirm(`¿Restaurar "${r.nombre}" a la versión original? Se descartarán los cambios locales.`))
+          return;
+        estado.recetas = estado.recetas.filter(x => x.id !== id);
+        guardarEstado();
+        encolarBorrado("recetas", id);    // limpia el override en Supabase también
+        renderTodo();
+        toast("Versión original restaurada");
+        return;
+      }
       if (!confirm(`¿Borrar la receta "${r.nombre}"? Se eliminará también su estado en perfiles, plan y compra.`))
         return;
       estado.recetas = estado.recetas.filter(x => x.id !== id);
@@ -9026,7 +9230,11 @@
       renderTodo();
     }
     function borrarIngrediente(clave) {
-      const usado = estado.recetas.some(r =>
+      if (CLAVES_FIJAS.has(clave)) {
+        toast("Ingrediente fijo: no se puede borrar");
+        return;
+      }
+      const usado = recetasResueltas().some(r =>
         r.ingredientes.some(i => i.ref === clave));
       if (usado) {
         if (!confirm(`El ingrediente "${clave}" está usado en recetas. Si lo borras, esas referencias se convertirán en ad-hoc al recargar. ¿Continuar?`)) return;
@@ -9222,6 +9430,12 @@
 
           <div class="editor-acciones">
             <button type="button" class="iox-boton secundario" data-accion="cancelar-editor">Cancelar</button>
+            ${esRecetaFija(r.id) && tieneOverride(r.id)
+              ? `<button type="button" class="iox-boton secundario" data-accion="restaurar-fija">↺ Restaurar versión original</button>`
+              : ""}
+            ${esRecetaFija(r.id)
+              ? `<span class="editor-pista-fija">Receta fija · al guardar se creará un <b>override</b> local sincronizado.</span>`
+              : ""}
             <button type="button" class="iox-boton" data-accion="guardar-receta">Guardar receta</button>
           </div>
         </form>
@@ -9753,6 +9967,9 @@
       cargarModoDev();
       cargarSupabase();
       cargarBorradosPendientes();
+      // Migración a recetas fijas (v1 -> v2). Debe ejecutarse DESPUÉS de
+      // cargarBorradosPendientes para no perder la cola existente.
+      migrarAFijas();
       actualizarThemeColor(document.documentElement.dataset.tema);
       // Si quedaron timers activos al cargar, arrancar el ticker.
       if (sesion.timers.some(t => !t.pausado && !t.vencido)) arrancarTicker();
@@ -10428,10 +10645,11 @@
         const borI = ev.target.closest("[data-accion='borrar-ing-cat']");
         if (borI) { borrarIngrediente(borI.dataset.clave); return; }
 
-        // -- Editor: cancelar/guardar
+        // -- Editor: cancelar/guardar/restaurar fija
         if (ev.target.closest("[data-accion='cancelar-editor']")) { cerrarEditor(); return; }
         if (ev.target.closest("[data-accion='guardar-receta']")) { guardarRecetaDesdeEditor(); return; }
         if (ev.target.closest("[data-accion='guardar-ingrediente']")) { guardarIngredienteDesdeEditor(); return; }
+        if (ev.target.closest("[data-accion='restaurar-fija']")) { restaurarRecetaFijaDesdeEditor(); return; }
 
         // -- Editor receta: ingredientes/pasos
         const r = sesion.editor.receta;
@@ -10746,7 +10964,7 @@
             if (cmp === "ing-ref")    {
               o.ref = t.value || null;
               if (o.ref && !o.nombre) {
-                const cat = estado.ingredientes.find(x => x.clave === o.ref);
+                const cat = ingredientePorClave(o.ref);
                 if (cat) {
                   o.nombre = cat.nombre;
                   // Refrescar el input nombre en vivo.
