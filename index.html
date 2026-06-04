@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#2563eb">
+  <meta name="theme-color" content="#111111">
   <title>Recetas</title>
 
   <!-- PWA: manifest + iconos para instalar en pantalla de inicio -->
@@ -3858,6 +3858,159 @@
       min-height: 18px;
       line-height: 1.4;
     }
+
+    /* ========================================================================
+       BOTONES EDITORIALES — sustituyen el azul de acciones por un negro sobrio.
+       Mantenemos `--accent` (azul) para focos de teclado, links, estrellas y
+       favoritos: el azul aporta señal informativa, el negro aporta autoridad
+       en las acciones.
+       ======================================================================== */
+    :root {
+      --btn-bg:      #111111;   /* casi-negro, más cálido que #000 */
+      --btn-fg:      #ffffff;
+      --btn-bg-h:    #000000;
+      --btn-borde:   #111111;
+    }
+    :root[data-tema="oscuro"] {
+      --btn-bg:      #f4f4f5;   /* invertido en oscuro */
+      --btn-fg:      #0a0a0a;
+      --btn-bg-h:    #ffffff;
+      --btn-borde:   #f4f4f5;
+    }
+
+    /* CTA principal: pill negra sólida */
+    .btn-principal {
+      background: var(--btn-bg);
+      color: var(--btn-fg);
+      box-shadow: none;
+      border: 1px solid var(--btn-bg);
+    }
+    .btn-principal:hover {
+      background: var(--btn-bg-h);
+      box-shadow: 0 4px 14px -6px rgba(0,0,0,0.45);
+    }
+
+    /* Botón secundario "Editar receta" en el detalle: outline fino */
+    .detalle-editar {
+      background: transparent;
+      color: var(--btn-bg);
+      border: 1px solid var(--btn-borde);
+      box-shadow: none;
+    }
+    .detalle-editar:hover {
+      background: var(--btn-bg);
+      color: var(--btn-fg);
+      box-shadow: none;
+    }
+    :root[data-tema="oscuro"] .detalle-editar { color: var(--btn-bg); }
+    :root[data-tema="oscuro"] .detalle-editar:hover { background: var(--btn-bg); color: var(--btn-fg); }
+
+    /* "Modo cocina" en detalle: outline fino, hover sólido */
+    .btn-cocina-iniciar {
+      background: transparent;
+      color: var(--btn-bg);
+      border: 1px solid var(--btn-borde);
+      box-shadow: none;
+    }
+    .btn-cocina-iniciar:hover {
+      background: var(--btn-bg);
+      color: var(--btn-fg);
+      box-shadow: none;
+      transform: translateY(-1px);
+    }
+
+    /* Botones +/- de raciones: hover en negro */
+    .raciones-btn:hover:not([disabled]) {
+      background: var(--btn-bg);
+      color: var(--btn-fg);
+    }
+
+    /* Botón principal del modo cocina (Siguiente / Terminar) */
+    .mc-btn-nav.principal {
+      background: var(--btn-bg);
+      color: var(--btn-fg);
+    }
+    .mc-btn-nav.principal:hover { background: var(--btn-bg-h); }
+
+    /* Botones de importar/exportar/nueva-receta/guardar */
+    .iox-boton {
+      background: var(--btn-bg);
+      color: var(--btn-fg);
+      border: 1px solid var(--btn-bg);
+    }
+    .iox-boton:hover { background: var(--btn-bg-h); border-color: var(--btn-bg-h); }
+    .iox-boton.secundario {
+      background: transparent;
+      color: var(--btn-bg);
+      border: 1px solid var(--btn-borde);
+    }
+    .iox-boton.secundario:hover {
+      background: var(--btn-bg);
+      color: var(--btn-fg);
+    }
+    :root[data-tema="oscuro"] .iox-boton.secundario { color: var(--btn-bg); }
+
+    /* ========================================================================
+       PERFIL INVITADO — solo lectura.
+       Oculta todos los affordances de edición. Las funciones JS también
+       hacen guard como red de seguridad ante atajos de teclado o doble click.
+       ======================================================================== */
+    html[data-perfil="invitado"] .detalle-editar,
+    html[data-perfil="invitado"] .estrellas-edit,
+    html[data-perfil="invitado"] .raciones-btn,
+    html[data-perfil="invitado"] [data-accion="editar-receta"],
+    html[data-perfil="invitado"] [data-accion="editar-receta-actual"],
+    html[data-perfil="invitado"] [data-accion="borrar-receta"],
+    html[data-perfil="invitado"] [data-accion="nueva-receta"],
+    html[data-perfil="invitado"] [data-accion="nuevo-ingrediente"],
+    html[data-perfil="invitado"] [data-accion="editar-ing"],
+    html[data-perfil="invitado"] [data-accion="borrar-ing-cat"],
+    html[data-perfil="invitado"] [data-accion="importar"],
+    html[data-perfil="invitado"] [data-accion="guardar-receta"],
+    html[data-perfil="invitado"] [data-accion="limpiar-todo"],
+    html[data-perfil="invitado"] [data-accion="sembrar-demo"],
+    html[data-perfil="invitado"] [data-accion="vaciar-perfil"],
+    html[data-perfil="invitado"] [data-accion="añadir-fav"],
+    html[data-perfil="invitado"] [data-accion="toggle-fav"],
+    html[data-perfil="invitado"] [data-accion="ajustar-cocinada"],
+    html[data-perfil="invitado"] [data-accion="valorar"],
+    html[data-perfil="invitado"] [data-accion="añadir-coleccion"],
+    html[data-perfil="invitado"] [data-accion="planificar"],
+    html[data-perfil="invitado"] [data-accion="añadir-compra"],
+    html[data-perfil="invitado"] [data-accion="quitar-compra"],
+    html[data-perfil="invitado"] [data-accion="planif-set-dia"],
+    html[data-perfil="invitado"] [data-accion="planif-borrar"],
+    html[data-perfil="invitado"] [data-accion="generar-lista-semana"],
+    html[data-perfil="invitado"] [data-accion="generar-lista-mes"],
+    html[data-perfil="invitado"] [data-accion="generar-lista-semana-visible"],
+    html[data-perfil="invitado"] [data-accion="limpiar-semana-visible"],
+    html[data-perfil="invitado"] [data-accion="limpiar-mes"],
+    html[data-perfil="invitado"] [data-accion="limpiar-nevera"],
+    html[data-perfil="invitado"] [data-accion="nuevo-ing-inversa"],
+    html[data-perfil="invitado"] .tarjeta-fav,
+    html[data-perfil="invitado"] .editor-paso,
+    html[data-perfil="invitado"] .iox-boton:not(.secundario) {
+      display: none !important;
+    }
+    /* Banner sutil de solo lectura, fijo abajo a la izquierda */
+    .badge-solo-lectura {
+      position: fixed;
+      bottom: calc(var(--gap-3) + env(safe-area-inset-bottom));
+      left: var(--gap-3);
+      z-index: 50;
+      background: var(--btn-bg);
+      color: var(--btn-fg);
+      padding: 6px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      border-radius: var(--r-pill);
+      box-shadow: var(--sh-2);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+    html:not([data-perfil="invitado"]) .badge-solo-lectura { display: none; }
   </style>
 </head>
 <body>
@@ -3867,6 +4020,9 @@
        La vista "biblioteca" se rellena por JS (lista o detalle).
        Las demas mantienen placeholder hasta sus fases.
        ======================================================================== -->
+
+  <!-- Badge "solo lectura" — solo visible cuando data-perfil="invitado" -->
+  <div class="badge-solo-lectura" aria-hidden="true">Solo lectura</div>
 
   <header class="cabecera">
     <div class="cabecera-inner">
@@ -4612,6 +4768,7 @@
     function cargarPerfilGuardado() {
       const p = localStorage.getItem(KEY_PERFIL);
       perfilActivo = PERFILES.includes(p) ? p : "ruben";
+      aplicarAtributoPerfil();
     }
 
     function fijarPerfil(p) {
@@ -4623,8 +4780,49 @@
         estado.estadoUsuario[p] = {};
         guardarEstado();
       }
+      aplicarAtributoPerfil();
       renderPerfil();
       renderTodo();
+    }
+
+    /** Refleja el perfil en <html data-perfil="…"> para que el CSS
+     *  oculte affordances de edición en modo invitado. */
+    function aplicarAtributoPerfil() {
+      document.documentElement.setAttribute("data-perfil", perfilActivo);
+    }
+
+    /** True si el perfil activo es solo-lectura (invitado). */
+    function esInvitado() {
+      return perfilActivo === "invitado";
+    }
+
+    /** Aviso uniforme cuando se intenta una acción de escritura como invitado. */
+    function bloquearSiInvitado() {
+      if (!esInvitado()) return false;
+      toast("Perfil invitado: solo lectura");
+      return true;
+    }
+
+    /** Toast flotante mínimo. Crea el contenedor on-demand. */
+    function toast(msg, ms) {
+      let cont = document.getElementById("toast-cont");
+      if (!cont) {
+        cont = document.createElement("div");
+        cont.id = "toast-cont";
+        cont.setAttribute("aria-live", "polite");
+        cont.style.cssText = "position:fixed;left:50%;transform:translateX(-50%);bottom:calc(72px + env(safe-area-inset-bottom));z-index:1000;display:flex;flex-direction:column;gap:8px;pointer-events:none;";
+        document.body.appendChild(cont);
+      }
+      const t = document.createElement("div");
+      t.textContent = msg;
+      t.style.cssText = "background:#111;color:#fff;padding:10px 18px;border-radius:999px;font-size:13px;font-weight:600;box-shadow:0 6px 24px -4px rgba(0,0,0,0.45);opacity:0;transition:opacity .18s, transform .18s;transform:translateY(8px);pointer-events:auto;";
+      cont.appendChild(t);
+      requestAnimationFrame(() => { t.style.opacity = "1"; t.style.transform = "translateY(0)"; });
+      const dur = ms || 2200;
+      setTimeout(() => {
+        t.style.opacity = "0"; t.style.transform = "translateY(8px)";
+        setTimeout(() => t.remove(), 220);
+      }, dur);
     }
 
     /* ---- Accesibilidad: slider de fuente (4 niveles) + alto contraste --
@@ -5088,6 +5286,11 @@
      */
     function setEstado(perfil, idReceta, parcial) {
       if (!PERFILES.includes(perfil)) return;
+      // Perfil invitado: solo lectura. Bloquea cualquier mutación de estado.
+      if (perfil === "invitado") {
+        try { toast("Perfil invitado: solo lectura"); } catch (_) {}
+        return;
+      }
       if (!estado.estadoUsuario[perfil]) estado.estadoUsuario[perfil] = {};
       const previo = estado.estadoUsuario[perfil][idReceta] || estadoUsuarioVacio();
       estado.estadoUsuario[perfil][idReceta] = { ...previo, ...parcial, modificado: nowISO() };
@@ -5701,6 +5904,9 @@
      *   - last-write-wins por modificado en recetas.
      */
     function importarObjeto(obj) {
+      if (esInvitado()) {
+        return { incidencias: ["Perfil invitado: solo lectura"], aplicados: { ingredientes:0, recetas:0, perfiles:0 }, huerfanas: [] };
+      }
       const incidencias = [];
       const huerfMap = new Map();   // ref -> {nombre}
       const out = { ingredientes: 0, recetas: 0, perfiles: 0 };
@@ -8310,6 +8516,7 @@
     }
 
     function abrirEditorReceta(id) {
+      if (bloquearSiInvitado()) return;
       if (id) {
         const r = recetaPorId(id);
         if (!r) return;
@@ -8324,6 +8531,7 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
     function abrirEditorIngrediente(clave) {
+      if (bloquearSiInvitado()) return;
       if (clave) {
         const ing = estado.ingredientes.find(x => x.clave === clave);
         if (!ing) return;
@@ -8344,6 +8552,7 @@
     }
 
     function guardarRecetaDesdeEditor() {
+      if (bloquearSiInvitado()) return;
       const r = sesion.editor.receta;
       if (!r) return;
       // Normalizaciones antes de validar.
@@ -8401,6 +8610,7 @@
     }
 
     function borrarReceta(id) {
+      if (bloquearSiInvitado()) return;
       const r = recetaPorId(id);
       if (!r) return;
       if (!confirm(`¿Borrar la receta "${r.nombre}"? Se eliminará también su estado en perfiles, plan y compra.`))
