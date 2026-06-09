@@ -3654,6 +3654,32 @@
     }
     .btn-cocina-top { margin-left: auto; }
 
+    /* Pestañas de variante (p.ej. Saladas / Caramelizadas) — selector principal
+       de la receta, por encima de las tabs Ingredientes/Pasos. Usa el color del
+       tipo de receta para distinguirse del segmentado neutro de abajo. */
+    .detalle-variantes {
+      display: inline-flex;
+      gap: 4px;
+      background: var(--bg-soft);
+      border-radius: var(--r-pill);
+      padding: 4px;
+      margin-bottom: var(--gap-3);
+    }
+    .detalle-variantes button {
+      padding: 11px 26px;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: var(--r-pill);
+      color: var(--text-muted);
+      transition: background .15s, color .15s;
+      cursor: pointer;
+    }
+    .detalle-variantes button[aria-pressed="true"] {
+      background: var(--chip-bg);
+      color: var(--chip-fg);
+      box-shadow: var(--sh-1);
+    }
+
     /* Acción en negrita dentro del cuerpo del paso */
     .detalle .paso-cuerpo strong {
       font-weight: 700;
@@ -5040,6 +5066,69 @@
 
     const RECETAS_FIJAS = [
 {
+        id: "crispetas-en-crispetera",
+        nombre: "Crispetas en crispetera",
+        tipo: "aperitivos_tapas",
+        cocina: null,
+        pais: null,
+        etiquetas: [],
+        tags: ["palomitas", "crispetas", "maiz", "snack"],
+        dieta: ["vegetariano", "sin_gluten"],
+        racionesBase: 2,
+        tiempoPrep: 2, tiempoCoccion: 5,
+        dificultad: "facil",
+        fuente: "Crispetera OnOff", imagen: null,
+        variantes: [
+          { id: "saladas",       label: "Saladas" },
+          { id: "caramelizadas", label: "Caramelizadas" }
+        ],
+        ingredientes: [
+          { ref: "maiz", nombre: "granos de maíz", cantidad: 1, cantidadMax: null, unidad: "cda", grupo: null, opcional: false, nota: null, variante: "saladas" },
+          { ref: "aceite-girasol", nombre: "aceite (girasol o neutro)", cantidad: 1, cantidadMax: null, unidad: "cdta", grupo: null, opcional: false, nota: null, variante: "saladas" },
+          { ref: "sal", nombre: "sal", cantidad: null, cantidadMax: null, unidad: "al_gusto", grupo: null, opcional: false, nota: null, variante: "saladas" },
+          { ref: "maiz", nombre: "granos de maíz", cantidad: 1, cantidadMax: null, unidad: "cda", grupo: null, opcional: false, nota: null, variante: "caramelizadas" },
+          { ref: "aceite-girasol", nombre: "aceite (girasol o neutro)", cantidad: 0.5, cantidadMax: null, unidad: "cdta", grupo: null, opcional: false, nota: null, variante: "caramelizadas" },
+          { ref: "mantequilla", nombre: "mantequilla", cantidad: 1, cantidadMax: null, unidad: "cdta", grupo: null, opcional: false, nota: null, variante: "caramelizadas" },
+          { ref: "azucar", nombre: "azúcar", cantidad: 3, cantidadMax: null, unidad: "cdta", grupo: null, opcional: false, nota: null, variante: "caramelizadas" },
+          { ref: "sal", nombre: "sal", cantidad: null, cantidadMax: null, unidad: "pizca", grupo: null, opcional: true, nota: "opcional", variante: "caramelizadas" }
+        ],
+        pasos: [
+          { n: 1, titulo: "Preparación", texto: "Enciende la máquina vacía y precalienta 1–2 minutos.", tiempo: 90, temperatura: null, usa: [], variante: "saladas" },
+          { n: 2, titulo: null, texto: "Vierte 1 cuchara pequeña de aceite sobre la base caliente.", tiempo: null, temperatura: null, usa: ["aceite-girasol"], variante: "saladas" },
+          { n: 3, titulo: null, texto: "Vierte 1 cuchara grande de granos de maíz encima. Añade sal si quieres.", tiempo: null, temperatura: null, usa: ["maiz", "sal"], variante: "saladas" },
+          { n: 4, titulo: "Reventado", texto: "Coloca el tazón encima (sin la tapa de ventilación todavía). Los granos empezarán a reventar en 2–3 minutos. No toques nada mientras revienta.", tiempo: null, temperatura: null, usa: [], variante: "saladas" },
+          { n: 5, titulo: null, texto: "Cuando los reventones se espacien más de 2–3 segundos, apaga y desenchufa. No esperes a que paren del todo.", tiempo: null, temperatura: null, usa: [], variante: "saladas" },
+          { n: 6, titulo: null, texto: "Pon la tapa de ventilación sobre la salida de aire. Con guante, agarra ambas asas (base y tazón), gira el conjunto alejándolo de ti sobre el mesón y separa la base despacio para liberar el vapor.", tiempo: null, temperatura: null, usa: [], variante: "saladas" },
+          { n: 7, titulo: null, texto: "Sirve directamente. ¡Listo!", tiempo: null, temperatura: null, usa: [], variante: "saladas" },
+          { n: 8, titulo: "Limpieza", texto: "Apaga, desenchufa y espera a que enfríe completamente.", tiempo: null, temperatura: null, usa: [], variante: "saladas" },
+          { n: 9, titulo: null, texto: "Gira la rosca del agitador hacia la izquierda y retíralo.", tiempo: null, temperatura: null, usa: [], variante: "saladas" },
+          { n: 10, titulo: null, texto: "Lava con agua tibia y jabón el tazón, la tapa y el agitador con su rosca.", tiempo: null, temperatura: null, usa: [], variante: "saladas" },
+          { n: 11, titulo: null, texto: "Limpia la base (superficie de cocción) solo con un paño suave y húmedo. No la sumerjas en agua.", tiempo: null, temperatura: null, usa: [], variante: "saladas" },
+          { n: 12, titulo: null, texto: "Seca todo bien antes de guardar.", tiempo: null, temperatura: null, usa: [], variante: "saladas" },
+          { n: 13, titulo: null, texto: "Vuelve a colocar el agitador alineándolo con la muesca del poste y aprieta la rosca hacia la derecha.", tiempo: null, temperatura: null, usa: [], variante: "saladas" },
+          { n: 1, titulo: "Preparación", texto: "Enciende la máquina vacía y precalienta 1–2 minutos.", tiempo: 90, temperatura: null, usa: [], variante: "caramelizadas" },
+          { n: 2, titulo: null, texto: "Vierte ½ cuchara pequeña de aceite sobre la base caliente.", tiempo: null, temperatura: null, usa: ["aceite-girasol"], variante: "caramelizadas" },
+          { n: 3, titulo: null, texto: "Añade 1 cuchara pequeña de mantequilla y espera unos 20 segundos a que se derrita.", tiempo: 20, temperatura: null, usa: ["mantequilla"], variante: "caramelizadas" },
+          { n: 4, titulo: null, texto: "Esparce 3 cucharas pequeñas de azúcar y espera 15–20 segundos hasta que empiece a fundirse.", tiempo: 20, temperatura: null, usa: ["azucar"], variante: "caramelizadas" },
+          { n: 5, titulo: null, texto: "Vierte 1 cuchara grande de granos de maíz encima. Añade una pizca de sal si quieres.", tiempo: null, temperatura: null, usa: ["maiz", "sal"], variante: "caramelizadas" },
+          { n: 6, titulo: "Reventado", texto: "Coloca el tazón encima (sin la tapa de ventilación todavía). Los granos empezarán a reventar en 2–3 minutos. No toques nada mientras revienta.", tiempo: null, temperatura: null, usa: [], variante: "caramelizadas" },
+          { n: 7, titulo: null, texto: "Cuando los reventones se espacien más de 2–3 segundos, apaga y desenchufa. No esperes a que paren del todo.", tiempo: null, temperatura: null, usa: [], variante: "caramelizadas" },
+          { n: 8, titulo: null, texto: "Pon la tapa de ventilación sobre la salida de aire. Con guante, agarra ambas asas (base y tazón), gira el conjunto alejándolo de ti sobre el mesón y separa la base despacio para liberar el vapor.", tiempo: null, temperatura: null, usa: [], variante: "caramelizadas" },
+          { n: 9, titulo: null, texto: "Extiende las palomitas de inmediato sobre papel de hornear y sepáralas con una cuchara antes de que el caramelo solidifique.", tiempo: null, temperatura: null, usa: [], variante: "caramelizadas" },
+          { n: 10, titulo: null, texto: "Espera 3–5 minutos a que el caramelo endurezca. ¡Listo!", tiempo: 240, temperatura: null, usa: [], variante: "caramelizadas" },
+          { n: 11, titulo: "Limpieza", texto: "Apaga, desenchufa y espera a que enfríe completamente.", tiempo: null, temperatura: null, usa: [], variante: "caramelizadas" },
+          { n: 12, titulo: null, texto: "Gira la rosca del agitador hacia la izquierda y retíralo.", tiempo: null, temperatura: null, usa: [], variante: "caramelizadas" },
+          { n: 13, titulo: null, texto: "Lava con agua tibia y jabón el tazón, la tapa y el agitador con su rosca.", tiempo: null, temperatura: null, usa: [], variante: "caramelizadas" },
+          { n: 14, titulo: null, texto: "Limpia la base (superficie de cocción) solo con un paño suave y húmedo. No la sumerjas en agua.", tiempo: null, temperatura: null, usa: [], variante: "caramelizadas" },
+          { n: 15, titulo: null, texto: "Si hay caramelo pegado, vierte agua tibia sobre la base y deja reposar 5–10 minutos. Luego limpia con un paño suave sin rascar.", tiempo: 600, temperatura: null, usa: [], variante: "caramelizadas" },
+          { n: 16, titulo: null, texto: "Seca todo bien antes de guardar.", tiempo: null, temperatura: null, usa: [], variante: "caramelizadas" },
+          { n: 17, titulo: null, texto: "Vuelve a colocar el agitador alineándolo con la muesca del poste y aprieta la rosca hacia la derecha.", tiempo: null, temperatura: null, usa: [], variante: "caramelizadas" }
+        ],
+        notas: "⚠️ Nunca: sumergir la base, el cable o el enchufe en agua · usar limpiadores abrasivos o estropajos · meter piezas en el lavavajillas · guardar la máquina caliente o húmeda · operar más de 5 minutos seguidos · hacer dos tandas seguidas sin esperar 10 minutos.",
+        creado:     "2026-06-09T10:00:00Z",
+        modificado: "2026-06-09T10:00:00Z"
+      },
+      {
         id: "albondigas-en-salsa-cremosa",
         nombre: "Albóndigas en salsa cremosa",
         tipo: "carnes",
@@ -7834,76 +7923,43 @@
       },
       {
         id: "pasta-estilo-carbonara-con-champinones-y-cebolla",
-        nombre: "Pasta estilo carbonara con champiñones y cebolla (versión gourmet equilibrada)",
+        nombre: "Pasta estilo carbonara con champiñones y cebolla",
         tipo: "pasta",
         cocina: null,
-        pais: null,
+        pais: "Italia",
         etiquetas: [],
-        tags: ["cerdo"],
+        tags: ["carbonara", "cerdo", "guanciale", "champiñones", "italiana", "rapido"],
         dieta: [],
         racionesBase: 2,
-        tiempoPrep: 0, tiempoCoccion: 0,
+        tiempoPrep: 15, tiempoCoccion: 25,
         dificultad: "media",
         fuente: null, imagen: null,
         ingredientes: [
-          { ref: "pasta-trigo", nombre: "rigatoni", cantidad: 200, cantidadMax: null, unidad: "g", grupo: null, opcional: false, nota: null },
-          { ref: "guanciale", nombre: "guanciale", cantidad: 100, cantidadMax: 120, unidad: "g", grupo: null, opcional: false, nota: "o panceta buena" },
-          { ref: "cebolla", nombre: "/2 cebolla dulce", cantidad: 1, cantidadMax: null, unidad: "ud", grupo: null, opcional: false, nota: "corte muy fino" },
-          { ref: "champinones", nombre: "champiñones frescos", cantidad: 150, cantidadMax: null, unidad: "g", grupo: null, opcional: false, nota: null },
-          { ref: "huevo", nombre: "yemas + 1 huevo entero", cantidad: 2, cantidadMax: null, unidad: "ud", grupo: null, opcional: false, nota: null },
-          { ref: "parmesano", nombre: "pecorino romano", cantidad: 50, cantidadMax: null, unidad: "g", grupo: null, opcional: false, nota: "rallado fino" },
-          { ref: "parmesano", nombre: "parmesano", cantidad: 15, cantidadMax: 20, unidad: "g", grupo: null, opcional: true, nota: null },
-          { ref: "pimienta-negra", nombre: "Pimienta negra recién molida", cantidad: null, cantidadMax: null, unidad: null, grupo: null, opcional: false, nota: "generosa" },
-          { ref: "sal", nombre: "Sal", cantidad: null, cantidadMax: null, unidad: null, grupo: null, opcional: false, nota: "muy poca" },
-          { ref: "agua", nombre: "agua de cocción", cantidad: 1, cantidadMax: null, unidad: "taza", grupo: null, opcional: false, nota: "reservar" }
+          { ref: "pasta-trigo",    nombre: "Rigatoni",                         cantidad: 200,  cantidadMax: null, unidad: "g",        grupo: "base",          opcional: false, nota: "O spaghetti grueso de calidad" },
+          { ref: "guanciale",      nombre: "Guanciale",                        cantidad: 100,  cantidadMax: 120,  unidad: "g",        grupo: "base",          opcional: false, nota: "O panceta italiana de calidad. Nunca bacon ahumado" },
+          { ref: "cebolla",        nombre: "½ cebolla dulce",                  cantidad: 0.5,  cantidadMax: null, unidad: "ud",       grupo: "base",          opcional: false, nota: "Corte muy fino, casi brunoise" },
+          { ref: "champinones",    nombre: "Champiñones frescos",              cantidad: 150,  cantidadMax: null, unidad: "g",        grupo: "base",          opcional: false, nota: "Blancos o portobello. En láminas no muy finas" },
+          { ref: "huevo",          nombre: "Yemas de huevo",                   cantidad: 2,    cantidadMax: null, unidad: "ud",       grupo: "crema",         opcional: false, nota: "Solo las yemas, sin clara" },
+          { ref: "huevo",          nombre: "Huevo entero",                     cantidad: 1,    cantidadMax: null, unidad: "ud",       grupo: "crema",         opcional: false, nota: "Huevo grande completo, yema y clara" },
+          { ref: "parmesano",      nombre: "Pecorino romano DOP",              cantidad: 50,   cantidadMax: null, unidad: "g",        grupo: "crema",         opcional: false, nota: "Rallado fino" },
+          { ref: "parmesano",      nombre: "Parmigiano Reggiano",              cantidad: 15,   cantidadMax: 20,   unidad: "g",        grupo: "crema",         opcional: true,  nota: "Para suavizar el sabor del pecorino" },
+          { ref: "pimienta-negra", nombre: "Pimienta negra recién molida",     cantidad: null, cantidadMax: null, unidad: "al_gusto", grupo: "condimentos",   opcional: false, nota: "Generosa: es uno de los protagonistas" },
+          { ref: "sal",            nombre: "Sal para el agua de la pasta",     cantidad: null, cantidadMax: null, unidad: "al_gusto", grupo: "condimentos",   opcional: false, nota: "Menos de lo habitual: el guanciale y el queso ya salan" },
+          { ref: "agua",           nombre: "Agua para cocer la pasta",         cantidad: 2,    cantidadMax: null, unidad: "l",        grupo: "condimentos",   opcional: false, nota: "Reservar 1 taza al escurrir" }
         ],
         pasos: [
-          { n: 1, titulo: "1. Base de cocción (empieza aquí)", texto: "Pon 2 litros de agua a hervir", tiempo: null, temperatura: null, usa: ["agua"] },
-          { n: 2, titulo: null, texto: "Sala ligeramente (menos de lo habitual)", tiempo: null, temperatura: null, usa: [] },
-          { n: 3, titulo: null, texto: "️ Este paso arranca todo → no esperes a tener todo listo ---", tiempo: null, temperatura: null, usa: [] },
-          { n: 4, titulo: "2. Guanciale → construir sabor", texto: "Corta en tiras gruesas (tipo bastón)", tiempo: null, temperatura: null, usa: [] },
-          { n: 5, titulo: null, texto: "Sartén fría → añade SIN aceite", tiempo: null, temperatura: null, usa: [] },
-          { n: 6, titulo: null, texto: "Fuego medio → deja que funda su grasa lentamente (5–7 min)", tiempo: 360, temperatura: null, usa: [] },
-          { n: 7, titulo: null, texto: "Debe quedar dorado por fuera y jugoso dentro Retira el guanciale Deja la grasa en la sartén (esto es la base del plato) ---", tiempo: null, temperatura: null, usa: ["guanciale"] },
-          { n: 8, titulo: "3. Cebolla → dulzor y fondo", texto: "Añade la cebolla a la sartén con esa grasa", tiempo: null, temperatura: null, usa: ["cebolla"] },
-          { n: 9, titulo: null, texto: "Fuego medio-bajo", tiempo: null, temperatura: null, usa: [] },
-          { n: 10, titulo: null, texto: "️ Cocina 8–10 min Objetivo:", tiempo: 540, temperatura: null, usa: [] },
-          { n: 11, titulo: null, texto: "blanda", tiempo: null, temperatura: null, usa: [] },
-          { n: 12, titulo: null, texto: "ligeramente dorada", tiempo: null, temperatura: null, usa: [] },
-          { n: 13, titulo: null, texto: "sin quemar Aquí construyes profundidad. Si la haces rápido → sabor plano. ---", tiempo: null, temperatura: null, usa: [] },
-          { n: 14, titulo: "4. Champiñones → concentración real", texto: "Corta en láminas (no muy finas)", tiempo: null, temperatura: null, usa: [] },
-          { n: 15, titulo: null, texto: "Añade a la sartén", tiempo: null, temperatura: null, usa: [] },
-          { n: 16, titulo: null, texto: "Sube a fuego medio-alto", tiempo: null, temperatura: null, usa: [] },
-          { n: 17, titulo: null, texto: "IMPORTANTE:", tiempo: null, temperatura: null, usa: [] },
-          { n: 18, titulo: null, texto: "no remuevas demasiado al principio", tiempo: null, temperatura: null, usa: [] },
-          { n: 19, titulo: null, texto: "deja que evaporen agua ️ 5–7 min hasta que:", tiempo: 360, temperatura: null, usa: ["agua"] },
-          { n: 20, titulo: null, texto: "pierdan toda el agua", tiempo: null, temperatura: null, usa: ["agua"] },
-          { n: 21, titulo: null, texto: "empiecen a dorarse Si quedan aguados → arruinan la textura final ---", tiempo: null, temperatura: null, usa: ["agua"] },
-          { n: 22, titulo: "5. Pasta (entra en juego ahora)", texto: "Cuece los rigatoni → 1 min menos del paquete", tiempo: 60, temperatura: null, usa: ["pasta-trigo"] },
-          { n: 23, titulo: null, texto: "Guarda 1 taza de agua de cocción", tiempo: null, temperatura: null, usa: ["agua"] },
-          { n: 24, titulo: null, texto: "NO enjuagar nunca ---", tiempo: null, temperatura: null, usa: [] },
-          { n: 25, titulo: "6. Crema carbonara (fuera del fuego)", texto: "Mezcla:", tiempo: null, temperatura: null, usa: [] },
-          { n: 26, titulo: null, texto: "2 yemas + 1 huevo", tiempo: null, temperatura: null, usa: ["huevo"] },
-          { n: 27, titulo: null, texto: "pecorino + parmesano", tiempo: null, temperatura: null, usa: ["parmesano"] },
-          { n: 28, titulo: null, texto: "pimienta negra abundante", tiempo: null, temperatura: null, usa: ["pimienta-negra"] },
-          { n: 29, titulo: null, texto: "Remueve hasta textura espesa tipo crema Debe ser densa, no líquida ---", tiempo: null, temperatura: null, usa: [] },
-          { n: 30, titulo: "7. Integración base", texto: "Añade la pasta directamente a la sartén con el sofrito", tiempo: null, temperatura: null, usa: [] },
-          { n: 31, titulo: null, texto: "Mezcla bien Aquí la pasta se impregna de grasa y sabor ---", tiempo: null, temperatura: null, usa: [] },
-          { n: 32, titulo: "️ 8. Paso CRÍTICO → emulsión perfecta", texto: "Apaga el fuego completamente", tiempo: null, temperatura: null, usa: [] },
-          { n: 33, titulo: null, texto: "Añade la mezcla de huevo", tiempo: null, temperatura: null, usa: ["huevo"] },
-          { n: 34, titulo: null, texto: "Remueve CONSTANTEMENTE", tiempo: null, temperatura: null, usa: [] },
-          { n: 35, titulo: null, texto: "Añade poco a poco agua de cocción:", tiempo: null, temperatura: null, usa: ["agua"] },
-          { n: 36, titulo: null, texto: "2–4 cucharadas", tiempo: null, temperatura: null, usa: [] },
-          { n: 37, titulo: null, texto: "ajusta textura Resultado buscado:", tiempo: null, temperatura: null, usa: [] },
-          { n: 38, titulo: null, texto: "salsa cremosa", tiempo: null, temperatura: null, usa: [] },
-          { n: 39, titulo: null, texto: "brillante", tiempo: null, temperatura: null, usa: [] },
-          { n: 40, titulo: null, texto: "que se agarre a la pasta Si se vuelve grumoso → te has pasado de temperatura ---", tiempo: null, temperatura: null, usa: [] },
-          { n: 41, titulo: "9. Final", texto: "Añade el guanciale", tiempo: null, temperatura: null, usa: ["guanciale"] },
-          { n: 42, titulo: null, texto: "Mezcla suave", tiempo: null, temperatura: null, usa: [] },
-          { n: 43, titulo: null, texto: "Ajusta pimienta", tiempo: null, temperatura: null, usa: ["pimienta-negra"] },
-          { n: 44, titulo: null, texto: "Servir inmediatamente ---", tiempo: null, temperatura: null, usa: [] }
+          { n: 1, titulo: "Hervir agua para la pasta",       texto: "Pon 2 L de agua a hervir en una olla grande. Cuando hierva, añade una sal moderada (menos de lo habitual: el guanciale y el pecorino ya aportan sal). Tapa para mantener el calor mientras avanzas con el resto.",                                                                          tiempo: 480,  temperatura: null, usa: ["agua", "sal"] },
+          { n: 2, titulo: "Cortar el guanciale",              texto: "Corta los 100-120 g de guanciale en tiras gruesas tipo bastón de ~1 cm. NO lo piques fino: las tiras gruesas quedan crujientes por fuera y jugosas por dentro.",                                                                                                                            tiempo: 180,  temperatura: null, usa: ["guanciale"] },
+          { n: 3, titulo: "Fundir el guanciale",              texto: "Pon las tiras de guanciale en una sartén grande FRÍA (sin aceite). Enciende a fuego medio y deja que vayan soltando su grasa lentamente 5-7 min, removiendo de vez en cuando. Debe quedar dorado por fuera y jugoso dentro. Retira el guanciale a un plato y DEJA LA GRASA en la sartén: es el oro del plato.", tiempo: 420,  temperatura: null, usa: ["guanciale"] },
+          { n: 4, titulo: "Pochar la cebolla",                texto: "Añade la ½ cebolla picada finísima a la sartén con la grasa del guanciale. Fuego medio-bajo. Cocina 8-10 min hasta que esté blanda, ligeramente dorada y sin quemar. Aquí se construye la profundidad: si la haces rápida, sabor plano. La cebolla debe casi «desaparecer» en el sofrito.", tiempo: 540,  temperatura: null, usa: ["cebolla"] },
+          { n: 5, titulo: "Saltear los champiñones",          texto: "Corta los 150 g de champiñones en láminas no muy finas. Súmalos a la sartén con la cebolla y sube a fuego medio-alto. IMPORTANTE: no remuevas demasiado al principio, deja que evaporen su agua. 5-7 min hasta que pierdan TODA el agua y empiecen a dorarse. Si quedan aguados, arruinan la textura final.", tiempo: 360,  temperatura: null, usa: ["champinones"] },
+          { n: 6, titulo: "Cocer la pasta",                   texto: "Echa los 200 g de rigatoni al agua hirviendo. Cuece 1 minuto MENOS del tiempo que indica el paquete (terminará de hacerse en la sartén). Antes de escurrir, GUARDA 1 taza de agua de cocción (¡no la tires!). NO enjuagues nunca la pasta: ese almidón es lo que liga la salsa.",                tiempo: 600,  temperatura: null, usa: ["pasta-trigo", "agua"] },
+          { n: 7, titulo: "Crema de huevo y queso",           texto: "FUERA DEL FUEGO, en un bol aparte, bate las 2 yemas + el huevo entero con los 50 g de pecorino rallado y los 15-20 g de parmesano. Añade pimienta negra abundante. Remueve hasta una crema espesa y densa, NO líquida. Esta es la salsa cruda que nunca debe ver llama directa.",                  tiempo: 180,  temperatura: null, usa: ["huevo", "parmesano", "pimienta-negra"] },
+          { n: 8, titulo: "Integrar pasta con el sofrito",    texto: "Añade la pasta escurrida directamente a la sartén con la cebolla y los champiñones (la sartén con el calor residual, pero ya fuera del fuego más fuerte). Mezcla bien para que cada rigatoni se impregne de la grasa aromática del guanciale.",                                                tiempo: 120,  temperatura: null, usa: ["pasta-trigo"] },
+          { n: 9, titulo: "Emulsión (paso crítico)",           texto: "APAGA EL FUEGO COMPLETAMENTE. Vierte la crema de huevo sobre la pasta en la sartén y remueve CONSTANTEMENTE. Añade el agua de cocción reservada cucharada a cucharada (2-4 cdas), ajustando textura: debe quedar una salsa cremosa, brillante, que se agarre a la pasta. Si se vuelve grumosa, te has pasado de temperatura: el calor residual hizo huevos revueltos.", tiempo: 120,  temperatura: null, usa: ["agua"] },
+          { n: 10, titulo: "Coronar con guanciale y servir",  texto: "Devuelve el guanciale reservado a la sartén, mezcla con cuidado para integrarlo sin romperlo. Ajusta pimienta negra al gusto. Sirve INMEDIATAMENTE en platos calientes: la carbonara espera a nadie, en 2 minutos se reseca.",                                                                  tiempo: 60,   temperatura: null, usa: ["guanciale", "pimienta-negra"] }
         ],
-        notas: "Errores típicos: Cebolla cruda o rápida → sabor plano Champiñones hervidos → textura acuosa Fuego alto con huevo → huevos revueltos Demasiada agua → sopa Poco queso → sin cuerpo --- · Consejos pro (nivel restaurante): La cebolla debe “desaparecer” → no notarse como trozo El champiñón debe dorarse, no cocerse Usa",
+        notas: "Errores típicos que matan el plato: cebolla cruda o cocinada rápido (sabor plano), champiñones que sueltan agua (textura acuosa), añadir el huevo con fuego encendido (huevos revueltos), exceso de agua de cocción (sopa), poco queso (sin cuerpo). Sobre los huevos: las 2 yemas + 1 entero da el equilibrio justo de cremosidad sin sabor a huevo crudo. Solo yemas: muy denso. Solo enteros: aguado. La proporción 2y+1e es la fórmula de los chefs italianos. La grasa del guanciale NO se sustituye por aceite: es lo que da el aroma único. Si no encuentras guanciale, usa panceta italiana curada (NO bacon ahumado, jamás). El pecorino romano DOP es innegociable: el parmesano solo está para suavizar (opcional). Pimienta recién molida en el plato, justo antes de servir: la prefermolida pierde aroma. Maridaje: vino blanco seco italiano (Frascati, Verdicchio) o tinto ligero (Sangiovese). Servir en plato hondo precalentado para que no se enfríe.",
         creado:     "2026-06-04T10:00:00Z",
         modificado: "2026-06-04T10:00:00Z"
       },
@@ -9862,40 +9918,40 @@
         tipo: "reposteria",
         cocina: null,
         pais: "España",
-        etiquetas: [],
-        tags: ["platano"],
+        etiquetas: ["familiar"],
+        tags: ["platano", "nueces", "desayuno", "merienda", "casero", "saludable"],
         dieta: ["vegetariano"],
-        racionesBase: 4,
-        tiempoPrep: 0, tiempoCoccion: 0,
-        dificultad: "media",
+        racionesBase: 8,
+        tiempoPrep: 15, tiempoCoccion: 50,
+        dificultad: "facil",
         fuente: null, imagen: null,
         ingredientes: [
-          { ref: "platano", nombre: "plátanos muy maduros", cantidad: 3, cantidadMax: null, unidad: "ud", grupo: null, opcional: false, nota: "mientras más negros, mejor" },
-          { ref: "huevo", nombre: "huevos grandes", cantidad: 3, cantidadMax: null, unidad: "ud", grupo: null, opcional: false, nota: null },
-          { ref: "panela", nombre: "panela rallada o molida", cantidad: 100, cantidadMax: null, unidad: "g", grupo: null, opcional: false, nota: "ajustado para que quede suave pero no empalagoso" },
-          { ref: "aceite-oliva", nombre: "aceite de girasol o de oliva suave", cantidad: 100, cantidadMax: null, unidad: "ml", grupo: null, opcional: false, nota: null },
-          { ref: "yogur-natural", nombre: "yogur natural o griego sin azúcar", cantidad: 120, cantidadMax: null, unidad: "ml", grupo: null, opcional: false, nota: "puedes usar leche con unas gotas de limón si prefieres sin yogur" },
-          { ref: "vainilla", nombre: "extracto de vainilla", cantidad: 1, cantidadMax: null, unidad: "cdta", grupo: null, opcional: false, nota: null },
-          { ref: "harina", nombre: "harina de trigo", cantidad: 220, cantidadMax: null, unidad: "g", grupo: null, opcional: false, nota: null },
-          { ref: "bicarbonato", nombre: "bicarbonato sódico", cantidad: 1, cantidadMax: null, unidad: "cdta", grupo: null, opcional: false, nota: null },
-          { ref: "levadura-quimica", nombre: "levadura química", cantidad: 1, cantidadMax: null, unidad: "cdta", grupo: null, opcional: false, nota: "tipo Royal" },
-          { ref: "sal", nombre: "sal", cantidad: 0.5, cantidadMax: null, unidad: "cdta", grupo: null, opcional: false, nota: null },
-          { ref: "canela", nombre: "canela molida", cantidad: 1, cantidadMax: null, unidad: "cdta", grupo: null, opcional: true, nota: null },
-          { ref: "nueces", nombre: "nueces picadas + algunas más para decorar", cantidad: 100, cantidadMax: null, unidad: "g", grupo: null, opcional: false, nota: null },
-          { ref: "mantequilla", nombre: "Mantequilla y harina para engrasar el molde", cantidad: null, cantidadMax: null, unidad: null, grupo: null, opcional: false, nota: "o papel vegetal" }
+          { ref: "platano",          nombre: "Plátanos muy maduros",           cantidad: 3,    cantidadMax: null, unidad: "ud",    grupo: "masa",   opcional: false, nota: "Cuanto más negros, mejor" },
+          { ref: "huevo",            nombre: "Huevos grandes",                 cantidad: 3,    cantidadMax: null, unidad: "ud",    grupo: "masa",   opcional: false, nota: null },
+          { ref: "panela",           nombre: "Panela rallada o molida",        cantidad: 100,  cantidadMax: null, unidad: "g",     grupo: "masa",   opcional: false, nota: "Suave pero no empalagoso. Sustituye por azúcar moreno si no tienes" },
+          { ref: "aceite-girasol",   nombre: "Aceite de girasol o oliva suave", cantidad: 100,  cantidadMax: null, unidad: "ml",    grupo: "masa",   opcional: false, nota: null },
+          { ref: "yogur-natural",    nombre: "Yogur natural o griego sin azúcar", cantidad: 120, cantidadMax: null, unidad: "ml",   grupo: "masa",   opcional: false, nota: "Puedes usar leche con unas gotas de limón" },
+          { ref: "vainilla",         nombre: "Extracto de vainilla",           cantidad: 1,    cantidadMax: null, unidad: "cdta",  grupo: "masa",   opcional: false, nota: null },
+          { ref: "harina",           nombre: "Harina de trigo",                cantidad: 220,  cantidadMax: null, unidad: "g",     grupo: "secos",  opcional: false, nota: null },
+          { ref: "bicarbonato",      nombre: "Bicarbonato sódico",             cantidad: 1,    cantidadMax: null, unidad: "cdta",  grupo: "secos",  opcional: false, nota: null },
+          { ref: "levadura-quimica", nombre: "Levadura química",               cantidad: 1,    cantidadMax: null, unidad: "cdta",  grupo: "secos",  opcional: false, nota: "Tipo Royal" },
+          { ref: "sal",              nombre: "Sal",                            cantidad: 0.5,  cantidadMax: null, unidad: "cdta",  grupo: "secos",  opcional: false, nota: null },
+          { ref: "canela",           nombre: "Canela molida",                  cantidad: 1,    cantidadMax: null, unidad: "cdta",  grupo: "secos",  opcional: true,  nota: null },
+          { ref: "nueces",           nombre: "Nueces picadas",                 cantidad: 100,  cantidadMax: null, unidad: "g",     grupo: "extras", opcional: false, nota: "Reserva algunas enteras para decorar" },
+          { ref: "mantequilla",      nombre: "Mantequilla para engrasar",      cantidad: null, cantidadMax: null, unidad: "al_gusto", grupo: "extras", opcional: false, nota: "O papel vegetal" }
         ],
         pasos: [
-          { n: 1, titulo: null, texto: "Precalienta el horno a 175 °C (calor arriba y abajo, sin ventilador). Engrasa el molde o cúbrelo con papel vegetal.", tiempo: null, temperatura: 175, usa: [] },
-          { n: 2, titulo: null, texto: "En un bol grande, machaca los plátanos hasta obtener un puré uniforme.", tiempo: null, temperatura: null, usa: ["platano"] },
-          { n: 3, titulo: null, texto: "Añade los huevos, el aceite, el yogur, la vainilla y la panela. Bate bien con varillas hasta que la mezcla quede suave y algo espumosa.", tiempo: null, temperatura: null, usa: ["huevo", "panela", "aceite-oliva", "yogur-natural", "vainilla"] },
-          { n: 4, titulo: null, texto: "En otro bol, tamiza la harina, la levadura, el bicarbonato, la canela y la sal.", tiempo: null, temperatura: null, usa: ["harina", "bicarbonato", "levadura-quimica", "canela", "mantequilla"] },
-          { n: 5, titulo: null, texto: "Incorpora poco a poco los ingredientes secos a la mezcla húmeda, mezclando con espátula solo hasta integrar (no sobrebatir).", tiempo: null, temperatura: null, usa: [] },
-          { n: 6, titulo: null, texto: "Añade las nueces picadas y mezcla suavemente.", tiempo: null, temperatura: null, usa: ["nueces"] },
-          { n: 7, titulo: null, texto: "Vierte la mezcla en el molde. Puedes decorar con nueces por encima o unas rodajas finas de plátano.", tiempo: null, temperatura: null, usa: ["nueces"] },
-          { n: 8, titulo: null, texto: "Hornea durante 40–50 minutos, o hasta que al pinchar con un palillo, salga limpio (aunque algo húmedo por el plátano está bien).", tiempo: 2700, temperatura: null, usa: [] },
-          { n: 9, titulo: null, texto: "Deja reposar 10 minutos en el molde, luego desmolda y enfría sobre rejilla.", tiempo: 600, temperatura: null, usa: [] }
+          { n: 1, titulo: "Precalentar",         texto: "Precalienta el horno a 175 °C (calor arriba y abajo, sin ventilador). Engrasa el molde con mantequilla o cúbrelo con papel vegetal.",                                                                            tiempo: null, temperatura: 175, usa: ["mantequilla"] },
+          { n: 2, titulo: "Puré de plátano",     texto: "En un bol grande, machaca los 3 plátanos con un tenedor hasta obtener un puré uniforme sin grumos grandes.",                                                                                                     tiempo: 180,  temperatura: null, usa: ["platano"] },
+          { n: 3, titulo: "Mezcla húmeda",       texto: "Añade al puré los 3 huevos, los 100 ml de aceite, los 120 ml de yogur, 1 cdta de vainilla y los 100 g de panela. Bate bien con varillas 2-3 min hasta que la mezcla quede suave y algo espumosa.",               tiempo: 180,  temperatura: null, usa: ["huevo", "aceite-girasol", "yogur-natural", "vainilla", "panela"] },
+          { n: 4, titulo: "Tamizar secos",       texto: "En otro bol, tamiza juntos los 220 g de harina, 1 cdta de levadura, 1 cdta de bicarbonato, 1 cdta de canela y ½ cdta de sal. Esto evita grumos y aporta esponjosidad.",                                            tiempo: 120,  temperatura: null, usa: ["harina", "levadura-quimica", "bicarbonato", "canela", "sal"] },
+          { n: 5, titulo: "Integrar",            texto: "Incorpora poco a poco los ingredientes secos a la mezcla húmeda, mezclando con espátula con movimientos envolventes solo hasta integrar. NO sobrebatir: si trabajas mucho la masa, el bizcocho queda chicloso.", tiempo: 180,  temperatura: null, usa: [] },
+          { n: 6, titulo: "Añadir nueces",       texto: "Incorpora los 100 g de nueces picadas a la masa con la espátula con 2-3 movimientos suaves. Reserva un puñado para decorar.",                                                                                    tiempo: 60,   temperatura: null, usa: ["nueces"] },
+          { n: 7, titulo: "Al molde",            texto: "Vierte la masa en el molde engrasado. Decora con las nueces reservadas por encima y, si quieres, unas rodajas finas de plátano formando una línea en el centro.",                                                tiempo: 120,  temperatura: null, usa: ["nueces", "platano"] },
+          { n: 8, titulo: "Hornear",             texto: "Hornea 40-50 min. Al pinchar con palillo en el centro debe salir limpio, aunque ligeramente húmedo por el plátano está bien. Si la superficie se dora demasiado pronto, cubre con papel aluminio los últimos 10 min.", tiempo: 2700, temperatura: 175, usa: [] },
+          { n: 9, titulo: "Reposo y desmoldar",  texto: "Saca el molde y deja reposar 10 min sobre rejilla. Después desmolda y enfría completamente sobre la rejilla antes de cortar.",                                                                                    tiempo: 600,  temperatura: null, usa: [] }
         ],
-        notas: "Consejos extra: Si te gusta con un punto aún más saludable, puedes sustituir 50 g de harina por avena molida. Si el plátano está poco maduro, puedes hornearlo con piel a 180 °C durante 10-15 minutos para concentrar su dulzor.",
+        notas: "Truco saludable: sustituye 50 g de harina por avena molida para una textura más rústica y fibra extra. Si los plátanos están poco maduros, hornéalos enteros con piel a 180 °C durante 10-15 min y luego úsalos: concentras su dulzor de golpe. El yogur griego da más cuerpo; el natural más ligereza. Sin yogur: leche entera + 1 cdta de zumo de limón (se corta y simula el yogur). Conservación: 3 días en bote hermético a temperatura ambiente, 5 días en nevera. Congela bien en rodajas envueltas en film. Maridaje: café con leche, chocolate caliente o té chai.",
         creado:     "2026-06-04T10:00:00Z",
         modificado: "2026-06-04T10:00:00Z"
       },
@@ -10800,6 +10856,7 @@
       neveraFiltro: "",          // texto del buscador de la nevera (efimero)
       /* Detalle — tab activa (efimero). */
       detalleTab: "ingredientes",     // ingredientes | pasos
+      varianteActiva: null,           // id de variante activa (recetas con r.variantes) — efimero
       /* Modo cocina — efimero. pagina: -2 portada, -1 ingredientes, 0..N-1 pasos. */
       modoCocina: { activo: false, idReceta: null, pagina: 0 },
       /* Temporizadores activos (persisten en KEY_TIMERS). T1: solo finMs/restanteMs. */
@@ -13076,13 +13133,34 @@
 
     /* ---- Biblioteca: detalle de receta ---------------------------------- */
 
+    /* ---- Variantes (recetas con pestañas internas, p.ej. Saladas/Caramelizadas) ----
+       Devuelven listas filtradas por la variante activa preservando el índice
+       original (necesario para los ticks, que se indexan sobre el array completo). */
+    function varianteActivaDe(r) {
+      if (!r || !Array.isArray(r.variantes) || !r.variantes.length) return null;
+      const ids = r.variantes.map(v => v.id);
+      return ids.includes(sesion.varianteActiva) ? sesion.varianteActiva : ids[0];
+    }
+    function ingredientesVisibles(r) {
+      const va = varianteActivaDe(r);
+      return r.ingredientes
+        .map((ing, idx) => ({ ing, idx }))
+        .filter(({ ing }) => !va || !ing.variante || ing.variante === va);
+    }
+    function pasosVisibles(r) {
+      const va = varianteActivaDe(r);
+      return r.pasos
+        .map((p, idx) => ({ p, idx }))
+        .filter(({ p }) => !va || !p.variante || p.variante === va);
+    }
+
     function renderIngredientesZona() {
       const r = recetaPorId(sesion.recetaAbierta);
       if (!r) return "";
       const factor = sesion.raciones / r.racionesBase;
       // Agrupar por grupo (preservando orden).
       const grupos = new Map();
-      r.ingredientes.forEach((ing, idx) => {
+      ingredientesVisibles(r).forEach(({ ing, idx }) => {
         const g = ing.grupo || "_sin_";
         if (!grupos.has(g)) grupos.set(g, []);
         grupos.get(g).push({ ing, idx });
@@ -13133,7 +13211,7 @@
     function renderPasosZona() {
       const r = recetaPorId(sesion.recetaAbierta);
       if (!r) return "";
-      const lis = r.pasos.map((p, idx) => {
+      const lis = pasosVisibles(r).map(({ p, idx }) => {
         // Botón temporizador (si el paso lo requiere) + meta de temperatura
         const timerBtn = pillTimerPasoHTML(p, r.id, "detalle");
         const meta = [];
@@ -13207,6 +13285,14 @@
             <h1>${esc(r.nombre)}</h1>
             ${metaInlineHTML ? `<p class="detalle-meta-line">${metaInlineHTML}</p>` : ""}
           </header>
+
+          ${Array.isArray(r.variantes) && r.variantes.length ? `
+          <div class="detalle-variantes" role="tablist" aria-label="Variantes">
+            ${r.variantes.map(v =>
+              `<button type="button" data-accion="detalle-variante" data-valor="${esc(v.id)}"
+                       aria-pressed="${varianteActivaDe(r) === v.id}">${esc(v.label)}</button>`
+            ).join("")}
+          </div>` : ""}
 
           <div class="detalle-tabs-bar">
             <div class="detalle-tabs" role="tablist">
@@ -13758,13 +13844,15 @@
       // Si no hay tics, empezar en la portada.
       // pagina: -1 portada · 0..N-1 pasos. (Se eliminó la pantalla intermedia
       // de ingredientes: el modo cocina solo muestra portada + pasos).
+      // En recetas con variantes solo se recorren los pasos de la variante activa.
+      const pv = pasosVisibles(r);
       let inicio = -1;
       if (sesion.ticsPaso.size > 0) {
         let primero = -1;
-        for (let i = 0; i < r.pasos.length; i++) {
-          if (!sesion.ticsPaso.has(i)) { primero = i; break; }
+        for (let i = 0; i < pv.length; i++) {
+          if (!sesion.ticsPaso.has(pv[i].idx)) { primero = i; break; }
         }
-        inicio = (primero >= 0) ? primero : (r.pasos.length - 1);
+        inicio = (primero >= 0) ? primero : (pv.length - 1);
       }
       sesion.modoCocina = { activo: true, idReceta: r.id, pagina: inicio };
       document.body.classList.add("modo-cocina-activo");
@@ -13794,7 +13882,7 @@
       if (!sesion.modoCocina.activo) return;
       const r = recetaPorId(sesion.modoCocina.idReceta);
       if (!r) return;
-      if (sesion.modoCocina.pagina < r.pasos.length - 1) {
+      if (sesion.modoCocina.pagina < pasosVisibles(r).length - 1) {
         sesion.modoCocina.pagina++;
         renderModoCocina();
       }
@@ -13805,8 +13893,9 @@
       if (!r) { cerrarCocina(); return; }
       // Defensa: redirige cualquier valor antiguo (-2) a la nueva portada (-1).
       if (sesion.modoCocina.pagina < -1) sesion.modoCocina.pagina = -1;
+      const pv = pasosVisibles(r);
       const pagina = sesion.modoCocina.pagina;
-      const total = r.pasos.length;
+      const total = pv.length;
       const totalPag = total + 1;          // portada + N pasos (sin pantalla de ingredientes)
       const idxAbs = pagina + 1;           // 0..totalPag-1
       const pct = Math.round((idxAbs + 1) / totalPag * 100);
@@ -13830,7 +13919,7 @@
           </div>`;
       } else {
         // PASO normal — sin bloque de ingredientes del paso.
-        const p = r.pasos[pagina];
+        const p = pv[pagina] && pv[pagina].p;
         if (!p) { cerrarCocina(); return; }
         const meta = [];
         if (p.temperatura != null) meta.push(`<span class="pill">Horno <b>${esc(p.temperatura)}°C</b></span>`);
@@ -15578,6 +15667,7 @@
       if (vistaActiva !== "biblioteca") fijarVista("biblioteca");
       sesion.recetaAbierta = id;
       sesion.raciones = r.racionesBase;
+      sesion.varianteActiva = (Array.isArray(r.variantes) && r.variantes.length) ? r.variantes[0].id : null;
       sesion.ticsIng.clear();
       sesion.ticsPaso.clear();
       // Actualizar URL para que se pueda compartir el enlace de esta receta.
@@ -15845,6 +15935,22 @@
           const v = tabBtn.dataset.valor;
           if (v === "ingredientes" || v === "pasos") {
             sesion.detalleTab = v;
+            renderBibliotecaDetalle();
+          }
+          return;
+        }
+
+        // Pestaña de variante (Saladas / Caramelizadas …).
+        const varBtn = ev.target.closest("[data-accion='detalle-variante']");
+        if (varBtn) {
+          const v = varBtn.dataset.valor;
+          const r = recetaPorId(sesion.recetaAbierta);
+          if (r && Array.isArray(r.variantes) && r.variantes.some(x => x.id === v) && v !== sesion.varianteActiva) {
+            sesion.varianteActiva = v;
+            // Los ticks se indexan sobre el array completo; al cambiar de variante
+            // se refieren a otros pasos/ingredientes, así que los reseteamos.
+            sesion.ticsIng.clear();
+            sesion.ticsPaso.clear();
             renderBibliotecaDetalle();
           }
           return;
